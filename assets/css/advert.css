@@ -1,0 +1,32 @@
+.input-text, input[type=text], input[type=email], input[type=url], input[type=password], input[type=search], textarea{
+    box-shadow: none !important;
+}
+
+a.event.dashicons-before{
+  cursor: pointer;
+  color: #525252;
+}
+
+div.pic-editor{
+  position: absolute;
+  display: inline-block;
+  background-color:rgba(255, 249, 57, 0.71);
+  padding-top: 5px;
+}
+.dashicons, .dashicons-before:before{
+      font-size: 17px !important;
+      padding-right: 5px;
+      padding-left: 5px;
+}
+
+a.event.dashicons-before:hover{
+  color: white;
+}
+
+md-card{
+  padding: 5px;
+  background: #ffffff;
+}
+md-card.active a.dashicons-camera{
+  color: white;
+}

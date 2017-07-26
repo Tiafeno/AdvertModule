@@ -1,0 +1,26 @@
+<div ng-show="itemCtgSelected.madagascar">
+  <md-input-container class="md-block" flex="50">
+    <label>Type de bien</label>
+    <md-select ng-model="advertPost.type" ng-required="itemCtgSelected.madagascar" ng-disabled="!itemCtgSelected.madagascar">
+      <md-option ng-value="vm.slug"  ng-repeat="vm in [
+      { slug : 'maison', name : 'Maison'},
+      { slug : 'appartement', name :'Appartement'},
+      { slug : 'terrain', name : 'Terrain'},
+      { slug : 'parking', name : 'Parking'},
+      { slug : 'autre', name : 'Autre'}
+      ]" >[[vm.name]]</md-option>
+    </md-select>
+  </md-input-container>
+
+  <div layout-gt-sm="row" >
+    <md-input-container class="md-block" flex-gt-sm>
+      <label>Surface</label>
+      <input ng-cust ng-required="itemCtgSelected.madagascar" type="number" ng-disabled="!itemCtgSelected.madagascar" name="surface" ng-model="advertPost.surface">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+      <label>Pièces</label>
+      <input ng-cust ng-required="itemCtgSelected.madagascar" type="number" ng-disabled="!itemCtgSelected.madagascar" name="piece" ng-model="advertPost.piece">
+    </md-input-container>
+  </div>
+</div>
