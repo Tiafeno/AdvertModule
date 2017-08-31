@@ -1,4 +1,6 @@
 <?php
+namespace advert\entity\model;
+
 class AdvertModel{
   private $wpdb;
 
@@ -8,29 +10,48 @@ class AdvertModel{
   }
 
   private static function setProductCat(){
-    $parent = array();
+    $parents = array();
     // $parent[] = array('name' => 'EMPLOI', 'slug' => 'emploi');
-    $parent[] = array('name' => 'VEHICULES', 'slug' => 'vehicules');
-    $parent[] = array('name' => 'IMMOBILIER', 'slug' => 'immobilier');
-    $parent[] = array('name' => 'VACANCES', 'slug' => 'vacances');
-    $parent[] = array('name' => 'MULTIMEDIA', 'slug' => 'multimedia');
-    $parent[] = array('name' => 'MAISON', 'slug' => 'maison');
-    $parent[] = array('name' => 'LOISIRS', 'slug' => 'loisirs');
-    $parent[] = array('name' => 'MATERIEL PROFESSIONNEL', 'slug' => 'materiel-professionnel');
-    $parent[] = array('name' => 'SERVICES', 'slug' => 'services');
-
-    foreach ($parent as $m) {
-      $t = term_exists($m['slug'], 'product_cat'); // return array('term_id'=> x,'term_taxonomy_id'=>x))
-      if(is_null($t)){
-        wp_insert_term(
-          $m['name'],
-          'product_cat',
-          array(
-            'slug' => $m['slug'],
-            'parent' => 0,
-            'description' => ''
-          )
+    $parents[] = array('name' => 'VEHICULES', 'slug' => 'vehicules');
+    $parents[] = array('name' => 'IMMOBILIER', 'slug' => 'immobilier');
+    $parents[] = array('name' => 'VACANCES', 'slug' => 'vacances');
+    $parents[] = array('name' => 'MULTIMEDIA', 'slug' => 'multimedia');
+    $parents[] = array('name' => 'MAISON', 'slug' => 'maison');
+    $parents[] = array('name' => 'LOISIRS', 'slug' => 'loisirs');
+    $parents[] = array('name' => 'MATERIEL PROFESSIONNEL', 'slug' => 'materiel-professionnel');
+    $parents[] = array('name' => 'SERVICES', 'slug' => 'services');
+  
+    $product_cat = [
+      'immobilier' => [
+        ['name' => 'Ventes immobilieres', 'slug' => \sanitize_title('Ventes immobilieres')],
+        ['name' => 'Locations', 'slug' => \sanitize_title( 'Locations' )],
+        ['name' => 'Colocations', 'slug' => \sanitize_title( 'Colocations' )],
+        ['name' => 'Bureaux et Commerces', 'slug' => \sanitize_title( 'Bureaux et Commerces' )],
+      ]
+    ];
+  
+    foreach ($parents as $parent) {
+      $verify = \term_exists($parent[ 'slug' ], 'product_cat'); // return array('term_id'=> x,'term_taxonomy_id'=>x))
+      if (is_null( $verify )){
+        $isParent = \wp_insert_term($parent[ 'name' ], 'product_cat', 
+          [ 'slug' => $parent[ 'slug' ] ]
         );
+        if (!\is_wp_error( $isParent )){ }
+      }
+    }
+    while (list($product_cat_parent_slug, $childs_term) = each( $product_cat )) {
+      $selfparent = \term_exists( $product_cat_parent_slug, 'product_cat');
+      $parent_term_id = $selfparent[ 'term_id' ];
+      foreach ($childs_term as $key => $term) {
+        # code...
+        $objTerm = (object) $term;
+        \wp_insert_term($objTerm->name, 'product_cat', 
+          [
+            'slug' => $objTerm->slug,
+            'parent' => $parent_term_id
+          ]
+        );
+  
       }
     }
   }
@@ -86,10 +107,7 @@ class AdvertModel{
         "FOREIGN KEY (id_user) REFERENCES {$wpdb->prefix}users(ID) " .
         "ON DELETE CASCADE ON UPDATE NO ACTION;");
 
-
-
-
-    AdvertModel::setProductCat();
+    namespace\AdvertModel::setProductCat();
   }
 
   public static function uninstall(){

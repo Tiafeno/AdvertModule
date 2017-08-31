@@ -17,7 +17,7 @@ class search_Widget extends WP_Widget
     public function __construct()
     {
       global $TWIG;
-      $this->Template = $TWIG;
+      $this->Template = &$TWIG;
       parent::__construct("fali_advert", "Advert > Search Bar", array('description' => ''));
     }
 

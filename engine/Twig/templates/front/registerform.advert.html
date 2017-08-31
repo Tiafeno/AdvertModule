@@ -89,8 +89,9 @@
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Adresse email *</label>
-                    <input ng-cust required name="email" ng-model="register.email">
+                    <input type="email" ng-cust required name="email" ng-model="register.email">
                     <div ng-messages="setAdvertRegisterForm.email.$error">
+                        <div ng-message="email">Veuillez insérer une adresse email valide.</div>
                         <div ng-message="required">Veuillez insérer une adresse email.</div>
                     </div>
                 </md-input-container>
