@@ -1,5 +1,6 @@
 <?php
 namespace advert\entity\model;
+use advert\src\services as Services;
 
 class AdvertModel{
   private $wpdb;
@@ -7,51 +8,35 @@ class AdvertModel{
   public function __construct(){
     global $wpdb;
     $this->wpdb = $wpdb;
+    return;
   }
 
-  private static function setProductCat(){
-    $parents = array();
-    // $parent[] = array('name' => 'EMPLOI', 'slug' => 'emploi');
-    $parents[] = array('name' => 'VEHICULES', 'slug' => 'vehicules');
-    $parents[] = array('name' => 'IMMOBILIER', 'slug' => 'immobilier');
-    $parents[] = array('name' => 'VACANCES', 'slug' => 'vacances');
-    $parents[] = array('name' => 'MULTIMEDIA', 'slug' => 'multimedia');
-    $parents[] = array('name' => 'MAISON', 'slug' => 'maison');
-    $parents[] = array('name' => 'LOISIRS', 'slug' => 'loisirs');
-    $parents[] = array('name' => 'MATERIEL PROFESSIONNEL', 'slug' => 'materiel-professionnel');
-    $parents[] = array('name' => 'SERVICES', 'slug' => 'services');
-  
-    $product_cat = [
-      'immobilier' => [
-        ['name' => 'Ventes immobilieres', 'slug' => \sanitize_title('Ventes immobilieres')],
-        ['name' => 'Locations', 'slug' => \sanitize_title( 'Locations' )],
-        ['name' => 'Colocations', 'slug' => \sanitize_title( 'Colocations' )],
-        ['name' => 'Bureaux et Commerces', 'slug' => \sanitize_title( 'Bureaux et Commerces' )],
-      ]
-    ];
-  
+  public static function setProductCat(){
+    $Services = new Services\ServicesController();
+    $SchemaAdvert = json_decode( $Services->getSchemaAdvert() );
+    $parents = $SchemaAdvert->product_cat;
+    $childs = $SchemaAdvert->product_cat_child;
     foreach ($parents as $parent) {
-      $verify = \term_exists($parent[ 'slug' ], 'product_cat'); // return array('term_id'=> x,'term_taxonomy_id'=>x))
+      $verify = \term_exists($parent->slug, 'product_cat'); // return array('term_id'=> x,'term_taxonomy_id'=>x))
       if (is_null( $verify )){
-        $isParent = \wp_insert_term($parent[ 'name' ], 'product_cat', 
-          [ 'slug' => $parent[ 'slug' ] ]
+        
+        $isParent = \wp_insert_term($parent->name, 'product_cat', 
+          [ 'slug' => $parent->slug, 'parent' => 0 ]
         );
-        if (!\is_wp_error( $isParent )){ }
-      }
-    }
-    while (list($product_cat_parent_slug, $childs_term) = each( $product_cat )) {
-      $selfparent = \term_exists( $product_cat_parent_slug, 'product_cat');
-      $parent_term_id = $selfparent[ 'term_id' ];
-      foreach ($childs_term as $key => $term) {
-        # code...
-        $objTerm = (object) $term;
-        \wp_insert_term($objTerm->name, 'product_cat', 
-          [
-            'slug' => $objTerm->slug,
-            'parent' => $parent_term_id
-          ]
-        );
-  
+        if (!\is_wp_error( $isParent )) { 
+          $selfparent = \term_exists( $parent->slug, 'product_cat');
+          $parent_term_id = $selfparent[ 'term_id' ];
+          foreach ($childs as $child) {
+            if ($parent->_id != $child->parent_id) return;
+            $objChild = (object) $child;
+            \wp_insert_term($objChild->name, 'product_cat', 
+              [
+                'parent' => $parent_term_id
+              ]
+            );
+      
+          }
+        }
       }
     }
   }
@@ -106,7 +91,7 @@ class AdvertModel{
         "ADD CONSTRAINT delete_custom_user " .
         "FOREIGN KEY (id_user) REFERENCES {$wpdb->prefix}users(ID) " .
         "ON DELETE CASCADE ON UPDATE NO ACTION;");
-
+    
     namespace\AdvertModel::setProductCat();
   }
 

@@ -1,0 +1,254 @@
+{
+	"product_cat" : [
+		{
+			"_id" : 1,
+			"name": "IMMOVABLE",
+			"slug": "immovable"
+		},
+		{
+			"_id" : 2,
+			"name": "VEHICULES",
+			"slug": "vehicules"
+		},
+		{
+			"_id" : 4,
+			"name": "MULTIMEDIA",
+			"slug": "multimedia"
+		},
+		{
+			"_id" : 5,
+			"name": "HOUSE",
+			"slug": "house"
+		},
+		{
+			"_id" : 6,
+			"name": "HOBBIES",
+			"slug": "hobbies"
+		},
+		{
+			"_id" : 7,
+			"name": "PROFESSIONAL MATERIALS",
+			"slug": "professional-materials"
+		},
+		{
+			"_id" : 8,
+			"name": "SERVICES",
+			"slug": "services"
+		}
+	],
+	"product_cat_child": [
+		{
+			"_id": 1,
+			"name" : "Real estate sales",
+			"parent_id" : 1,
+			"vendor" : [
+				"Area", "Kind of good", "Rooms"
+			]
+		},
+		{
+			"_id": 2,
+			"name" : "Rentals",
+			"parent_id" : 1,
+			"vendor" : [
+				"Area", "Furnished and Unfurnished", "Kind of good", "Rooms"
+			]
+		},
+		{
+			"_id": 3,
+			"name" : "Housemates",
+			"parent_id" : 1,
+			"vendor" : [
+				"Area", "Rooms"
+			]
+		},
+		{
+			"_id": 4,
+			"name" : "Offices and Shops",
+			"parent_id" : 1,
+			"vendor" : [
+				"Area"
+			]
+		}
+	],
+	"vendor": [
+		{
+			"id": "Area",
+			"type": "number",
+			"validate": "area",
+			"scope": {
+				"maxlength": 6,
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez préciser la surface.."
+				}
+			}
+		},
+		{
+			"id": "Kind of good",
+			"type": "select",
+			"validate": "real_estate_type",
+			"options": [
+				{ 
+					"type": "House", 
+					"_id": 1
+				},
+				{ 
+					"type": "Apartment", 
+					"_id": 2 
+				},
+				{ 
+					"type": "Car park", 
+					"_id": 3 
+				},
+				{ 
+					"type": "Ground", 
+					"_id": 4 
+				},
+				{ 
+					"type": "Other",
+					"_id": 5 
+				}
+			],
+			"scope": {
+				"required": false
+			}
+		},
+		{
+			"id": "Rooms",
+			"type": "tel",
+			"validate": "rooms",
+			"scope": {
+				"maxlength": 2,
+				"ng_message": {
+					"maxlength": "L'indication du nombre de pièces ne doit comporter que des caractères numériques."
+				}
+			}
+		},
+		{
+			"id": "Furnished and Unfurnished",
+			"type": "select",
+			"validate": "furnished"
+		},
+		{
+			"id": "Mark",
+			"type": "select",
+			"validate": "mark"
+		},
+		{
+			"id": "Model",
+			"type": "text",
+			"validate": "model",
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez préciser le Modèle.."
+				}
+			}
+		},
+		{
+			"id": "Model Year",
+			"type": "date",
+			"validate": "regdate",
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez choisir l'année-modèle."
+				}
+			}
+		},
+		{
+			"id": "Fuel",
+			"type": "select",
+			"validate": "fuel",
+			"options": [
+				{
+					"_id": 1,
+					"name": "Gasoline"
+				},
+				{
+					"_id": 2,
+					"name": "Diesel"
+				},
+				{
+					"_id": 3,
+					"name": "GPL"
+				},
+				{
+					"_id": 4,
+					"name": "Electric"
+				},
+				{
+					"_id": 5,
+					"name": "Hybrid"
+				},
+				{
+					"_id": 6,
+					"name": "Other"
+				}
+			],
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez choisir le carburant."
+				}
+			}
+		},
+		{
+			"id": "Gearbox",
+			"type": "select",
+			"validate": "gearbox",
+			"options":[
+				{
+					"_id": 1,
+					"name": "Manual"
+				},
+				{
+					"_id": 2,
+					"name": "Automatic"
+				}
+			],
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez choisir la boîte de vitesse."
+				}
+			}
+		},
+		{
+			"id": "Mielage",
+			"type": "text",
+			"validate": "mileage",
+			"placeholder": "km",
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez préciser le kilométrage."
+				}
+			}
+		},
+		{
+			"id": "Displacement",
+			"type": "text",
+			"validate": "cubic_capacity",
+			"placeholder": "cm3",
+			"scope": {
+				"required": false
+			}
+		},
+		{
+			"id": "Swimming pool",
+			"type": "select",
+			"valiate": "swimming",
+			"options" : [
+				{
+					"_id": 1,
+					"name": "Yes"
+				},
+				{
+					"_id": 2,
+					"name": "No"
+				}
+			]
+		}
+	]
+}

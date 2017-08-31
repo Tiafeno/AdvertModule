@@ -57,17 +57,14 @@
     </div>
 
     <div flex-gt-sm="50" flex style="
-        -webkit-box-shadow: 0px 0px 5px 0px #ddd;
-        -o-box-shadow: 0px 0px 5px 0px #ddd;
-        -moz-box-shadow: 0px 0px 5px 0px #ddd;
-        box-shadow: 0px 0px 5px 0px #ddd;
         margin-left: 15px;
         padding: 10px;
     ">
         <md-content style="padding-left:10px">
             <md-list flex>
                 <md-subheader class="md-no-sticky" style="
-                    background: #2a4b80;
+                    border-left: .6180469716em solid rgba(0,0,0,.15);
+                    background: #3d9cd2;
                     color: #fff;
                 ">VOTRE ANNONCE</md-subheader>
                 <md-divider></md-divider>
@@ -98,16 +95,29 @@
 
                     <md-input-container class="md-block" flex-gt-sm>
                         <label>Catégorie</label>
-                        <md-select ng-model="advertPost.selectedCat" required>
-                            <md-option ng-value="cat.slug" ng-repeat="cat in product_cat" ng-disabled="cat.parent == 0">
+                        <md-select ng-model="advertPost.categorie" required>
+                            <md-option ng-value="cat.term_id" ng-repeat="cat in product_cat" ng-disabled="cat.parent == 0">
                                 [[cat.name]]
                             </md-option>
                         </md-select>
                     </md-input-container>
                 </div>
-                <!-- Directive Template -->
-                <immobilier></immobilier>
-                <!-- /end Directive -->
+
+                <div layout="row" layout-xs="column">
+                {% for vendor in vendors %}
+                    {% if vendor.type in ['text', 'number', 'tel'] %}
+                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" flex>
+                            <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
+                            <input ng-cust ng-required="!optionalInput.{{ vendor.validate }}"  name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.{{ vendor.validate }}">
+                            <div ng-messages="setAdvertForm.{{ vendor.validate }}.$error">
+                                {% if vendor.scope.required %}
+                                <div ng-message="required">{{ vendor.scope.ng_message.required }}</div>
+                                {% endif %}
+                            </div>
+                        </md-input-container>
+                    {% endif %}
+                {% endfor %}
+                </div>
 
                 <md-input-container class="md-block">
                     <label>Texte de l'annonce</label>
@@ -145,7 +155,7 @@
                     </div>
                 </md-input-container>
                 <div>
-                    <p style="font-size:12px; padding:1rem; background:#dff7d9">Complétez votre adresse et les personnes
+                    <p style="font-size:12px; padding:1rem; background:#dff7d9; border-left: .6180469716em solid rgba(0,0,0,.15);">Complétez votre adresse et les personnes
                         utilisant la recherche autour de soi trouveront plus facilement votre annonce.
                         Si vous ne souhaitez pas renseigner votre adresse exacte, indiquez votre rue sans donner le
                         numéro. Cette information ne sera conservée que le temps de la publication de votre annonce.</p>
@@ -154,7 +164,7 @@
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Téléphone (+261)</label>
                     <input name="phone" ng-model="advertPost.phone"
-                           ng-pattern="/^[0-9]{2}-[0-9]{2}-[0-9]{3}-[0-9]{2}$/"/>
+                           ng-pattern="/^[0-9]{3}[0-9]{2}[0-9]{3}[0-9]{2}$/"/>
 
                     <div class="hint" ng-if="showHints">3#-##-###-##</div>
 
@@ -172,7 +182,7 @@
 
                 <md-input-container flex="50" class="md-block">
                     <input id="fileInput" ngf-change="uploadFile" name="file" type="file" class="ng-hide">
-                    <md-button id="uploadButton" uploadfile class="md-raised md-primary"> Photo</md-button>
+                    <md-button id="uploadButton" uploadfile class="md-raised md-primary"> Ajouter une photo </md-button>
                 </md-input-container>
 
                 <div class="container">

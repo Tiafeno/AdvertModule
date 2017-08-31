@@ -12,4 +12,9 @@ class ServicesController {
       \wp_send_json(array('msg' => 'Update post success', 'type' => 'success'));
     } else { \wp_send_json(array('msg' => 'Update post failure, function : setThumbnailbyRequestPostId', 'type' => 'error')); }
   }
+
+  public function getSchemaAdvert(){
+    return file_get_contents( \plugin_dir_path(__FILE__)."schema/advert.json");
+  }
+
 }

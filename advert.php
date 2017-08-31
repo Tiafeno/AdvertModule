@@ -2,7 +2,7 @@
 namespace advert\plugins;
 
 use advert\src\controller\AdvertController as AdvertController;
-use advert\entity\model as model;
+use advert\entity\model\AdvertModel as AdvertModel;
 use shortcode\AdvertCode as AdvertCode;
 
 final class _Advert extends AdvertController {
@@ -11,14 +11,14 @@ final class _Advert extends AdvertController {
   public function __construct() {
     parent::__construct();
     // Action WP
-    add_action('init', array( $this, '__init' ));
-    add_action('widgets_init', function () {
-      register_widget( 'search_Widget' );
+    \add_action('init', array( $this, '__init' ));
+    \add_action('widgets_init', function () {
+      \register_widget( 'search_Widget' );
     });
-    add_action('admin_menu', function() {
-      add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array($this, 'advert_admin_template'), 'dashicons-admin-settings');
+    \add_action('admin_menu', function() {
+      \add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array($this, 'advert_admin_template'), 'dashicons-admin-settings');
     });
-    add_action('wp_loaded', function () {
+    \add_action('wp_loaded', function () {
       if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
       \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&
       \current_user_can('edit_post', $_POST[ 'post_id' ])) {
@@ -41,10 +41,11 @@ final class _Advert extends AdvertController {
     \add_shortcode('st_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
     \add_shortcode('st_register_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
     // Attributs
-    $this->Model = new model\AdvertModel();
+    $this->Model = new AdvertModel();
     //Install and Uninstall Plugins
-    \register_activation_hook(__FILE__, array('AdvertModel', 'install'));
-    \register_uninstall_hook(__FILE__, array('AdvertModel', 'uninstall'));
+    //AdvertModel::setProductCat();
+    \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'install'));
+    \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
   }
   
   public function __init() {

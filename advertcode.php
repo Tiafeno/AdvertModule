@@ -1,6 +1,6 @@
 <?php
 namespace advert\plugins\shortcode;
-use advert\plugins\twig;
+use advert\src\services as Services;
 
 class AdvertCode {
 	
@@ -54,7 +54,7 @@ class AdvertCode {
 		
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'form_id' => $args['form_id'],
-			'action' => \esc_url( site_url( 'wp-login.php', 'login_post' ) ),
+			'action' => \esc_url( \site_url( 'wp-login.php', 'login_post' ) ),
 			'login_form_top' => $login_form_top,
 			'login_form_middle' => $login_form_middle,
 			'login_form_bottom' => $login_form_bottom,
@@ -150,18 +150,33 @@ class AdvertCode {
 				'post_type' => "product",
 			));
 		}
-		if (is_null( $post_id )) new WP_Error('Warning', 'Variable post_id is null');
-		\wp_enqueue_style('advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
-		\wp_enqueue_script('AdvertCtrl', \plugins_url('/assets/js/advert.js', __FILE__), array( 'angular' ));
-		\wp_localize_script('AdvertCtrl', 'advert', array(
+		if (is_null( $post_id )) new \WP_Error('Warning', 'Variable post_id is null');
+
+		$products_cat = [];
+		$products_cat_child = [];
+		$vendors = []; 
+		$Services = new Services\ServicesController();
+		$Schema = $Services->getSchemaAdvert();
+		$AdvertSchema = json_decode( $Schema );
+
+		\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
+		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
+		\wp_enqueue_script( 'AdvertApp', \plugins_url('/assets/js/advert.js', __FILE__), array( 'angular' ));
+		\wp_enqueue_script( 'advert-directive', \plugins_url('/assets/js/advert.directive.js', __FILE__), ['AdvertApp'] );
+		\wp_enqueue_script( 'advert-factory', \plugins_url('/assets/js/advert.factory.js', __FILE__), ['AdvertApp'] );
+		\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['AdvertApp'] );
+		\wp_localize_script( 'AdvertApp', 'advert', array(
 			'ajax_url' => \admin_url( 'admin-ajax.php' ),
 			'post_id' => $post_id,
+			'vendors' => $AdvertSchema->vendor,
+			'products_cat_child' => $AdvertSchema->product_cat_child,
 			'assets_plugins_url' => \plugins_url( '/assets/', __FILE__ )
 		));
 		return $twig->render('@frontadvert/addform.advert.html', array(
 			'nonce' => \wp_nonce_field('thumbnail_upload', 'thumbnail_upload_nonce'),
 			'post_id' => $post_id,
-			'terms' => $content
+			'terms' => $content,
+			'vendors' => $AdvertSchema->vendor
 		));
 	}
 }
