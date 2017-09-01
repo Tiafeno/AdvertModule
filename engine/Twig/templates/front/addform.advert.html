@@ -97,7 +97,7 @@
                         <label>Catégorie</label>
                         <md-select ng-model="advertPost.categorie" required>
                             <md-option ng-value="cat.term_id" ng-repeat="cat in product_cat" ng-disabled="cat.parent == 0">
-                                [[cat.name]]
+                                <span ng-show="cat.parent != 0"> — </span>[[cat.name]]
                             </md-option>
                         </md-select>
                     </md-input-container>
@@ -106,14 +106,25 @@
                 <div layout="row" layout-xs="column">
                 {% for vendor in vendors %}
                     {% if vendor.type in ['text', 'number', 'tel'] %}
-                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" flex>
+                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
-                            <input ng-cust ng-required="!optionalInput.{{ vendor.validate }}"  name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.{{ vendor.validate }}">
+                            <input ng-cust ng-required="optionalInput.{{ vendor.validate }}"  name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.attributs.{{ vendor.validate }}">
                             <div ng-messages="setAdvertForm.{{ vendor.validate }}.$error">
                                 {% if vendor.scope.required %}
                                 <div ng-message="required">{{ vendor.scope.ng_message.required }}</div>
                                 {% endif %}
                             </div>
+                        </md-input-container>
+                    {% endif %}
+
+                    {% if vendor.type in ['select'] %}
+                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
+                            <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
+                            <md-select name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.attributs.{{ vendor.validate }}">
+                              <md-option ng-repeat="option in {{ vendor.options|json_encode() }} track by option._id" value="[[ option._id ]]">
+                                 [[ option.name ]]
+                              </md-option>
+                            </md-select>
                         </md-input-container>
                     {% endif %}
                 {% endfor %}

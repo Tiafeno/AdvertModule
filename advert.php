@@ -120,6 +120,9 @@ final class _Advert extends AdvertController {
     }
     
     public function action_add_new_advert() {
+      if (!isset( $_REQUEST[ 'post_id' ] )) return false;
+      if (!\is_user_logged_in()) return false;
+
       $post_id = (int)$_REQUEST[ 'post_id' ];
       $cost = (float)$_REQUEST[ 'cost' ];
       $gallery = json_decode( $_REQUEST[ 'gallery' ] );
@@ -151,36 +154,41 @@ final class _Advert extends AdvertController {
       \update_post_meta($post_id, '_backorders', 'no');
       \update_post_meta($post_id, '_stock', '');
       \update_post_meta($post_id, '_product_image_gallery', implode(",", $gallery));
+
+      $desc = \apply_filters('the_content', $_POST[ 'description' ]);
+      if (!isset( $_POST[ 'description' ] )) \wp_send_json($_REQUEST);
       
-      $desc = \strip_shortcodes( $_REQUEST[ 'description' ] );
-      $desc = \apply_filters('the_content', $desc);
-      $post = ['ID'     => $post_id,
-      'post_status' => 'publish',
-      /* @var $_REQUEST String */
-      'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
-      'post_content' => $desc,
-    ];
-    $form = new \stdClass();
-    $form->state = $_REQUEST[ 'state' ];
-    $form->adress = $_REQUEST[ 'adress' ];
-    $form->phone = $_REQUEST[ 'phone' ];
-    $form->hidephone = $_REQUEST[ 'hidephone' ];
-    $form->post_id = $post_id;
-    
-    /* @var $post_id int */
-    $post_id = \wp_update_post( $post, true );
-    if (\is_wp_error( $post_id )) {
-      $errors = $post_id->get_error_messages();
-      \wp_send_json(array('msg' => 'Add annonce error : '.$errors, 'type' => 'error'));
-    } else{
-      $setAdvert = $this->Model->setAdvert( $form ); // return true if success or String if error
-      if ($setAdvert == true){
-        \wp_send_json(array('msg' => 'Add annonce success', 'type' => 'success'));
+      $form = new \stdClass();
+      $form->state  = $_REQUEST[ 'state' ];
+      $form->adress = $_REQUEST[ 'adress' ];
+      $form->phone  = $_REQUEST[ 'phone' ];
+      $form->hidephone = $_REQUEST[ 'hidephone' ];
+      $form->post_id = $post_id;
+      
+      $post = [
+        'ID'     => $post_id,
+        'post_status' => 'publish',
+        'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
+        'post_content' => $desc,
+      ];
+      /* @var $post_id int */
+      $current_post_id = \wp_update_post( $post, true );
+      if (\is_wp_error( $current_post_id )) {
+        $errors = $current_post_id->get_error_messages();
+        \wp_send_json(array('msg' => $errors, 'tracking' => 'Update Post product', 'type' => 'error'));
       } else{
-        \wp_send_json(array('msg' => 'Add annonce error : '.$setAdvert, 'type' => 'error'));
+        //Set attribute in the product
+        if (isset($_REQUEST[ 'attributs' ])){
+          $attributs = json_decode($_REQUEST[ 'attributs' ]);
+          $product_attributs = [];
+          // while (list($iteration, $attribut) = each( $attributs )) {
+          //   wp_set_object_terms($post_id, $value, $name, true);
+          // }
+          \wp_send_json($_REQUEST[ 'attributs' ]);
+          //\wp_send_json(array('msg' => $attributs, 'type' => 'success'));
+        }
+        
       }
-      
-    }
   }
   
   public function req($k, $def=''){

@@ -15,15 +15,12 @@ app.factory("factoryServices", function( $http, $q ) {
       });
      },
      addAdvert: function( formdata ){
-      return $http.post(advert.ajax_url, formdata, {
-        headers : {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
-        },
-        params: {
-          action: "action_add_new_advert",
-          post_id: advert.post_id,
-        }
-      })
+      return $http({
+        url: advert.ajax_url,
+        method: "POST",
+        headers: {'Content-Type': undefined},
+        data: formdata
+      });
      }
   }
 })

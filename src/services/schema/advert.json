@@ -89,23 +89,23 @@
 			"validate": "real_estate_type",
 			"options": [
 				{ 
-					"type": "House", 
+					"name": "House", 
 					"_id": 1
 				},
 				{ 
-					"type": "Apartment", 
+					"name": "Apartment", 
 					"_id": 2 
 				},
 				{ 
-					"type": "Car park", 
+					"name": "Car park", 
 					"_id": 3 
 				},
 				{ 
-					"type": "Ground", 
+					"name": "Ground", 
 					"_id": 4 
 				},
 				{ 
-					"type": "Other",
+					"name": "Other",
 					"_id": 5 
 				}
 			],
@@ -127,12 +127,18 @@
 		{
 			"id": "Furnished and Unfurnished",
 			"type": "select",
-			"validate": "furnished"
+			"validate": "furnished",
+			"options": [
+				
+			]
 		},
 		{
 			"id": "Mark",
 			"type": "select",
-			"validate": "mark"
+			"validate": "mark",
+			"option": [
+
+			]
 		},
 		{
 			"id": "Model",
@@ -238,7 +244,7 @@
 		{
 			"id": "Swimming pool",
 			"type": "select",
-			"valiate": "swimming",
+			"validate": "swimming",
 			"options" : [
 				{
 					"_id": 1,
