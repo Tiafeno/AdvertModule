@@ -97,47 +97,87 @@
                         <label>Catégorie</label>
                         <md-select ng-model="advertPost.categorie" required>
                             <md-option ng-value="cat.term_id" ng-repeat="cat in product_cat" ng-disabled="cat.parent == 0">
-                                <span ng-show="cat.parent != 0"> — </span>[[cat.name]]
+                                <span ng-show="cat.parent != 0" style="padding-left:20px"></span>[[cat.name]]
                             </md-option>
                         </md-select>
                     </md-input-container>
                 </div>
-
-                <div layout="row" layout-xs="column">
+                
+                <div layout="column" layout-padding style="background: rgba(249, 250, 251, 0.82); border-top: .6180469716em solid rgba(0,0,0,.15);" >
                 {% for vendor in vendors %}
                     {% if vendor.type in ['text', 'number', 'tel'] %}
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
-                            <input ng-cust ng-required="optionalInput.{{ vendor.validate }}"  name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.attributs.{{ vendor.validate }}">
+                            <input ng-cust {% if vendor.scope.required %} ng-required="optionalInput.{{ vendor.validate }}" {% endif %} 
+                            type="{{ vendor.type }}" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
+                            ng-model="advertPost.attributs.{{ vendor.validate }}" 
+                            {% if vendor.scope.maxlength %} maxlength="{{ vendor.scope.maxlength }}" {% endif %} >
                             <div ng-messages="setAdvertForm.{{ vendor.validate }}.$error">
                                 {% if vendor.scope.required %}
                                 <div ng-message="required">{{ vendor.scope.ng_message.required }}</div>
+                                {% endif %}
+
+                                {% if vendor.scope.maxlength > 0  %}
+                                <div ng-message="maxlength">{{ vendor.scope.ng_message.maxlength }}</div>
                                 {% endif %}
                             </div>
                         </md-input-container>
                     {% endif %}
 
-                    {% if vendor.type in ['select'] %}
+                    {% if vendor.type in ['date'] %}
+                        <script type="text/javascript">
+                            (function( $ ){
+                                $( document ).ready( () => {
+                                    $( '.datepicker_{{ vendor.validate }}' ).datepicker({
+                                        onSelect : function(fd, date){
+                                            angular.element($( '.datepicker_{{ vendor.validate }}' )).triggerHandler( 'input' );
+                                        }
+                                    });
+                                })
+                            })(window.jQuery);
+                        </script>
+                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
+                            <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
+                            <input ng-cust type="text" class="datepicker_{{ vendor.validate }}" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
+                            ng-model="advertPost.attributs.{{ vendor.validate }}" data-language='fr' data-position='bottom left' 
+                            {% for option in vendor.datepicker %} {{ option.key }}="{{ option.value }}" {% endfor %} >
+                        </md-input-container>
+                    {% endif %}
+
+                    {% if vendor.type in ['sequence'] %}
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
                             <md-select name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.attributs.{{ vendor.validate }}">
-                              <md-option ng-repeat="option in {{ vendor.options|json_encode() }} track by option._id" value="[[ option._id ]]">
+                              <md-option ng-repeat="sequence in range({{ vendor.sequences.min|number_format }}, {{ vendor.sequences.max|number_format }})" value="[[ sequence ]]">
+                                 [[ sequence ]]
+                                 <span ng-if="$last"> et plus</span>
+                              </md-option>
+                            </md-select>
+                        </md-input-container>
+                    {% endif %}
+
+                    {% if vendor.type in ['select'] %}
+                    {% set options = vendor.options|merge([{ '_id':0, 'name': 'Choose'}]) %}
+                        <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
+                            <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
+                            <md-select name="{{ vendor.validate }}" id="{{ vendor.validate }}" ng-model="advertPost.attributs.{{ vendor.validate }}">
+                              <md-option ng-selected="option._id == 0" ng-repeat="option in {{ options|json_encode() }} | orderBy:'_id' " value="[[ option._id ]]">
                                  [[ option.name ]]
                               </md-option>
                             </md-select>
                         </md-input-container>
                     {% endif %}
-                {% endfor %}
-                </div>
 
-                <md-input-container class="md-block">
-                    <label>Texte de l'annonce</label>
-                    <textarea ng-model="advertPost.description" name="description" md-maxlength="500" rows="5"
-                              md-select-on-focus required></textarea>
-                    <div ng-messages="setAdvertForm.description.$error">
-                        <div ng-message="required">Veuillez rédiger un texte d'annonce.</div>
-                    </div>
-                </md-input-container>
+                {% endfor %}
+                    <md-input-container class="md-block">
+                        <label>Texte de l'annonce</label>
+                        <textarea ng-model="advertPost.description" name="description" md-maxlength="500" rows="5"
+                                  md-select-on-focus required></textarea>
+                        <div ng-messages="setAdvertForm.description.$error">
+                            <div ng-message="required">Veuillez rédiger un texte d'annonce.</div>
+                        </div>
+                    </md-input-container>
+                </div>
 
                 <md-input-container flex="50" class="md-block" flex-gt-sm>
                     <label>Prix</label>
@@ -177,10 +217,10 @@
                     <input name="phone" ng-model="advertPost.phone"
                            ng-pattern="/^[0-9]{3}[0-9]{2}[0-9]{3}[0-9]{2}$/"/>
 
-                    <div class="hint" ng-if="showHints">3#-##-###-##</div>
+                    <div class="hint" ng-if="showHints">32******</div>
 
                     <div ng-messages="setAdvertForm.phone.$error" role="alertdialog">
-                        <div ng-message="pattern">##-##-###-## - Please enter a valid phone number (ex: 32-26-XXX-XX).
+                        <div ng-message="pattern">Please enter a valid phone number (ex: 322624977).
                         </div>
                     </div>
                 </md-input-container>
@@ -200,19 +240,17 @@
                     <md-progress-linear md-mode="indeterminate" ng-show="picProgress"></md-progress-linear>
                 </div>
                 <md-content class="md-padding" layout="row">
-                    <div style="display:flex">
-                        <md-card ng-repeat="thumb in thumbnailGalleryIDs track by thumb.id" id="[[thumb.id]]">
-                            <div class="pic-editor">
-                                <a href="#onClickDeleteThumb" title="Effacer cette image"
-                                   ng-click="onClickDeleteThumb(thumb.id)"
-                                   class="event wp-menu-image dashicons-before dashicons-trash"></a>
+                    <div ng-repeat="thumb in thumbnailGalleryIDs track by thumb.id" id="[[thumb.id]]" class="advert-pic" style="width:250px; padding:1px">
+                        <div class="pic-editor">
+                            <a href="#onClickDeleteThumb" title="Effacer cette image"
+                                ng-click="onClickDeleteThumb(thumb.id)"
+                                class="event wp-menu-image dashicons-before dashicons-trash"></a>
 
-                                <a href="#onClicksetDefaultThumb" title="Photo principal"
-                                   ng-click="onClicksetDefaultThumb(thumb.id, $event)"
-                                   class="event wp-menu-image dashicons-before dashicons-camera"></a>
-                            </div>
-                            <img ng-src="[[thumb.file]]" class="md-card-image" alt="">
-                        </md-card>
+                            <a href="#onClicksetDefaultThumb" title="Photo principal"
+                                ng-click="onClicksetDefaultThumb(thumb.id, $event)"
+                                class="event wp-menu-image dashicons-before dashicons-camera"></a>
+                        </div>
+                        <img ng-src="[[thumb.file]]" class="md-card-image" alt="">
                     </div>
                 </md-content>
 

@@ -1,37 +1,37 @@
 {
-	"product_cat" : [
+	"product_cat": [
 		{
-			"_id" : 1,
+			"_id": 1,
 			"name": "IMMOVABLE",
 			"slug": "immovable"
 		},
 		{
-			"_id" : 2,
+			"_id": 2,
 			"name": "VEHICULES",
 			"slug": "vehicules"
 		},
 		{
-			"_id" : 4,
+			"_id": 4,
 			"name": "MULTIMEDIA",
 			"slug": "multimedia"
 		},
 		{
-			"_id" : 5,
+			"_id": 5,
 			"name": "HOUSE",
 			"slug": "house"
 		},
 		{
-			"_id" : 6,
+			"_id": 6,
 			"name": "HOBBIES",
 			"slug": "hobbies"
 		},
 		{
-			"_id" : 7,
+			"_id": 7,
 			"name": "PROFESSIONAL MATERIALS",
 			"slug": "professional-materials"
 		},
 		{
-			"_id" : 8,
+			"_id": 8,
 			"name": "SERVICES",
 			"slug": "services"
 		}
@@ -39,35 +39,335 @@
 	"product_cat_child": [
 		{
 			"_id": 1,
-			"name" : "Real estate sales",
-			"parent_id" : 1,
-			"vendor" : [
-				"Area", "Kind of good", "Rooms"
+			"name": "Real estate sales",
+			"parent_id": 1,
+			"vendor": [
+				"Area",
+				"Kind of good",
+				"Rooms"
 			]
 		},
 		{
 			"_id": 2,
-			"name" : "Rentals",
-			"parent_id" : 1,
-			"vendor" : [
-				"Area", "Furnished and Unfurnished", "Kind of good", "Rooms"
+			"name": "Rentals",
+			"parent_id": 1,
+			"vendor": [
+				"Area",
+				"Furnished and Unfurnished",
+				"Kind of good",
+				"Rooms"
 			]
 		},
 		{
 			"_id": 3,
-			"name" : "Housemates",
-			"parent_id" : 1,
-			"vendor" : [
-				"Area", "Rooms"
+			"name": "Housemates",
+			"parent_id": 1,
+			"vendor": [
+				"Area",
+				"Rooms"
 			]
 		},
 		{
 			"_id": 4,
-			"name" : "Offices and Shops",
-			"parent_id" : 1,
-			"vendor" : [
+			"name": "Offices and Shops",
+			"parent_id": 1,
+			"vendor": [
 				"Area"
 			]
+		},
+		{
+			"_id": 5,
+			"name": "Car",
+			"parent_id": 2,
+			"vendor": [
+				"Mark",
+				"Model",
+				"Model Year",
+				"Mielage",
+				"Fuel",
+				"Gearbox"
+			]
+		},
+		{
+			"_id": 6,
+			"name": "Motorcycles",
+			"parent_id": 2,
+			"vendor": [
+				"Mark",
+				"Model",
+				"Model Year",
+				"Mielage",
+				"Displacement"
+			]
+		},
+		{
+			"_id": 7,
+			"name": "Caravanning",
+			"parent_id": 2,
+			"vendor": [
+				"Model Year",
+				"Mielage"
+			]
+		},
+		{
+			"_id": 8,
+			"name": "Utilities",
+			"parent_id": 2,
+			"vendor": [
+				"Model Year",
+				"Mielage",
+				"fuel"
+			]
+		},
+		{
+			"_id": 9,
+			"name": "Auto Equipment",
+			"parent_id": 2,
+			"vendor": []
+		},
+		{
+			"_id": 10,
+			"name": "Motorcycle Equipment",
+			"parent_id": 2,
+			"vendor": []
+		},
+		{
+			"_id": 11,
+			"name": "Caravanning Equipment",
+			"parent_id": 2,
+			"vendor": []
+		},
+		{
+			"_id": 12,
+			"name": "Boating",
+			"parent_id": 2,
+			"vendor": []
+		},
+		{
+			"_id": 13,
+			"name": "Boating Equipment",
+			"parent_id": 2,
+			"vendor": []
+		},
+		{
+			"_id": 14,
+			"name": "Data processing",
+			"parent_id": 4,
+			"vendor": []
+		},
+		{
+			"_id": 15,
+			"name": "Consoles and video games",
+			"parent_id": 4,
+			"vendor": []
+		},
+		{
+			"_id": 16,
+			"name": "Picture and sound",
+			"parent_id": 4,
+			"vendor": []
+		},
+		{
+			"_id": 17,
+			"name": "Phone",
+			"parent_id": 4,
+			"vendor": []
+		},
+		{
+			"_id": 18,
+			"name": "Furnishing",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 19,
+			"name": "Home appliance",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 20,
+			"name": "Table Arts",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 21,
+			"name": "Decoration",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 22,
+			"name": "Household linen",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 23,
+			"name": "Housing",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 24,
+			"name": "Gardening",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 25,
+			"name": "Clothing",
+			"parent_id": 5,
+			"vendor": [
+				"Type Clothing"
+			]
+		},
+		{
+			"_id": 26,
+			"name": "Shoe",
+			"parent_id": 5,
+			"vendor": [
+				"Shoe size"
+			]
+		},
+		{
+			"_id": 27,
+			"name": "Watches and jewelry",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 28,
+			"name": "Baby equipment",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 29,
+			"name": "Baby clothing",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 30,
+			"name": "Accessories and Luggage",
+			"parent_id": 5,
+			"vendor": []
+		},
+		{
+			"_id": 31,
+			"name": "Agricultural material",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 32,
+			"name": "Transport - Handling",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 33,
+			"name": "BTP equipment",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 34,
+			"name": "Tools",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 35,
+			"name": "Industrial Equipment",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 36,
+			"name": "Catering - Hotels",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 37,
+			"name": "Office furnitures",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 38,
+			"name": "Shops and markets",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 39,
+			"name": "Medical material",
+			"parent_id": 7,
+			"vendor": []
+		},
+		{
+			"_id": 40,
+			"name": "DVD or Films",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 41,
+			"name": "CD or Music",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 42,
+			"name": "Books",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 43,
+			"name": "Animals",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 44,
+			"name": "Bicycles",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 45,
+			"name": "Sports and Hobbies",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 46,
+			"name": "Music instrument",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 47,
+			"name": "Collection",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 48,
+			"name": "Games and toys",
+			"parent_id": 6,
+			"vendor": []
+		},
+		{
+			"_id": 49,
+			"name": "Wines and gastronomy",
+			"parent_id": 6,
+			"vendor": []
 		}
 	],
 	"vendor": [
@@ -88,25 +388,25 @@
 			"type": "select",
 			"validate": "real_estate_type",
 			"options": [
-				{ 
-					"name": "House", 
+				{
+					"name": "House",
 					"_id": 1
 				},
-				{ 
-					"name": "Apartment", 
-					"_id": 2 
+				{
+					"name": "Apartment",
+					"_id": 2
 				},
-				{ 
-					"name": "Car park", 
-					"_id": 3 
+				{
+					"name": "Car park",
+					"_id": 3
 				},
-				{ 
-					"name": "Ground", 
-					"_id": 4 
+				{
+					"name": "Ground",
+					"_id": 4
 				},
-				{ 
+				{
 					"name": "Other",
-					"_id": 5 
+					"_id": 5
 				}
 			],
 			"scope": {
@@ -129,16 +429,26 @@
 			"type": "select",
 			"validate": "furnished",
 			"options": [
-				
+				{
+					"_id": 1,
+					"name": "Furnished"
+				},
+				{
+					"_id": 2,
+					"name": "Unfurnished"
+				}
 			]
 		},
 		{
 			"id": "Mark",
-			"type": "select",
+			"type": "text",
 			"validate": "mark",
-			"option": [
-
-			]
+			"scope": {
+				"required": true,
+				"ng_message": {
+					"required": "Veuillez préciser la Marque."
+				}
+			}
 		},
 		{
 			"id": "Model",
@@ -147,20 +457,29 @@
 			"scope": {
 				"required": true,
 				"ng_message": {
-					"required": "Veuillez préciser le Modèle.."
+					"required": "Veuillez préciser le Modèle."
 				}
 			}
 		},
 		{
 			"id": "Model Year",
 			"type": "date",
-			"validate": "regdate",
-			"scope": {
-				"required": true,
-				"ng_message": {
-					"required": "Veuillez choisir l'année-modèle."
+			"datepicker": [
+				{
+					"key": "data-min-view",
+					"value": "years"
+				},
+				{
+					"key": "data-view",
+					"value": "years"
+				},
+				{
+					"key": "data-date-format",
+					"value": "yyyy"
 				}
-			}
+			],
+			"validate": "regdate",
+			"scope": {}
 		},
 		{
 			"id": "Fuel",
@@ -203,7 +522,7 @@
 			"id": "Gearbox",
 			"type": "select",
 			"validate": "gearbox",
-			"options":[
+			"options": [
 				{
 					"_id": 1,
 					"name": "Manual"
@@ -245,7 +564,7 @@
 			"id": "Swimming pool",
 			"type": "select",
 			"validate": "swimming",
-			"options" : [
+			"options": [
 				{
 					"_id": 1,
 					"name": "Yes"
@@ -255,6 +574,38 @@
 					"name": "No"
 				}
 			]
+		},
+		{
+			"id": "Type Clothing",
+			"type": "select",
+			"validate": "type_clothing",
+			"options": [
+				{
+					"_id": 1,
+					"name": "Wife"
+				},
+				{
+					"_id": 2,
+					"name": "Man"
+				},
+				{
+					"_id": 3,
+					"name": "Pregnant woman"
+				},
+				{
+					"_id": 4,
+					"name": "Kids"
+				}
+			]
+		},
+		{
+			"id": "Shoe size",
+			"type": "sequence",
+			"validate": "shoe_size",
+			"sequences": {
+				"min": 10,
+				"max": 50
+			}
 		}
 	]
 }

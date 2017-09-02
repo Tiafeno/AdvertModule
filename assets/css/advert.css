@@ -4,13 +4,13 @@
 
 a.event.dashicons-before{
   cursor: pointer;
-  color: #525252;
+  color: #FFFFFF;
 }
 
 div.pic-editor{
   position: absolute;
   display: inline-block;
-  background-color:rgba(255, 249, 57, 0.71);
+  background-color:rgba(61, 156, 210, 0.78);
   padding-top: 5px;
 }
 .dashicons, .dashicons-before:before{
@@ -23,10 +23,13 @@ a.event.dashicons-before:hover{
   color: white;
 }
 
-md-card{
-  padding: 5px;
-  background: #ffffff;
+.advert-pic.active img{
+  padding: 3px;
+  background: #3d9cd2;
 }
-md-card.active a.dashicons-camera{
-  color: white;
+
+table {
+  margin: inherit;
+  width: initial;
 }
+

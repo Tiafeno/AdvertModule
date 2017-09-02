@@ -160,6 +160,9 @@ class AdvertCode {
 		$AdvertSchema = json_decode( $Schema );
 
 		\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
+		\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), array('advert'));
+		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
+		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
 		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script( 'AdvertApp', \plugins_url('/assets/js/advert.js', __FILE__), array( 'angular' ));
 		\wp_enqueue_script( 'advert-directive', \plugins_url('/assets/js/advert.directive.js', __FILE__), ['AdvertApp'] );

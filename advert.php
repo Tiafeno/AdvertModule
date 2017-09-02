@@ -66,8 +66,12 @@ final class _Advert extends AdvertController {
     // AdvertController.class.php
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
     \add_action('wp_ajax_nopriv_getTermsProductCategory', array($this, 'getTermsProductCategory'));
+
     \add_action('wp_ajax_getParentsTermsCat', array($this, 'getParentsTermsCat'));
     \add_action('wp_ajax_nopriv_getParentsTermsCat', array($this, 'getParentsTermsCat'));
+
+    \add_action('wp_ajax_controller_getProduct', array($this, 'controller_getProduct'));
+    \add_action('wp_ajax_nopriv_controller_getProduct', array($this, 'controller_getProduct'));
     
     \register_taxonomy(
       'district',
@@ -145,7 +149,6 @@ final class _Advert extends AdvertController {
       \update_post_meta($post_id, '_width', '');
       \update_post_meta($post_id, '_height', '');
       \update_post_meta($post_id, '_sku', strtoupper( md5( $post_id )) );
-      \update_post_meta($post_id, '_product_attributes', array());
       \update_post_meta($post_id, '_sale_price_dates_from', '');
       \update_post_meta($post_id, '_sale_price_dates_to', '');
       \update_post_meta($post_id, '_price', $cost);
@@ -156,15 +159,19 @@ final class _Advert extends AdvertController {
       \update_post_meta($post_id, '_product_image_gallery', implode(",", $gallery));
 
       $desc = \apply_filters('the_content', $_POST[ 'description' ]);
-      if (!isset( $_POST[ 'description' ] )) \wp_send_json($_REQUEST);
       
       $form = new \stdClass();
-      $form->state  = $_REQUEST[ 'state' ];
-      $form->adress = $_REQUEST[ 'adress' ];
+      $form->state  = isset( $_REQUEST[ 'state' ] )  ? $_REQUEST[ 'state' ] : '';
+      $form->adress = isset( $_REQUEST[ 'adress' ] ) ? $_REQUEST[ 'adress' ] : '';
       $form->phone  = $_REQUEST[ 'phone' ];
       $form->hidephone = $_REQUEST[ 'hidephone' ];
       $form->post_id = $post_id;
-      
+
+      \update_post_meta( $post_id, '_product_advert_state', $form->state );
+      \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
+      \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
+      \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
+
       $post = [
         'ID'     => $post_id,
         'post_status' => 'publish',
@@ -174,18 +181,37 @@ final class _Advert extends AdvertController {
       /* @var $post_id int */
       $current_post_id = \wp_update_post( $post, true );
       if (\is_wp_error( $current_post_id )) {
-        $errors = $current_post_id->get_error_messages();
-        \wp_send_json(array('msg' => $errors, 'tracking' => 'Update Post product', 'type' => 'error'));
-      } else{
+        \wp_send_json(array(
+            'msg' => $current_post_id->get_error_messages(), 
+            'tracking' => 'Update Post product', 
+            'type' => 'error'
+          )
+        );
+      } else {
+        // Set term product_cat to this post
+        $categorie = (int) $_REQUEST[ 'categorie' ];
+        $term = \term_exists( $categorie, 'product_cat');
+        if (!is_null( $term )){
+          $validate = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
+          if (\is_wp_error( $validate )) \wp_send_json( ['type' => 'error', 'msg' => $validate->get_error_messages() ] );
+        }
         //Set attribute in the product
         if (isset($_REQUEST[ 'attributs' ])){
-          $attributs = json_decode($_REQUEST[ 'attributs' ]);
-          $product_attributs = [];
-          // while (list($iteration, $attribut) = each( $attributs )) {
-          //   wp_set_object_terms($post_id, $value, $name, true);
-          // }
-          \wp_send_json($_REQUEST[ 'attributs' ]);
-          //\wp_send_json(array('msg' => $attributs, 'type' => 'success'));
+          $attributes = str_replace('\\"','"', $_REQUEST[ 'attributs' ]);
+          $attributes = json_decode($attributes);
+          $product_attributes = [];
+          while (list(, $attribute) = each( $attributes )) {
+            \wp_set_object_terms($current_post_id, $attribute->value, $attribute->_id);
+            $product_attributes[ $attribute->_id ] = [
+              'name' => $attribute->_id, // set attribute name
+              'value' => (int)$attribute->value, // set attribute value
+              'is_visible' => 1,
+              'is_variation' => 0,
+              'is_taxonomy' => 0 // !important
+            ]; 
+          }
+          \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
+          \wp_send_json($product_attributes);
         }
         
       }
