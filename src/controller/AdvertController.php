@@ -4,6 +4,7 @@ use advert\src\services as services;
 
 abstract class AdvertController {
   public $Services;
+  public $advert_error;
 
   public function __construct(){
     $this->Services = new services\ServicesController();

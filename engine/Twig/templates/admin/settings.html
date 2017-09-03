@@ -4,7 +4,7 @@
     <tbody>
       <tr>
         <th scope="row">
-          <label for="blogname">Register Page</label>
+          <label for="blogname">Page pour s'inscrire</label>
         </th>
         <td>
           <select name="register_page" id="register_page" >
@@ -13,9 +13,22 @@
               <option value="{{ post.ID }}" {% if post.ID == register_page_id %} selected {% endif %} > {{ post.post_title }} </option>
             {% endfor %}
           </select>
-          <p class="description">
-
-          </p>
+          <p class="description">Choisir la page pour d'enregistrer</p>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label for="blogname">Page pour le formulaire</label>
+          
+        </th>
+        <td>
+          <select name="addform_page" id="addform_page" >
+              <option value=""> </option>
+            {% for post in posts %}
+              <option value="{{ post.ID }}" {% if post.ID == addform_page_id %} selected {% endif %} > {{ post.post_title }} </option>
+            {% endfor %}
+          </select>
+          <p class="description">Cette option est pour le formulaire d'ajout de l'annonce</p>
         </td>
       </tr>
     </tbody>

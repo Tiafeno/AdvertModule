@@ -86,7 +86,7 @@ class AdvertCode {
 	*/
 	public static function RenderRegisterForm($attrs, $content){
 		global $twig;
-		if($twig === null){
+		if (is_null( $twig )){
 			print 'Active or install Template Engine TWIG';
 			return;
 		}
@@ -94,6 +94,8 @@ class AdvertCode {
 			return self::RenderAddForm([], null);
 
 		namespace\AdvertCode::setEnqueue();
+		\wp_enqueue_script('Register', \plugins_url('/assets/js/register.js', __FILE__), array('angular'));
+		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register.factory.js', __FILE__), array('angular'));
 		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertRegisterCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
@@ -182,4 +184,5 @@ class AdvertCode {
 			'vendors' => $AdvertSchema->vendor
 		));
 	}
+
 }

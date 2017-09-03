@@ -22,13 +22,13 @@ app.controller('AdvertFormAddCtrl', function (
 
   $scope.getToastPosition = function () {
     sanitizePosition();
-
     return Object.keys($scope.toastPosition)
       .filter(function (pos) {
-        return $scope.toastPosition[pos];
+        return $scope.toastPosition[ pos ];
       })
       .join(' ');
   };
+
   $scope.showSimpleToast = function () {
     var pinTo = $scope.getToastPosition();
     $mdToast.show(
@@ -38,6 +38,19 @@ app.controller('AdvertFormAddCtrl', function (
         .hideDelay(3000)
     );
   };
+
+  $scope.showActionToast = function(msg, btn) {
+    var pinTo = $scope.getToastPosition();
+    var toast = $mdToast.simple()
+      .textContent( msg )
+      .action( btn )
+      .highlightAction(true)
+      .position( pinTo );
+    $mdToast.show( toast ).then(function( response ) {
+      console.log(response);
+    });
+  }
+
   $scope.range = function (min, max, step) {
     step = step || 1;
     var input = [];
@@ -50,7 +63,8 @@ app.controller('AdvertFormAddCtrl', function (
   $scope.clearSearchTerm = function () {
     $scope.searchTerm = '';
   };
-  $element.find('input.demo-header-searchbox').on('keydown', function (ev) {
+
+  $element.find( 'input.demo-header-searchbox' ).on('keydown', function (ev) {
     ev.stopPropagation();
   });
 
@@ -63,7 +77,7 @@ app.controller('AdvertFormAddCtrl', function (
   $scope.advertPost = {
     hidephone: false
   };
-  $scope.product_cat = []; //content all categories
+  $scope.product_cat = []; /* content all categories */
 
   /*
   ** Watch variable advertPost
@@ -74,7 +88,7 @@ app.controller('AdvertFormAddCtrl', function (
     if (AdvertPostKeys.length === 0) return;
     if (newValue.categorie != oldValue.categorie) {
       _.each(InputPreferences, function (el) {
-        $scope.optionalInput[el] = false;
+        $scope.optionalInput[ el ] = false;
       });
       var currentCategorie = _.find($scope.product_cat, function (ctg) {
         return ctg.term_id == newValue.categorie;
@@ -84,7 +98,7 @@ app.controller('AdvertFormAddCtrl', function (
         var preference = _.find(advert.vendors, function (vendor) {
           return el == vendor.id;
         });
-        $scope.optionalInput[preference.validate] = true;
+        $scope.optionalInput[ preference.validate ] = true;
       });
     }
   }, true);
@@ -122,7 +136,8 @@ app.controller('AdvertFormAddCtrl', function (
       if (resp.type === 'success')
         $scope.thumbnailGalleryIDs.push({ file: resp.url, id: resp.attach_id });
       if (resp.type === 'error')
-        $log.debug(resp.msg);
+        $log.debug(resp.data);
+
       $scope.picProgress = false;
     }).error(function (errno) {
       $log.debug(errno);
@@ -137,13 +152,13 @@ app.controller('AdvertFormAddCtrl', function (
     var advertdata = new FormData();
     $scope.activated = true;
     $scope.thumbnailGalleryIDs.forEach(function (el) {
-      Gallery.push(el.id);
+      Gallery.push( el.id );
     });
     $scope.advertPost.hidephone = ($scope.advertPost.hidephone == true) ? 1 : 0;
-    var Attributs = [];
+    var attrs = [];
     _.map($scope.advertPost.attributs, function (val, key) {
       if ($scope.optionalInput[ key ])
-        Attributs.push({ 'value': val, '_id': key }); // e.g {"value":"0","_id":"real_estate_type"}
+        attrs.push({ 'value': val, '_id': key }); // e.g {"value":"0","_id":"real_estate_type"}
     });
     advertdata.append('cost', $scope.advertPost.cost);
     advertdata.append('title', $scope.advertPost.title);
@@ -154,19 +169,21 @@ app.controller('AdvertFormAddCtrl', function (
     advertdata.append('hidephone', $scope.advertPost.hidephone);
     advertdata.append('gallery', JSON.stringify(Gallery));
     advertdata.append('categorie', $scope.advertPost.categorie);
-    advertdata.append('attributs', angular.toJson(Attributs));
+    advertdata.append('attributs', angular.toJson(attrs));
     advertdata.append('action', "action_add_new_advert");
     advertdata.append('post_id', advert.post_id);
 
     factoryServices.addAdvert(advertdata).success(function (results) {
-      if (parseInt(results) === 0) return;
-      $scope.thumbnailGalleryIDs = [];
+      if (parseInt(results) === 0) { 
+        return $scope.activated = false; 
+      }
       $scope.activated = false;
+      $scope.thumbnailGalleryIDs = [];
       $scope.advertPost = {};
       $scope.setAdvertForm.$setUntouched();
       $scope.setAdvertForm.$setPristine();
     }).error(function () { $scope.activated = false; });
-
+    
   };
 
   $scope.onClicksetDefaultThumb = function (thumb_id, $event) {
@@ -187,6 +204,7 @@ app.controller('AdvertFormAddCtrl', function (
       $scope.picProgress = false;
     });
   };
+
   $scope.onClickDeleteThumb = function (post_id) {
     if (typeof post_id == "number") {
       $scope.picProgress = true;
@@ -209,7 +227,7 @@ app.controller('AdvertFormAddCtrl', function (
           }
         });
         $scope.picProgress = false;
-        $log.debug($scope.thumbnailGalleryIDs);
+        $log.debug( $scope.thumbnailGalleryIDs );
       }).error(function () {
         $scope.picProgress = false;
       });
@@ -220,7 +238,7 @@ app.controller('AdvertFormAddCtrl', function (
     factoryServices.getTermsProductCategory().then(function (results) {
       results.data.forEach(function (el) {
         if (el.term_id == 1 || el.slug == 'all') return false;
-        $scope.product_cat.push(el);
+        $scope.product_cat.push( el );
       });
     }).catch(function () { console.warn('Terms products error') });
   };
@@ -228,9 +246,9 @@ app.controller('AdvertFormAddCtrl', function (
   this.Initialise();
 })
   .config(function ($mdThemingProvider, $interpolateProvider) {
-    $interpolateProvider.startSymbol('[[').endSymbol(']]');
+    $interpolateProvider.startSymbol( '[[' ).endSymbol( ']]' );
     $mdThemingProvider.theme('docs-dark', 'default')
-      .primaryPalette('yellow')
+      .primaryPalette( 'yellow' )
       .dark();
 
   });

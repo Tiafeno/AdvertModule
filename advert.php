@@ -25,25 +25,23 @@ final class _Advert extends AdvertController {
         $this->_action_add_new_advert();
       }
 
-      if (isset($_POST[ 'advert_settings_nonce' ], $_POST[ 'register_page' ]) && 
+      if (isset($_POST[ 'advert_settings_nonce' ]) && 
       \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings')) {
-        $register_post_id = (int) $_POST[ 'register_page' ];
-        $option = \get_option( 'register_page_id', false );
-        if ($option != false){
-          \add_option( 'register_page_id', $register_post_id);
-        } else {
-          \update_option( 'register_page_id', $register_post_id );
-        }
+
+        $register_page_id = (int) $_POST[ 'register_page' ];
+        $addform_page_id = (int) $_POST[ 'addform_page'];
+
+        \update_option( 'register_page_id', $register_page_id );
+        \update_option( 'addform_page_id', $addform_page_id );
       }
 
     });
     // Shortcode WP
     \add_shortcode('st_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
     \add_shortcode('st_register_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
-    // Attributs
     $this->Model = new AdvertModel();
-    //Install and Uninstall Plugins
-    //AdvertModel::setProductCat();
+
+    /* Activate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'install'));
     \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
   }
@@ -63,7 +61,8 @@ final class _Advert extends AdvertController {
     
     \add_action('wp_ajax_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
-    // AdvertController.class.php
+
+    /* See these function at AdvertController.class.php */
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
     \add_action('wp_ajax_nopriv_getTermsProductCategory', array($this, 'getTermsProductCategory'));
 
@@ -85,168 +84,240 @@ final class _Advert extends AdvertController {
       );
       
       return true;
-    }
-    
-    public function action_set_thumbnail_post() {
-      if (isset($_REQUEST[ 'thumbnail_upload_nonce' ], $_REQUEST[ 'post_id' ]) &&
-      \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') &&
-      \current_user_can('edit_post', $_REQUEST[ 'post_id' ])
-      ) {
-        require_once( ABSPATH . 'wp-admin/includes/image.php' );
-        require_once( ABSPATH . 'wp-admin/includes/file.php' );
-        require_once( ABSPATH . 'wp-admin/includes/media.php' );
-        $attachment_id = \media_handle_upload('file', $_REQUEST[ 'post_id' ]);
-        if (\is_wp_error( $attachment_id )) {
-          \wp_send_json(array('msg' => 'There was an error uploading the image.', 'type' => 'error'));
-        } else {
-          \update_post_meta((int)$_REQUEST[ 'post_id' ], '_thumbnail_id', $attachment_id);
-          \wp_send_json(array(
-            'msg' => 'The image was uploaded successfully!',
-            'attach_id' => $attachment_id,
-            'url' => \wp_get_attachment_image_src($attachment_id, array(250, 250))[ 0 ],
-            'type' => 'success')
-          );
-        }
-      } else {
-        \wp_send_json(array('msg' => 'The security check failed, maybe show the user an error.', 'type' => 'error'));
-      }
-      die();
-    }
-    
-    public function action_set_thumbnail_id(){
-      if (isset( $_REQUEST[ 'attachment_id' ] ) || isset( $_REQUEST[ 'post_id' ] )):
-        $attachment_id = (int)$_REQUEST[ 'attachment_id' ];
-        $post_id = (int)$_REQUEST[ 'post_id' ];
-        if (!is_int( $post_id )) return false;
-        
-        $this->Services->setThumbnailbyRequestPostId($attachment_id, $post_id);
-      endif;
-    }
-    
-    public function action_add_new_advert() {
-      if (!isset( $_REQUEST[ 'post_id' ] )) return false;
-      if (!\is_user_logged_in()) return false;
-
-      $post_id = (int)$_REQUEST[ 'post_id' ];
-      $cost = (float)$_REQUEST[ 'cost' ];
-      $gallery = json_decode( $_REQUEST[ 'gallery' ] );
-      if (!is_array( $gallery )) $gallery = array();
-      
-      //add_post_meta($post_id, '_thumbnail_id', '');
-      \wp_set_object_terms($post_id, 'simple', 'product_type');
-      
-      \update_post_meta($post_id, '_visibility', 'visible');
-      \update_post_meta($post_id, '_stock_status', 'instock');
-      \update_post_meta($post_id, 'total_sales', '0');
-      \update_post_meta($post_id, '_downloadable', 'no');
-      \update_post_meta($post_id, '_virtual', 'yes');
-      \update_post_meta($post_id, '_regular_price', $cost);
-      \update_post_meta($post_id, '_sale_price', '');
-      \update_post_meta($post_id, '_purchase_note', '');
-      \update_post_meta($post_id, '_featured', 'no');
-      \update_post_meta($post_id, '_weight', '');
-      \update_post_meta($post_id, '_length', '');
-      \update_post_meta($post_id, '_width', '');
-      \update_post_meta($post_id, '_height', '');
-      \update_post_meta($post_id, '_sku', strtoupper( md5( $post_id )) );
-      \update_post_meta($post_id, '_sale_price_dates_from', '');
-      \update_post_meta($post_id, '_sale_price_dates_to', '');
-      \update_post_meta($post_id, '_price', $cost);
-      \update_post_meta($post_id, '_sold_individually', '');
-      \update_post_meta($post_id, '_manage_stock', 'no');
-      \update_post_meta($post_id, '_backorders', 'no');
-      \update_post_meta($post_id, '_stock', '');
-      \update_post_meta($post_id, '_product_image_gallery', implode(",", $gallery));
-
-      $desc = \apply_filters('the_content', $_POST[ 'description' ]);
-      
-      $form = new \stdClass();
-      $form->state  = isset( $_REQUEST[ 'state' ] )  ? $_REQUEST[ 'state' ] : '';
-      $form->adress = isset( $_REQUEST[ 'adress' ] ) ? $_REQUEST[ 'adress' ] : '';
-      $form->phone  = $_REQUEST[ 'phone' ];
-      $form->hidephone = $_REQUEST[ 'hidephone' ];
-      $form->post_id = $post_id;
-
-      \update_post_meta( $post_id, '_product_advert_state', $form->state );
-      \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
-      \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
-      \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
-
-      $post = [
-        'ID'     => $post_id,
-        'post_status' => 'publish',
-        'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
-        'post_content' => $desc,
-      ];
-      /* @var $post_id int */
-      $current_post_id = \wp_update_post( $post, true );
-      if (\is_wp_error( $current_post_id )) {
-        \wp_send_json(array(
-            'msg' => $current_post_id->get_error_messages(), 
-            'tracking' => 'Update Post product', 
-            'type' => 'error'
-          )
-        );
-      } else {
-        // Set term product_cat to this post
-        $categorie = (int) $_REQUEST[ 'categorie' ];
-        $term = \term_exists( $categorie, 'product_cat');
-        if (!is_null( $term )){
-          $validate = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
-          if (\is_wp_error( $validate )) \wp_send_json( ['type' => 'error', 'msg' => $validate->get_error_messages() ] );
-        }
-        //Set attribute in the product
-        if (isset($_REQUEST[ 'attributs' ])){
-          $attributes = str_replace('\\"','"', $_REQUEST[ 'attributs' ]);
-          $attributes = json_decode($attributes);
-          $product_attributes = [];
-          while (list(, $attribute) = each( $attributes )) {
-            \wp_set_object_terms($current_post_id, $attribute->value, $attribute->_id);
-            $product_attributes[ $attribute->_id ] = [
-              'name' => $attribute->_id, // set attribute name
-              'value' => (int)$attribute->value, // set attribute value
-              'is_visible' => 1,
-              'is_variation' => 0,
-              'is_taxonomy' => 0 // !important
-            ]; 
-          }
-          \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
-          \wp_send_json($product_attributes);
-        }
-        
-      }
   }
   
+  public function action_set_thumbnail_post() {
+    if (isset($_REQUEST[ 'thumbnail_upload_nonce' ], $_REQUEST[ 'post_id' ]) &&
+    \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') &&
+    \current_user_can('edit_post', $_REQUEST[ 'post_id' ])
+    ) {
+      require_once( ABSPATH . 'wp-admin/includes/image.php' );
+      require_once( ABSPATH . 'wp-admin/includes/file.php' );
+      require_once( ABSPATH . 'wp-admin/includes/media.php' );
+      $attachment_id = \media_handle_upload('file', $_REQUEST[ 'post_id' ]);
+      if (\is_wp_error( $attachment_id )) {
+        \wp_send_json(array('data' => 'There was an error uploading the image.', 'tracking' => null, 'type' => 'error'));
+      } else {
+        \update_post_meta((int)$_REQUEST[ 'post_id' ], '_thumbnail_id', $attachment_id);
+        \wp_send_json(array(
+          'data' => 'The image was uploaded successfully!',
+          'attach_id' => $attachment_id,
+          'url' => \wp_get_attachment_image_src($attachment_id, array(250, 250))[ 0 ],
+          'type' => 'success')
+        );
+      }
+    } else {
+      \wp_send_json(array(
+          'data' => 'The security check failed, maybe show the user an error.', 
+          'tracking' => null, 
+          'type' => 'error'
+        )
+      );
+    }
+    die();
+  }
+  
+  public function action_set_thumbnail_id(){
+    if (isset( $_REQUEST[ 'attachment_id' ] ) || isset( $_REQUEST[ 'post_id' ] )):
+      $attachment_id = (int)$_REQUEST[ 'attachment_id' ];
+      $post_id = (int)$_REQUEST[ 'post_id' ];
+      if (!is_int( $post_id )) return false;
+      
+      $this->Services->setThumbnailbyRequestPostId($attachment_id, $post_id);
+    endif;
+  }
+
+  /**
+  * Update the post content
+  *
+  * This is a action $http function, action update the product post type after submit
+  * add form in front page.
+  *
+  * @function action_add_new_advert
+  * @param void
+  * @return json, type `error` and `success` 
+  **/
+    
+  public function action_add_new_advert() {
+    if (!isset( $_REQUEST[ 'post_id' ] )) return false;
+    if (!\is_user_logged_in()) return false;
+
+    $post_id = (int)$_REQUEST[ 'post_id' ];
+    $cost = (float)$_REQUEST[ 'cost' ];
+    $gallery = json_decode( $_REQUEST[ 'gallery' ] );
+    if (!is_array( $gallery )) $gallery = array();
+    
+    \wp_set_object_terms($post_id, 'simple', 'product_type');
+
+    /* Update post meta, these meta depend a product post_type */
+    \update_post_meta($post_id, '_visibility', 'visible');
+    \update_post_meta($post_id, '_stock_status', 'instock');
+    \update_post_meta($post_id, 'total_sales', '0');
+    \update_post_meta($post_id, '_downloadable', 'no');
+    \update_post_meta($post_id, '_virtual', 'yes');
+    \update_post_meta($post_id, '_regular_price', $cost);
+    \update_post_meta($post_id, '_sale_price', '');
+    \update_post_meta($post_id, '_purchase_note', '');
+    \update_post_meta($post_id, '_featured', 'no');
+    \update_post_meta($post_id, '_weight', '');
+    \update_post_meta($post_id, '_length', '');
+    \update_post_meta($post_id, '_width', '');
+    \update_post_meta($post_id, '_height', '');
+    \update_post_meta($post_id, '_sku', strtoupper( md5( $post_id )) );
+    \update_post_meta($post_id, '_sale_price_dates_from', '');
+    \update_post_meta($post_id, '_sale_price_dates_to', '');
+    \update_post_meta($post_id, '_price', $cost);
+    \update_post_meta($post_id, '_sold_individually', '');
+    \update_post_meta($post_id, '_manage_stock', 'no');
+    \update_post_meta($post_id, '_backorders', 'no');
+    \update_post_meta($post_id, '_stock', '');
+    \update_post_meta($post_id, '_product_image_gallery', implode(",", $gallery));
+
+    $desc = \apply_filters('the_content', $_POST[ 'description' ]);
+    
+    $form = new \stdClass();
+    $form->state  = $this->req('state');
+    $form->adress = $this->req('adress');
+    $form->phone  = $this->req('phone');
+    $form->hidephone = $this->req('hidephone', 0);
+    $form->post_id = $post_id;
+
+    /**
+    * Update post meta, custom key 
+    */
+    \update_post_meta( $post_id, '_product_advert_state', $form->state );
+    \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
+    \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
+    \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
+
+    $post = [
+      'ID'     => $post_id,
+      'post_status' => 'publish',
+      'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
+      'post_content' => $desc,
+    ];
+
+    /* Update the post for new content */
+    $current_post_id = \wp_update_post( $post, true );
+    if (\is_wp_error( $current_post_id )) {
+      \wp_send_json(array(
+          'data' => $current_post_id->get_error_messages(), 
+          'tracking' => 'Error: Update Post product ', 
+          'type' => 'error'
+        )
+      );
+    } else {
+
+      /* 
+      * Set term product_cat to this post, 
+      * if the term exist in product_cat taxonomy 
+      */
+      $categorie = (int) $_REQUEST[ 'categorie' ];
+      $term = \term_exists( $categorie, 'product_cat');
+      if (!is_null( $term )){
+        $post_terms = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
+        if (\is_wp_error( $post_terms )) 
+          \wp_send_json( [
+            'type' => 'error',
+            'tracking' => 'Error: On set post terms ', 
+            'data' => $post_terms->get_error_messages() 
+            ] 
+          );
+      }
+
+      /* Set attributes in the product post */
+      if (isset($_REQUEST[ 'attributs' ])){
+        $attributes = str_replace('\\"','"', trim($_REQUEST[ 'attributs' ]));
+        $attributes = json_decode($attributes);
+        $product_attributes = [];
+        while (list(, $attribute) = each( $attributes )) {
+          \wp_set_object_terms($current_post_id, $attribute->value, $attribute->_id);
+          $product_attributes[ $attribute->_id ] = [
+            'name' => $attribute->_id, // set attribute name
+            'value' => (int)$attribute->value, // set attribute value
+            'is_visible' => 1,
+            'is_variation' => 0,
+            'is_taxonomy' => 0 // !important
+          ]; 
+        }
+        \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
+        \wp_send_json([
+          'type' => 'success', 
+          'data' => 'Update post with attributs'
+          ]
+        );
+      } else {
+        \wp_send_json( [
+          'type' => 'success', 
+          'data' => 'Update post with success without attributs!'
+          ] 
+        );
+      }
+      
+    }
+  }
+  
+  /* This is Lambda function to get REQUEST header content */
   public function req($k, $def=''){
     return isset( $_REQUEST[ $k ] ) ? $_REQUEST[ $k ] : $def;
   }
   
   public function action_register_user(){
     if (\is_user_logged_in())
-    return false;
+      return false;
     
-    if (!isset( $_REQUEST[ 'email' ] ) && !isset( $_REQUEST[ 'password' ] ))
-    return false;
-    
-    //extract($_REQUEST, EXTR_PREFIX_SAME, "register");
-    //        wp_send_json($_REQUEST);
-    if (isset( $_REQUEST[ 'email' ] )) {
-      $user_id = \username_exists( $_REQUEST[ 'email' ] );
-    } else return false;
-    
-    if (isset( $_REQUEST[ 'lastname' ] )) {
-      if (!$user_id and \email_exists( $_REQUEST[ 'email' ] ) == false ) {
-        if (isset( $_REQUEST[ 'password' ] )) {
-          $user_id = \wp_create_user( \sanitize_title( $_REQUEST[ 'lastname' ] ),
-          $_REQUEST[ 'password' ],
-          $_REQUEST[ 'email' ] );
-          if ($user_id) \set_user_role($user_id, 'editor');
-        } else return false;
-        \wp_send_json(array('type'=>'success', 'message'=> $user_id));
+    if (!isset( $_REQUEST[ 'email' ], $_REQUEST[ 'password' ] ))
+      return false;
+    $user_id = \username_exists( \sanitize_title($_REQUEST[ 'lastname' ]) );
+    if (isset( $_REQUEST[ 'lastname' ], $_REQUEST[ 'firstname' ] )) {
+      if (!$user_id && \email_exists( $_REQUEST[ 'email' ] ) == false ) {
+        if (isset( $_REQUEST[ 'password' ] ) && !empty($_REQUEST['password'])) {
+          $user = \wp_create_user( \sanitize_title( trim($_REQUEST[ 'lastname' ]) ), $_REQUEST[ 'password' ], trim($_REQUEST[ 'email' ]) );
+          if (!\is_wp_error($user)){
+            $user_id = &$user; 
+            /* Register success */
+            $update_usr = \wp_update_user([
+              'ID' => $user_id,
+              'role' => 'subscriber'
+            ]);
+            if (!is_int($update_usr)) \wp_send_json(['Error on update user role, probably that user doesn\'t exist.']);
+            $addform_page_id = \get_option( 'addform_page_id', false );
+            $verify = $addform_page_id == false || !is_int( (int)$addform_page_id );
+            $redirect_url =  $verify ? \get_home_url() : \get_the_permalink( (int)$addform_page_id );
+            \wp_send_json([
+              'type' => 'success',
+              'data' => 'User add with success',
+              'redirect_url' => $redirect_url
+            ]);
+          } else {
+            \wp_send_json([
+              'type' => 'error',
+              'tracking' => 'Error: Create user.',
+              'data' => $user->get_error_messages()
+            ]);
+          }
+        } else {
+          \wp_send_json(array(
+            'type' => 'error', 
+            'tracking' => 'Error: Please review $_REQUEST variable, `password` not send or not define. ',
+            'data' => 'Request `password` is not defined.'
+            )
+          );
+        };
+        \wp_send_json(array('type'=>'success', 'data'=> $user_id));
       } else {
-        \wp_send_json(array('type' => 'Error', 'message' => 'User already exists.  Password inherited.'));
+        \wp_send_json(array(
+          'type' => 'error', 
+          'tracking' => 'Error: Adress `email` or `user` already exists. ',
+          'data' => 'User already exists.'
+          )
+        );
       }
-    } else return false;
+    } else \wp_send_json([
+      'type' => 'error',
+      'tracking' => 'Error: Please review Request variable, `lastname` or `firstname` is not define.',
+      'data' => 'There are variables not defined in the query.'
+    ]);
   }
   
   public function action_delete_post(){
@@ -283,12 +354,11 @@ final class _Advert extends AdvertController {
       'post_type' => 'page',
       'posts_per_page' => -1
     ];
-    $register_page_id = \get_option( 'register_page_id', false );
-    if ($register_page_id === false) new \WP_Error('broke', 'Admin: variable register_page_id is not allow value');
     $posts = \get_posts( $params );
     $args = [
       'nonce' => \wp_nonce_field('advert_settings', 'advert_settings_nonce'),
-      'register_page_id' => $register_page_id,
+      'register_page_id' => \get_option( 'register_page_id', false ),
+      'addform_page_id' => \get_option( 'addform_page_id', false ),
       'posts' => $posts
     ];
     print $twig->render('@adminadvert/settings.html', $args);

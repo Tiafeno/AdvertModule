@@ -1,66 +1,98 @@
 /**
-* Created by Ьк Аштуд on 5/6/17.
+* Created by Tiafeno Finel on 5/6/17.
 */
-(function (angular) {
-	var app = angular.module('RegisterAdvertApp', ['ngMaterial', 'ngMessages']);
-	
-	app.controller('AdvertFormRegisterCtrl', function ($scope, $http, $log) {
-		$scope.register = {};
-		$scope.CheckPass = false;
-		$scope.activated = false;
-		$scope.$watch('register', function(){
-			if(typeof $scope.register.password != 'undefined'){
-				if($scope.register.password != $scope.register.rpassword){
-					if(typeof $scope.register.rpassword != "undefined")
-						$scope.CheckPass = true;
-				} else  $scope.CheckPass = false;
-				
-			}
-		}, true);
+
+register.controller('AdvertFormRegisterCtrl', function (
+	$scope, 
+	$http, 
+	$window,
+	$log, 
+	$mdToast,
+	registerFactory
+) {
+	var last = { bottom: true, top: false, left: false, right: true };
+	$scope.toastPosition = angular.extend({}, last);
+	function sanitizePosition() {
+		var current = $scope.toastPosition;
+		if (current.bottom && last.top) current.top = false;
+		if (current.top && last.bottom) current.bottom = false;
+		if (current.right && last.left) current.left = false;
+		if (current.left && last.right) current.right = false;
 		
-		$scope.registerFormSubmit = function( isValid ) {
-			if (!isValid) return;
-			if ($scope.register.password != $scope.register.rpassword) {
-				$scope.CheckPass = true;
-				return;
-			}
+		last = angular.extend({}, current);
+	}
+	
+	$scope.getToastPosition = function () {
+		sanitizePosition();
+		return Object.keys($scope.toastPosition)
+		.filter(function (pos) {
+			return $scope.toastPosition[ pos ];
+		})
+		.join(' ');
+	};
+	
+	$scope.showActionToast = function(msg, btn) {
+		var pinTo = $scope.getToastPosition();
+		var toast = $mdToast.simple()
+		.textContent( msg )
+		.action( btn )
+		.highlightAction(true)
+		.hideDelay(3000)
+		.position( pinTo );
+		$mdToast.show( toast ).then(function( response ) { /* @return string, ok */
 			
-			var registerdata = new FormData();
-			registerdata.append('lastname', $scope.register.lastname);
-			registerdata.append('firstname',$scope.register.firstname);
-			registerdata.append('SIRET',    $scope.register.SIRET);
-			registerdata.append('society',  $scope.register.society);
-			registerdata.append('adress',   $scope.register.adress);
-			registerdata.append('postal_code', $scope.register.postal_code);
-			registerdata.append('phone',       $scope.register.phone);
-			
-			registerdata.append('email',    $scope.register.email);
-			registerdata.append('password', $scope.register.password);
-			$scope.activated = true;
-			$http({
-				url: advert.ajax_url,
-				method: "POST",
-				headers: {'Content-Type': undefined},
-				data: registerdata,
-				params: {
-					action: "action_register_user"
-				}
-				
-			}).success(function (resp) {
-				if (parseInt( resp ) === 0)  return;
+		});
+	}
+	
+	$scope.register = {};
+	$scope.CheckPass = false;
+	$scope.activated = false;
+	$scope.$watch('register', function(newValue, oldValue){
+		
+	}, true);
+	
+	$scope.registerFormSubmit = function( isValid ) {
+		if (!isValid) return;
+		
+		var registerdata = new FormData();
+		registerdata.append('lastname', $scope.register.lastname);
+		registerdata.append('firstname',$scope.register.firstname);
+		registerdata.append('SIRET',    $scope.register.SIRET);
+		registerdata.append('society',  $scope.register.society);
+		registerdata.append('adress',   $scope.register.adress);
+		registerdata.append('postal_code', $scope.register.postal_code);
+		registerdata.append('phone',       $scope.register.phone);
+		
+		registerdata.append('email',    $scope.register.email);
+		registerdata.append('password', $scope.register.password);
+
+		registerdata.append('action', 'action_register_user');
+		$scope.activated = true;
+
+		registerFactory.register_user( registerdata )
+			.success(function(resp) {
 				$scope.activated = false;
 				
-				$scope.setAdvertRegisterForm.$setUntouched();
-				$scope.setAdvertRegisterForm.$setPristine();
+				$scope.RegisterForm.$setUntouched();
+				$scope.RegisterForm.$setPristine();
+
+				/* Set toasted */
+				$scope.showActionToast(resp.data, 'OK');
+				/* redirect add form if success */
+				if (resp.type == 'success')
+					$window.setTimeout(function(){
+						$window.location.href = resp.redirect_url;
+					}, 2500)
 				
-			}).error(function () {
+				$log.debug( resp );
+			})
+			.error(function() {
 				$scope.activated = false;
 			});
-		};
-		
-		this.Initialize = function () {
-		};
-		
-		this.Initialize();
-	});
-})(window.angular);
+	};
+	
+	this.Initialize = function () {
+	};
+	
+	this.Initialize();
+});
