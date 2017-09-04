@@ -84,7 +84,6 @@ register.controller('AdvertFormRegisterCtrl', function (
 						$window.location.href = resp.redirect_url;
 					}, 2500)
 				
-				$log.debug( resp );
 			})
 			.error(function() {
 				$scope.activated = false;

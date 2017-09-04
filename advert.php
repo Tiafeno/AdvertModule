@@ -37,8 +37,9 @@ final class _Advert extends AdvertController {
 
     });
     // Shortcode WP
-    \add_shortcode('st_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
-    \add_shortcode('st_register_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
+    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
+    \add_shortcode('adverts', [ new shortcode\AdvertCode(),'get_adverts']);
+    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
     $this->Model = new AdvertModel();
 
     /* Activate and Uninstall Plugins */
@@ -91,10 +92,11 @@ final class _Advert extends AdvertController {
     \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') &&
     \current_user_can('edit_post', $_REQUEST[ 'post_id' ])
     ) {
+      if (!is_int( (int)$_REQUEST[ 'post_id' ])) return;
       require_once( ABSPATH . 'wp-admin/includes/image.php' );
       require_once( ABSPATH . 'wp-admin/includes/file.php' );
       require_once( ABSPATH . 'wp-admin/includes/media.php' );
-      $attachment_id = \media_handle_upload('file', $_REQUEST[ 'post_id' ]);
+      $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
       if (\is_wp_error( $attachment_id )) {
         \wp_send_json(array('data' => 'There was an error uploading the image.', 'tracking' => null, 'type' => 'error'));
       } else {
@@ -135,7 +137,7 @@ final class _Advert extends AdvertController {
   *
   * @function action_add_new_advert
   * @param void
-  * @return json, type `error` and `success` 
+  * @return json, type `false` and `true`, `0` if user isn't login or request post_id not send 
   **/
     
   public function action_add_new_advert() {
@@ -144,7 +146,7 @@ final class _Advert extends AdvertController {
 
     $post_id = (int)$_REQUEST[ 'post_id' ];
     $cost = (float)$_REQUEST[ 'cost' ];
-    $gallery = json_decode( $_REQUEST[ 'gallery' ] );
+    $gallery = json_decode( $this->req($_REQUEST[ 'gallery' ], []) );
     if (!is_array( $gallery )) $gallery = array();
     
     \wp_set_object_terms($post_id, 'simple', 'product_type');
@@ -203,7 +205,7 @@ final class _Advert extends AdvertController {
       \wp_send_json(array(
           'data' => $current_post_id->get_error_messages(), 
           'tracking' => 'Error: Update Post product ', 
-          'type' => 'error'
+          'type' => false
         )
       );
     } else {
@@ -218,7 +220,7 @@ final class _Advert extends AdvertController {
         $post_terms = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
         if (\is_wp_error( $post_terms )) 
           \wp_send_json( [
-            'type' => 'error',
+            'type' => false,
             'tracking' => 'Error: On set post terms ', 
             'data' => $post_terms->get_error_messages() 
             ] 
@@ -242,13 +244,14 @@ final class _Advert extends AdvertController {
         }
         \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
         \wp_send_json([
-          'type' => 'success', 
-          'data' => 'Update post with attributs'
+          'type' => true, 
+          'data' => 'Update post with attributs',
+          'redirect_url' => null
           ]
         );
       } else {
         \wp_send_json( [
-          'type' => 'success', 
+          'type' => true, 
           'data' => 'Update post with success without attributs!'
           ] 
         );
@@ -322,18 +325,24 @@ final class _Advert extends AdvertController {
   
   public function action_delete_post(){
     if (!\is_user_logged_in())
-    return false;
+      return false;
     
     if (!isset( $_REQUEST[ 'id' ] ))
-    return false;
-    $post_id = (int)$_REQUEST[ 'id' ];
+      return false;
+
+    $post_id = (int)trim($_REQUEST[ 'id' ]);
+    $post_type = ( isset($_REQUEST['post_type']) && !empty(trim($_REQUEST['post_type'])) ) ? trim($_REQUEST['post_type']) : 'attachement';
     $args = [
       'p' => $post_id,
-      'post_type' => 'attachment'
+      'post_type' => $post_type
     ];
     $attachment = new \WP_Query( $args );
-    if ($attachment->have_posts())
+    if ($attachment->have_posts()) {
       \wp_send_json( \wp_delete_attachment( $post_id ) );
+    } else {
+      \wp_send_json( $attachment );
+    }
+      
     
   }
   

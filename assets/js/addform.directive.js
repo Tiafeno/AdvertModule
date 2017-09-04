@@ -17,9 +17,3 @@ app.directive("uploadfile", function () {
      }
   };
 })
-.directive('immobilier', function ($window) {
-  return {
-     restrict: 'E',
-     templateUrl: advert.assets_plugins_url + 'js/templates/immobilier-form.html'
-  }
-})

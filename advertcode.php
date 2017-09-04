@@ -80,9 +80,59 @@ class AdvertCode {
 			
 		));
 	}
+
+	/**
+  * [adverts orderBy="%s" order="%s"]
+  *
+  * Get all adverts list content
+  * This is a function shortcode, get all product post type
+  *
+  * @function get_adverts
+  * @param $attrs, $content
+  * @return wp_send_json (json)
+  **/
+  public static function get_adverts($attrs, $content = null) {
+		$attributs = \shortcode_atts(array(
+			'orderBy' => 'date',
+			'order' => 'DESC'
+		), $attrs);
+
+    $user_id = null;
+    if (\is_user_logged_in()) {
+      /*
+      * @function  wp_get_current_user
+      * Will set the current user, if the current user is not set. 
+      * The current user will be set to the logged-in person.
+      * If no user is logged-in, then it will set the current user to 0 
+      * @return WP_User
+      */
+      $current_user = \wp_get_current_user();
+      $user_id = $current_user->ID;
+		}
+		namespace\AdvertCode::setEnqueue();
+		$args = [
+			'post_type' => 'product',
+			'posts_per_page' => 20,
+			'order' => $attributs[ 'order' ],
+			'orderby' => $attributs[ 'orderBy' ]
+		];
+		$adverts = new \WP_Query( $args );
+		if ($adverts->have_posts()) {
+			global $twig;
+			if (is_null( $twig )){
+				return 'Active or install Template Engine TWIG';
+			}
+
+			return $twig->render('@frontadvert/advert.html', array(
+				'posts' => $adverts->posts,
+				'user_id' => $user_id
+			));
+		}
+		return 'No post!';
+  }
 	
 	/*
-	* [st_register_advert]
+	* [singin_advert]
 	*/
 	public static function RenderRegisterForm($attrs, $content){
 		global $twig;
@@ -108,7 +158,7 @@ class AdvertCode {
 	}
 	
 	/*
-	* [st_advert user_id="%d"]
+	* [addform_advert user_id="%d"]
 	*/
 	public static function RenderAddForm($attrs, $content) {
 		global $twig;
@@ -122,7 +172,9 @@ class AdvertCode {
 		}
 		
 		$current_user = \wp_get_current_user();
-		$at = \shortcode_atts(array('user_id' => $current_user->ID), $attrs);
+		$at = \shortcode_atts(array(
+				'user_id' => $current_user->ID
+			), $attrs);
 		
 		$args = [
 			'post_type' => "product",
@@ -166,11 +218,11 @@ class AdvertCode {
 		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
 		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
 		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
-		\wp_enqueue_script( 'AdvertApp', \plugins_url('/assets/js/advert.js', __FILE__), array( 'angular' ));
-		\wp_enqueue_script( 'advert-directive', \plugins_url('/assets/js/advert.directive.js', __FILE__), ['AdvertApp'] );
-		\wp_enqueue_script( 'advert-factory', \plugins_url('/assets/js/advert.factory.js', __FILE__), ['AdvertApp'] );
-		\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['AdvertApp'] );
-		\wp_localize_script( 'AdvertApp', 'advert', array(
+		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform.js', __FILE__), array( 'angular' ));
+		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform.directive.js', __FILE__), ['AddFormapp'] );
+		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform.factory.js', __FILE__), ['AddFormapp'] );
+		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform.controller.js', __FILE__), ['AddFormapp'] );
+		\wp_localize_script( 'AddFormapp', 'advert', array(
 			'ajax_url' => \admin_url( 'admin-ajax.php' ),
 			'post_id' => $post_id,
 			'vendors' => $AdvertSchema->vendor,

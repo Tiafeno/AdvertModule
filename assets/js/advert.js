@@ -1,4 +1,3 @@
+'use strict'
 
-var app = angular.module('AdvertApp', ['ngMaterial', 'ngMessages']);
-
-	
+var advert = angular.module('AdvertApp', ['ngMaterial', 'ngMessages']);
