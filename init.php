@@ -1,10 +1,10 @@
 <?php
 namespace advert;
 /*
-Plugin Name: FALI. Advert
+Plugin Name: WP AdVert
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
 Description: --------.
-Version: 1.2
+Version: 2.2
 Author: Tiafeno Finel
 Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2
