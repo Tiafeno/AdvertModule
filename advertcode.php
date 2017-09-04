@@ -11,10 +11,12 @@ class AdvertCode {
 	private static function setEnqueue(){
 		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__), array());
 		
+		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.js', __FILE__), array('angular'));
 		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.js', __FILE__), array());
 		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.js', __FILE__), array());
+		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array());
 		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.js', __FILE__), array('angular'));
 		
 	}
@@ -110,6 +112,12 @@ class AdvertCode {
       $user_id = $current_user->ID;
 		}
 		namespace\AdvertCode::setEnqueue();
+
+		/* 
+		* e.g [{'post_id': 154, 'thumbnail_url': '...'}] , 
+		* PS: `post_id` is id post product type or not thumbnail post id
+		*/
+		$thumbnails = []; 
 		$args = [
 			'post_type' => 'product',
 			'posts_per_page' => 20,
@@ -117,11 +125,31 @@ class AdvertCode {
 			'orderby' => $attributs[ 'orderBy' ]
 		];
 		$adverts = new \WP_Query( $args );
+		if ($adverts->have_posts()){
+			while($adverts->have_posts()): $adverts->the_post();
+				array_push($thumbnails, [
+					'post_id' => $adverts->post->ID,
+					'thumbnail_url' => \get_the_post_thumbnail_url( $adverts->post->ID, 'full' )
+				]);
+			endwhile;
+		}
+		
 		if ($adverts->have_posts()) {
 			global $twig;
 			if (is_null( $twig )){
 				return 'Active or install Template Engine TWIG';
 			}
+			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert.js', __FILE__), ['angular'] );
+			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
+			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert'] );
+			\wp_localize_script( 'advert-controller', 'adverts', [
+				'thumbnails' => $thumbnails
+			] );
+			/* create filter twig */
+			$get_post_thumbnail = new \Twig_SimpleFilter('get_full_post_thumbnail', function( $id ) {
+				return \get_the_post_thumbnail_url( $id, 'full' );
+			});
+			$twig->addFilter( $get_post_thumbnail );
 
 			return $twig->render('@frontadvert/advert.html', array(
 				'posts' => $adverts->posts,
@@ -217,7 +245,6 @@ class AdvertCode {
 		\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), array('advert'));
 		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
 		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
-		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform.js', __FILE__), array( 'angular' ));
 		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform.directive.js', __FILE__), ['AddFormapp'] );
 		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform.factory.js', __FILE__), ['AddFormapp'] );

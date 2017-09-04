@@ -1,7 +1,19 @@
-<div ng-controller="AdvertController" ng-cloak layout-gt-sm="row" layout="column">
-  {% if posts != null %}
-
-  {% else %}
-    {{ posts }}
-  {% endif %}
+<div ng-app="AdvertApp" ng-controller="AdvertController" ng-cloak layout-gt-sm="row" layout="column">
+  <md-content>
+    <md-list flex>
+      {% if posts != null %}
+        <md-list-item class="md-3-line" ng-repeat="item in {{ posts|json_encode() }}" ng-click="null">
+          <img ng-src="[[item.ID | thumbnail_url]]" class="md-avatar" alt="[[item.post_title]]" />
+          <div class="md-list-item-text" layout="column">
+            <h3>[[ item.post_title ]]</h3>
+            <h4>[[ item.post_date ]]</h4>
+            <p ng-bind-html="item.post_content"></p>
+          </div>
+          <md-divider ></md-divider>
+        </md-list-item>
+      {% else %}
+        {{ posts }}
+      {% endif %}
+    </md-list>
+  </md-content>
 </div>
