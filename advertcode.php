@@ -9,16 +9,26 @@ class AdvertCode {
 	}
 	
 	private static function setEnqueue(){
-		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__), array());
-		
-		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
+		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.js', __FILE__), array('angular'));
 		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.js', __FILE__), array('angular'));
 		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.js', __FILE__), array('angular'));
 		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
-		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.js', __FILE__), array('angular'));
 		
+	}
+
+	public static function setAngularMaterial() {
+		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.min.js', __FILE__), array('angular'));
+		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.min.css', __FILE__));
+	}
+
+	public static function setUIKit() {
+		// pass
+		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
+
+		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
+		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
 	
 	public static function getLoginForm(){
@@ -111,8 +121,7 @@ class AdvertCode {
       $current_user = \wp_get_current_user();
       $user_id = $current_user->ID;
 		}
-		namespace\AdvertCode::setEnqueue();
-
+		
 		/* 
 		* e.g [{'post_id': 154, 'thumbnail_url': '...'}] , 
 		* PS: `post_id` is id post product type or not thumbnail post id
@@ -130,13 +139,13 @@ class AdvertCode {
 			while($adverts->have_posts()): $adverts->the_post();
 				array_push($thumbnails, [
 					'post_id' => $adverts->post->ID,
-					'thumbnail_url' => \get_the_post_thumbnail_url( $adverts->post->ID, 'full' )
+					'thumbnail_url' => \get_the_post_thumbnail_url( $adverts->post->ID,  'full' )
 				]);
 				array_push($posts, [
 					'ID' => $adverts->post->ID,
 					'post_title' => $adverts->post->post_title,
 					'post_date' => $adverts->post->post_date,
-					'post_content' => $adverts->post->post_content,
+					'post_excerpt' => $adverts->post->post_content,
 					'price' => \get_post_meta( $adverts->post->ID, '_price'),
 					/* @return false or array (WP_Term) */
 					'categorie' => \get_the_terms( $adverts->post->ID, 'product_cat' )[ 0 ],
@@ -152,15 +161,18 @@ class AdvertCode {
 			if (is_null( $twig )){
 				return 'Active or install Template Engine TWIG';
 			}
+			namespace\AdvertCode::setEnqueue();
+			namespace\AdvertCode::setUIKit();
+
 			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.js', __FILE__), ['angular'] );
 			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
-			
 			\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
 			\wp_localize_script( 'advert-route', 'jsRoute', [
 				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ )
 			] );
 
+			\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), ['advert', 'advert-route'] );
 			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
 			\wp_localize_script( 'advert-controller', 'adverts', [
 				'thumbnails' => $thumbnails,
@@ -193,6 +205,8 @@ class AdvertCode {
 			return self::RenderAddForm([], null);
 
 		namespace\AdvertCode::setEnqueue();
+		namespace\AdvertCode::setAngularMaterial();
+
 		\wp_enqueue_script('Register', \plugins_url('/assets/js/register.js', __FILE__), array('angular'));
 		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register.factory.js', __FILE__), array('angular'));
 		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register.advert.js', __FILE__), array('angular'));
@@ -215,6 +229,7 @@ class AdvertCode {
 			return 'Active or install Template Engine TWIG';
 		}
 		namespace\AdvertCode::setEnqueue();
+		namespace\AdvertCode::setAngularMaterial();
 		
 		if (!\is_user_logged_in()) {
 			return self::getLoginForm();
@@ -264,6 +279,7 @@ class AdvertCode {
 		$AdvertSchema = json_decode( $Schema );
 
 		\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
+		
 		\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), array('advert'));
 		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
 		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);

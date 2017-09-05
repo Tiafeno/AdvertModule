@@ -3,6 +3,7 @@ namespace advert\plugins;
 
 use advert\src\controller\AdvertController as AdvertController;
 use advert\entity\model\AdvertModel as AdvertModel;
+use advert\libraries\parsedown as parsedown;
 use shortcode\AdvertCode as AdvertCode;
 
 final class _Advert extends AdvertController {
