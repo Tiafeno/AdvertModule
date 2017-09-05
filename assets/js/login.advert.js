@@ -1,10 +1,8 @@
-(function (angular) {
-    var app = angular.module('LoginAdvertApp', ['ngMaterial', 'ngMessages']);
+var login = angular.module('LoginAdvertApp', ['ngMaterial', 'ngMessages']);
+login.controller('LoginAdvertCtrl', function ($scope, $http) {
+    this.Initialize = function () {
+        angular.element(jQuery( 'input[type="password"]' )).triggerHandler( 'input' );
+    };
 
-    app.controller('LoginAdvertCtrl', function ($scope, $http) {
-        this.Initialise = function () {
-        };
-
-        this.Initialise();
-    });
-})(window.angular);
+    this.Initialize();
+});

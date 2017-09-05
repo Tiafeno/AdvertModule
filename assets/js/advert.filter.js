@@ -12,4 +12,17 @@ advert
         return post.thumbnail_url;
       }
     }
-  });
+  })
+  .filter('currency', function() {
+    return function( input ) {
+      var currency = 'Ar';
+      if (isNaN(input)) {
+        return input;
+      } else {
+        input = parseFloat(input);
+        return input.toFixed(2).replace(/./g, function(c, i, a) {
+          return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c ;
+      });
+      }
+    }
+  })

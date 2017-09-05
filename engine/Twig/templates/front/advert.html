@@ -1,19 +1,51 @@
-<div ng-app="AdvertApp" ng-controller="AdvertController" ng-cloak layout-gt-sm="row" layout="column">
-  <md-content>
-    <md-list flex>
-      {% if posts != null %}
-        <md-list-item class="md-3-line" ng-repeat="item in {{ posts|json_encode() }}" ng-click="null">
-          <img ng-src="[[item.ID | thumbnail_url]]" class="md-avatar" alt="[[item.post_title]]" />
-          <div class="md-list-item-text" layout="column">
-            <h3>[[ item.post_title ]]</h3>
-            <h4>[[ item.post_date ]]</h4>
-            <p ng-bind-html="item.post_content"></p>
+<style type="text/css">
+  md-list-item .avatar {
+    border-radius: 0 !important;
+    width : 30%;
+    height: inherit;
+    margin-right: 20px;
+  }
+  .item-price {
+    font-size: 2rem;
+    color: #f56b2a;
+  }
+  .item-title {
+    color: #3873bd;
+  }
+  .item-adress {
+    padding-bottom: 14px;
+  }
+  .item-date {
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    background: #11a4f7;
+    color: aliceblue !important;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+</style>
+<div ng-app="AdvertApp" ng-controller="AdvertController" ng-cloak layout="row" layout-sm="column" layout-xs="column">
+  <md-content flex-gt-sm="80">
+    <md-list>
+      <md-list-item class="md-3-line noright" ng-repeat="post in posts" ng-click="null">
+        <img ng-src="[[post.ID | thumbnail_url]]" class="avatar" alt="[[post.post_title]]" />
+        <div class="md-list-item-text" layout="column" >
+          <h2 class="item-title">[[ post.post_title ]]</h2>
+          <h4 class="md-body-1">[[ post.categorie.name ]]</h4>
+          <h4 class="md-body-1 item-adress">[[ post.adress[0] ]]</h4>
+          <!-- <p ng-bind-html="post.post_content"></p> -->
+          <h2 class="md-headline item-price" > [[ post.price | currency ]] Ar</h4>
+            <p class="item-date">[[ post.post_date ]]</p>
           </div>
+          
           <md-divider ></md-divider>
         </md-list-item>
-      {% else %}
-        {{ posts }}
-      {% endif %}
-    </md-list>
-  </md-content>
-</div>
+        
+        <h4 ng-show="posts.length == 0"> No post! </h4>
+      </md-list>
+    </md-content>
+    <md-content >
+      sdfsfsdf
+    </md-content>
+  </div>

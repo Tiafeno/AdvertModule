@@ -95,7 +95,7 @@
 
                     <md-input-container class="md-block" flex-gt-sm>
                         <label>Catégorie</label>
-                        <md-select ng-model="advertPost.categorie" required>
+                        <md-select ng-model="advertPost.categorie" ng-required="true">
                             <md-option ng-value="cat.term_id" ng-repeat="cat in product_cat" ng-disabled="cat.parent == 0">
                                 <span ng-show="cat.parent != 0" style="padding-left:20px"></span>[[cat.name]]
                             </md-option>

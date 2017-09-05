@@ -118,6 +118,7 @@ class AdvertCode {
 		* PS: `post_id` is id post product type or not thumbnail post id
 		*/
 		$thumbnails = []; 
+		$posts = [];
 		$args = [
 			'post_type' => 'product',
 			'posts_per_page' => 20,
@@ -131,6 +132,18 @@ class AdvertCode {
 					'post_id' => $adverts->post->ID,
 					'thumbnail_url' => \get_the_post_thumbnail_url( $adverts->post->ID, 'full' )
 				]);
+				array_push($posts, [
+					'ID' => $adverts->post->ID,
+					'post_title' => $adverts->post->post_title,
+					'post_date' => $adverts->post->post_date,
+					'post_content' => $adverts->post->post_content,
+					'price' => \get_post_meta( $adverts->post->ID, '_price'),
+					/* @return false or array (WP_Term) */
+					'categorie' => \get_the_terms( $adverts->post->ID, 'product_cat' )[ 0 ],
+					/* --- */
+					'adress' => \get_post_meta( $adverts->post->ID, '_product_advert_adress'),
+					'state' => \get_post_meta( $adverts->post->ID, '_product_advert_state')
+				]);
 			endwhile;
 		}
 		
@@ -143,7 +156,8 @@ class AdvertCode {
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
 			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert'] );
 			\wp_localize_script( 'advert-controller', 'adverts', [
-				'thumbnails' => $thumbnails
+				'thumbnails' => $thumbnails,
+				'posts' => $posts
 			] );
 			/* create filter twig */
 			$get_post_thumbnail = new \Twig_SimpleFilter('get_full_post_thumbnail', function( $id ) {
@@ -152,10 +166,10 @@ class AdvertCode {
 			$twig->addFilter( $get_post_thumbnail );
 
 			return $twig->render('@frontadvert/advert.html', array(
-				'posts' => $adverts->posts,
 				'user_id' => $user_id
 			));
 		}
+		\wp_reset_postdata();
 		return 'No post!';
   }
 	
