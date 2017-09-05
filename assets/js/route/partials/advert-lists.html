@@ -1,0 +1,24 @@
+<div layout="row" layout-sm="column" layout-xs="column">
+  <md-content flex-gt-sm="80">
+    <md-list>
+      <md-list-item class="md-3-line noright" ng-repeat="post in posts" ng-click="null">
+        <img ng-src="[[post.ID | thumbnail_url]]" class="avatar" alt="[[post.post_title]]" />
+        <div class="md-list-item-text" layout="column">
+          <h2 class="item-title">[[ post.post_title ]]</h2>
+          <h4 class="md-body-1">[[ post.categorie.name ]]</h4>
+          <h4 class="md-body-1 item-adress">[[ post.adress[0] ]]</h4>
+          <!-- <p ng-bind-html="post.post_content"></p> -->
+          <h2 class="md-headline item-price"> [[ post.price | currency ]] Ar</h4>
+            <p class="item-date">[[ post.post_date ]]</p>
+        </div>
+
+        <md-divider></md-divider>
+      </md-list-item>
+
+      <h4 ng-show="posts.length == 0"> No post! </h4>
+    </md-list>
+  </md-content>
+  <md-content>
+    sdfsfsdf
+  </md-content>
+</div>

@@ -1,3 +1,10 @@
 'use strict'
 
-var advert = angular.module('AdvertApp', ['ngMaterial', 'ngMessages', 'ngSanitize']);
+var advert = angular.module('AdvertApp', [
+    'ngMaterial', 
+    'ngMessages', 
+    'ngRoute', 
+    'routeAdvert', 
+    'ngSanitize'
+  ]
+);

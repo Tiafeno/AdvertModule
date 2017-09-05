@@ -14,9 +14,9 @@ class AdvertCode {
 		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.js', __FILE__), array());
-		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.js', __FILE__), array());
-		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array());
+		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.js', __FILE__), array('angular'));
+		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.js', __FILE__), array('angular'));
+		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
 		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.js', __FILE__), array('angular'));
 		
 	}
@@ -152,9 +152,16 @@ class AdvertCode {
 			if (is_null( $twig )){
 				return 'Active or install Template Engine TWIG';
 			}
-			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert.js', __FILE__), ['angular'] );
+			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.js', __FILE__), ['angular'] );
+			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
-			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert'] );
+			
+			\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
+			\wp_localize_script( 'advert-route', 'jsRoute', [
+				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ )
+			] );
+
+			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
 			\wp_localize_script( 'advert-controller', 'adverts', [
 				'thumbnails' => $thumbnails,
 				'posts' => $posts
@@ -246,8 +253,9 @@ class AdvertCode {
 				'post_type' => "product",
 			));
 		}
-		if (is_null( $post_id )) new \WP_Error('Warning', 'Variable post_id is null');
 
+		\wp_reset_postdata();
+		if (is_null( $post_id )) new \WP_Error('Warning', 'Variable post_id is null');
 		$products_cat = [];
 		$products_cat_child = [];
 		$vendors = []; 
