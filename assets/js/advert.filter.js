@@ -9,6 +9,7 @@ advert
         var post = _.find( adverts.thumbnails, function( thumbnail ) {
           return thumbnail.post_id = parseInt( input );
         });
+        if (post.thumbnail_url == false) return '';
         return post.thumbnail_url;
       }
     }
@@ -24,5 +25,13 @@ advert
           return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c ;
       });
       }
+    }
+  })
+  .filter('postDate', function() {
+    return function( input ) {
+      var postdate = input.trim();
+
+      moment.locale('fr');
+      return moment( postdate ).fromNow();
     }
   })

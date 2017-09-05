@@ -10,6 +10,7 @@ Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2
 */
 include_once( plugin_dir_path(__FILE__) . '/autoload.php' );
+include_once( plugin_dir_path(__FILE__) . '/libraries/php/parsedown/Parsedown.php' );
 include_once( plugin_dir_path(__FILE__) . '/src/services/services.controller.php' );
 include_once( plugin_dir_path(__FILE__) . '/src/controller/AdvertController.php' );
 include_once( plugin_dir_path(__FILE__) . '/advert.php' );
