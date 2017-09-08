@@ -30,6 +30,10 @@ class AdvertCode {
 		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
 
+	/**
+	* [login_advert]
+	**/
+
 	public static function getLoginForm(){
 		global $twig, $login_fail;
 
@@ -64,6 +68,7 @@ class AdvertCode {
 		));
 
 		namespace\AdvertCode::setUIKit();
+		$register_link = \get_option( 'register_page_id', false ) ? \get_permalink(\get_option( 'register_page_id', false )) : '#register';
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'login_fail' => $login_fail,
 			'form_id' => $args['form_id'],
@@ -88,7 +93,7 @@ class AdvertCode {
 			'label_log_in' => \esc_attr( $args['label_log_in'] ),
 			'redirect' => \esc_url( $args['redirect'] ),
 			
-			'register_link' => \get_permalink(\get_option( 'register_page_id' ))
+			'register_link' => $register_link
 			
 		));
 	}
@@ -123,6 +128,7 @@ class AdvertCode {
 		}
 		
 		/* 
+		* @var $thumbnails
 		* e.g [{'post_id': 154, 'thumbnail_url': '...'}] , 
 		* PS: `post_id` is id post product type or not thumbnail post id
 		*/
@@ -216,7 +222,9 @@ class AdvertCode {
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
+		$login_link = \get_option( 'login_page_id', false ) ? \get_permalink(\get_option( 'login_page_id', false )) : '#login';
 		return $twig->render('@frontadvert/registerform.advert.html', array(
+			'login_link' => $login_link
 		));
 		
 		
@@ -296,11 +304,13 @@ class AdvertCode {
 			'products_cat_child' => $AdvertSchema->product_cat_child,
 			'assets_plugins_url' => \plugins_url( '/assets/', __FILE__ )
 		));
+		$login_link = \get_option( 'login_page_id', false ) ? \get_permalink(\get_option( 'login_page_id', false )) : '#login';
 		return $twig->render('@frontadvert/addform.advert.html', array(
 			'nonce' => \wp_nonce_field('thumbnail_upload', 'thumbnail_upload_nonce'),
 			'post_id' => $post_id,
 			'terms' => $content,
 			'vendors' => $AdvertSchema->vendor
+			
 		));
 	}
 

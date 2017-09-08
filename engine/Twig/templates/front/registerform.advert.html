@@ -6,13 +6,10 @@
         border-top-color: rgb(255, 165, 0) !important;
     }
 </style>
-<div ng-app="RegisterAdvertApp" ng-controller="AdvertFormRegisterCtrl as afrc"  layout="column">
-    
-<div  style="
-        margin: auto;
-        padding: 10px;
-        width: 65%;
-    ">
+<div ng-app="RegisterAdvertApp" ng-controller="AdvertFormRegisterCtrl as afrc"  layout="column" >
+
+<div layout-gt-sm="row" layout-align="center center"> Vous avez déjà un compte ? <md-button class="md-primary" ng-href="{{login_link}}" > Se connecter</md-button> </div>
+<div  style="margin: auto; padding: 10px; width: 65%;">
     <md-content style="padding-left:10px">
         <md-list flex>
             <md-subheader class="md-no-sticky" style="

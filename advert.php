@@ -28,6 +28,7 @@ final class _Advert extends AdvertController {
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
     \add_shortcode('adverts', [ new shortcode\AdvertCode(),'get_adverts']);
+    \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'getLoginForm']);
     \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
 
     /* create Model instance */
@@ -103,7 +104,7 @@ final class _Advert extends AdvertController {
       
       return true;
   }
-  
+
   /*
   * This function load on wordpress load action
   * @function wordpress_loaded
@@ -117,14 +118,18 @@ final class _Advert extends AdvertController {
     }
 
     if (isset($_POST[ 'advert_settings_nonce' ]) && 
-    \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings')) {
+    \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings') &&
+    is_admin() ) {
 
       $register_page_id = (int) $_POST[ 'register_page' ];
       $addform_page_id = (int) $_POST[ 'addform_page'];
+      $login_page_id = (int) $_POST[ 'login_page'];
 
       \update_option( 'register_page_id', $register_page_id );
       \update_option( 'addform_page_id', $addform_page_id );
+      \update_option( 'login_page_id', $login_page_id );
     }
+
     if (isset($_GET[ 'login' ])) {
       $value = trim($_GET[ 'login' ]);
       if ($value != 'failed') return;
@@ -454,6 +459,7 @@ final class _Advert extends AdvertController {
     $args = [
       'nonce' => \wp_nonce_field('advert_settings', 'advert_settings_nonce'),
       'register_page_id' => \get_option( 'register_page_id', false ),
+      'login_page_id' => \get_option( 'login_page_id', false),
       'addform_page_id' => \get_option( 'addform_page_id', false ),
       'posts' => $posts
     ];

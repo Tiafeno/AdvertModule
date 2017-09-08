@@ -31,6 +31,20 @@
           <p class="description">Cette option est pour le formulaire d'ajout de l'annonce</p>
         </td>
       </tr>
+      <tr>
+        <th scope="row">
+          <label for="blogname">Login</label>
+          
+        </th>
+        <td>
+          <select name="login_page" id="login_page" >
+              <option value=""> </option>
+            {% for post in posts %}
+              <option value="{{ post.ID }}" {% if post.ID == login_page_id %} selected {% endif %} > {{ post.post_title }} </option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
     </tbody>
   </table>
   <p class="submit">
