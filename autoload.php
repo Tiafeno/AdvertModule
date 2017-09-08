@@ -2,6 +2,7 @@
 namespace advert\loader;
 
 $twig = null;
+$login_fail = null;
 
 add_action('plugins_loaded', function() {
   global $loader, $twig;

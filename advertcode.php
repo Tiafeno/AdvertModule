@@ -30,10 +30,11 @@ class AdvertCode {
 		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
 		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
-	
+
 	public static function getLoginForm(){
-		global $twig;
-		$args = array();
+		global $twig, $login_fail;
+
+		$args = [];
 		$defaults = array(
 			'echo' => true,
 			// Default 'redirect' value takes the user back to the request URI.
@@ -62,10 +63,12 @@ class AdvertCode {
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
-
+		
+		namespace\AdvertCode::setUIKit();
 		return $twig->render('@frontadvert/loginform.advert.html', array(
+			'login_fail' => $login_fail,
 			'form_id' => $args['form_id'],
-			'action' => \esc_url( \site_url( 'wp-login.php', 'login_post' ) ),
+			'action' => \esc_url( site_url( 'wp-login.php', 'login_post' ) ), //$_SERVER[ 'REQUEST_URI' ]
 			'login_form_top' => $login_form_top,
 			'login_form_middle' => $login_form_middle,
 			'login_form_bottom' => $login_form_bottom,
@@ -87,7 +90,6 @@ class AdvertCode {
 			'redirect' => \esc_url( $args['redirect'] ),
 			
 			'register_link' => \get_permalink(\get_option( 'register_page_id' ))
-			
 			
 		));
 	}

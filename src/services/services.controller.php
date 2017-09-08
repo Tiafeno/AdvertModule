@@ -3,6 +3,7 @@ namespace advert\src\services;
 
 class ServicesController {
   public function __construct(){}
+    
   public function setThumbnail( $attachment_id, $post_id ) { // Action
     if (!\is_user_logged_in())
       return false;

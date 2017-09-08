@@ -8,23 +8,30 @@
         margin : 0 !important;
     }
 </style>
-<form name="{{form_id}}" id="{{form_id}}"
-      action="{{action}}" method="post" ng-app="LoginAdvertApp" ng-controller="LoginAdvertCtrl as lfc"
+
+<form name="{{form_id}}" id="{{form_id}}" action="{{action}}" method="post" ng-app="LoginAdvertApp" ng-controller="LoginAdvertCtrl as lfc"
         style="
-        width:59%;
+        width:80%;
         margin: auto;
-        -moz-box-shadow: 0px 0px 5px 0px #ddd;
-        -o-box-shadow: 0px 0px 5px 0px #ddd;
-        -webkit-box-shadow: 0px 0px 5px 0px #ddd;
-        box-shadow: 0px 0px 5px 0px #ddd;
         padding: 37px 10px 42px 10px;
         ">
     {{login_form_top}}
 
+    {% if login_fail is not null %}
+    <div layout-gt-sm="row" layout-align="center center">
+        <div class="uk-alert-warning" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <h3>Notice</h3>
+            <p> {{login_fail|raw}} </p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="uk-padding"></div>
+
     <div layout-gt-sm="row" layout-align="center center">
         <md-input-container class="md-block" flex="35" >
             <label>{{label_username}}</label>
-            <input ng-cust required type="text"   name="log" value="{{value_username}}" >
+            <input ng-cust required type="text" name="log" value="{{value_username}}" >
         </md-input-container>
     </div>
     <div layout-gt-sm="row" layout-align="center center">

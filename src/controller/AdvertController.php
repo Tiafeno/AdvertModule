@@ -7,6 +7,7 @@ abstract class AdvertController {
   public $advert_error;
 
   public function __construct() {
+    /* Create new services instance */
     $this->Services = new services\ServicesController();
   }
 

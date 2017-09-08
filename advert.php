@@ -12,47 +12,34 @@ final class _Advert extends AdvertController {
   public function __construct() {
     parent::__construct();
     // Action WP
-    \add_action('init', array( $this, '__init' ));
+    \add_action('init', array( &$this, 'wordpress_init' ));
     \add_action('widgets_init', function () {
       \register_widget( 'search_Widget' );
     });
     \add_action('admin_menu', function() {
-      \add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array($this, 'advert_admin_template'), 'dashicons-admin-settings');
+      \add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array(&$this, 'advert_admin_template'), 'dashicons-admin-settings');
     });
-    \add_action('wp_loaded', function () {
-      if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
-      \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&
-      \current_user_can('edit_post', $_POST[ 'post_id' ])) {
-        $this->_action_add_new_advert();
-      }
 
-      if (isset($_POST[ 'advert_settings_nonce' ]) && 
-      \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings')) {
-
-        $register_page_id = (int) $_POST[ 'register_page' ];
-        $addform_page_id = (int) $_POST[ 'addform_page'];
-
-        \update_option( 'register_page_id', $register_page_id );
-        \update_option( 'addform_page_id', $addform_page_id );
-      }
-
-    });
-    
+    \add_action('wp_loaded', [&$this, 'wordpress_loaded']);
     \add_action( 'admin_init', [&$this, 'admin_access'], 100 );
     \add_action( 'after_setup_theme', [&$this, 'remove_admin_bar']);
+    \add_action( 'wp_login_failed', [&$this, 'login_fail'] );  // hook failed login
 
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
     \add_shortcode('adverts', [ new shortcode\AdvertCode(),'get_adverts']);
     \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
+
+    /* create Model instance */
     $this->Model = new AdvertModel();
     
-    /* Activate and Uninstall Plugins */
+    /* Activate, Deactivate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'install'));
     \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'deactivate'));
     \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
   }
 
+  /** * action wordpress */
   public function admin_access() {
     $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : \home_url( '/' );
     if ( \is_admin() && !defined('DOING_AJAX') && \current_user_can('advertiser') ) {
@@ -66,7 +53,18 @@ final class _Advert extends AdvertController {
     }
    }
   
-  public function __init() {
+  public function login_fail() {
+    $referrer = $_SERVER[ 'HTTP_REFERER' ];  
+    // if there's a valid referrer, and it's not the default log-in screen
+    if ( !empty($referrer) && !strstr($referrer, 'wp-login') && !strstr($referrer, 'wp-admin') ) {
+        \wp_redirect( $referrer . '?login=failed' );  // let's append some information (login=failed) to the URL for the theme to use
+        exit;
+    }
+  }
+
+  /* end action */
+  
+  public function wordpress_init() {
     \add_action('wp_ajax_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
     
@@ -104,6 +102,35 @@ final class _Advert extends AdvertController {
       );
       
       return true;
+  }
+  
+  /*
+  * This function load on wordpress load action
+  * @function wordpress_loaded
+  * @return void
+  */
+  public function wordpress_loaded() {
+    if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
+    \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&
+    \current_user_can('edit_post', $_POST[ 'post_id' ])) {
+      $this->_action_add_new_advert();
+    }
+
+    if (isset($_POST[ 'advert_settings_nonce' ]) && 
+    \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings')) {
+
+      $register_page_id = (int) $_POST[ 'register_page' ];
+      $addform_page_id = (int) $_POST[ 'addform_page'];
+
+      \update_option( 'register_page_id', $register_page_id );
+      \update_option( 'addform_page_id', $addform_page_id );
+    }
+    if (isset($_GET[ 'login' ])) {
+      $value = trim($_GET[ 'login' ]);
+      if ($value != 'failed') return;
+      global $login_fail;
+      $login_fail = '<strong>ERROR</strong>: Invalid username or incorrect password.';
+    }
   }
   
   public function action_set_thumbnail_post() {
@@ -148,7 +175,16 @@ final class _Advert extends AdvertController {
     }
     die();
   }
-  
+
+  /**
+  * Update or set post a attachment thumbnail
+  *
+  * @function action_set_thumbnail_id
+  * This is a action $http function, action update or set a post an a thumbnail id 
+  *
+  * @param, void
+  * @return, JSON : with `type` value true or false. 0 if user isn't logged
+  **/
   public function action_set_thumbnail_id(){
     if (isset( $_REQUEST[ 'attachment_id' ] ) || isset( $_REQUEST[ 'post_id' ] )):
       $attachment_id = (int)$_REQUEST[ 'attachment_id' ];
@@ -165,10 +201,9 @@ final class _Advert extends AdvertController {
   * add form in front page.
   *
   * @function action_add_new_advert
-  * @param void
-  * @return json, type `false` and `true`, `0` if user isn't login or request post_id not send 
+  * @param, void
+  * @return, JSON with type `false`,`true` and `0` if user isn't logged or request post_id not send 
   **/
-    
   public function action_add_new_advert() {
     if (!isset( $_REQUEST[ 'post_id' ] )) return false;
     if (!\is_user_logged_in()) return false;
