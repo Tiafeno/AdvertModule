@@ -25,8 +25,7 @@ class AdvertCode {
 	}
 
 	public static function setUIKit() {
-		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
-
+		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.min.css', __FILE__), []);
 		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
 		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
@@ -63,7 +62,7 @@ class AdvertCode {
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
-		
+
 		namespace\AdvertCode::setUIKit();
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'login_fail' => $login_fail,
