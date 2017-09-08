@@ -54,7 +54,38 @@ class AdvertModel{
     } else{  return true;  }
   }
 
-  public static function install(){
+  private static function create_role() {
+    $result = \add_role(
+        'advertiser',
+        'Advertiser',
+        array(
+            'read'         => true,  // true allows this capability
+            'upload_files' => true,
+            'edit_posts'   => true,
+            'edit_users'   => true,
+            'manage_options' => true,
+            'remove_users' => true,
+            'edit_others_posts'   => true,
+            'delete_others_pages'   => true,
+            'delete_published_posts' => true,
+            'edit_others_posts' => true, // Allows user to edit others posts not just their own
+            'create_posts' => true, // Allows user to create new posts
+            'manage_categories' => true, // Allows user to manage post categories
+            'publish_posts' => true, // Allows the user to publish, otherwise posts stays in draft mode
+            'edit_themes' => false, // false denies this capability. User can’t edit your theme
+            'install_plugins' => false, // User cant add new plugins
+            'update_plugin' => false, // User can’t update any plugins
+            'update_core' => false // user cant perform core updatesy
+        )
+    );
+    return (null != $result) ? true : false;
+  }
+
+  public static function deactivate() {
+    \remove_role('advertiser');
+  }
+
+  public static function install() {
     global $wpdb;
     $wpdb->query("CREATE TABLE IF NOT EXISTS {$wpdb->prefix}advert_user" .
         "( id_advert_user BIGINT(20) UNSIGNED PRIMARY KEY, " .
@@ -75,6 +106,7 @@ class AdvertModel{
         "ON DELETE CASCADE ON UPDATE NO ACTION;");
     
     namespace\AdvertModel::setProductCat();
+    namespace\AdvertModel::create_role();
   }
 
   public static function uninstall(){

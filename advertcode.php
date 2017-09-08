@@ -9,6 +9,7 @@ class AdvertCode {
 	}
 	
 	private static function setEnqueue(){
+		\wp_enqueue_style( 'dashicons' );
 		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.js', __FILE__), array('angular'));
@@ -24,7 +25,6 @@ class AdvertCode {
 	}
 
 	public static function setUIKit() {
-		// pass
 		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
 
 		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
@@ -63,7 +63,6 @@ class AdvertCode {
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
 
-		
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'form_id' => $args['form_id'],
 			'action' => \esc_url( \site_url( 'wp-login.php', 'login_post' ) ),
@@ -135,8 +134,8 @@ class AdvertCode {
 			'orderby' => $attributs[ 'orderBy' ]
 		];
 		$adverts = new \WP_Query( $args );
-		if ($adverts->have_posts()){
-			while($adverts->have_posts()): $adverts->the_post();
+		if ($adverts->have_posts()) {
+			while ($adverts->have_posts()) : $adverts->the_post();
 				array_push($thumbnails, [
 					'post_id' => $adverts->post->ID,
 					'thumbnail_url' => \get_the_post_thumbnail_url( $adverts->post->ID,  'full' )
@@ -146,19 +145,19 @@ class AdvertCode {
 					'post_title' => $adverts->post->post_title,
 					'post_date' => $adverts->post->post_date,
 					'post_excerpt' => $adverts->post->post_content,
-					'price' => \get_post_meta( $adverts->post->ID, '_price'),
+					'price' => \get_post_meta( $adverts->post->ID, '_price', true),
 					/* @return false or array (WP_Term) */
 					'categorie' => \get_the_terms( $adverts->post->ID, 'product_cat' )[ 0 ],
 					/* --- */
-					'adress' => \get_post_meta( $adverts->post->ID, '_product_advert_adress'),
-					'state' => \get_post_meta( $adverts->post->ID, '_product_advert_state')
+					'adress' => \get_post_meta( $adverts->post->ID, '_product_advert_adress', true),
+					'state' => \get_post_meta( $adverts->post->ID, '_product_advert_state', true)
 				]);
 			endwhile;
 		}
 		
 		if ($adverts->have_posts()) {
 			global $twig;
-			if (is_null( $twig )){
+			if (is_null( $twig )) {
 				return 'Active or install Template Engine TWIG';
 			}
 			namespace\AdvertCode::setEnqueue();
@@ -169,7 +168,8 @@ class AdvertCode {
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
 			\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
 			\wp_localize_script( 'advert-route', 'jsRoute', [
-				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ )
+				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
+				'ajax_url' => \admin_url( 'admin-ajax.php' )
 			] );
 
 			\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), ['advert', 'advert-route'] );
@@ -178,6 +178,7 @@ class AdvertCode {
 				'thumbnails' => $thumbnails,
 				'posts' => $posts
 			] );
+			
 			/* create filter twig */
 			$get_post_thumbnail = new \Twig_SimpleFilter('get_full_post_thumbnail', function( $id ) {
 				return \get_the_post_thumbnail_url( $id, 'full' );
@@ -279,14 +280,14 @@ class AdvertCode {
 		$AdvertSchema = json_decode( $Schema );
 
 		\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
-		
 		\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), array('advert'));
+
 		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
 		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
 		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform.js', __FILE__), array( 'angular' ));
 		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform.directive.js', __FILE__), ['AddFormapp'] );
 		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform.factory.js', __FILE__), ['AddFormapp'] );
-		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform.controller.js', __FILE__), ['AddFormapp'] );
+		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform.controller.js', __FILE__), ['AddFormapp', 'addform-directive', 'addform-factory'] );
 		\wp_localize_script( 'AddFormapp', 'advert', array(
 			'ajax_url' => \admin_url( 'admin-ajax.php' ),
 			'post_id' => $post_id,

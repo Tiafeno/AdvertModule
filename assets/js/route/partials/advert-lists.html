@@ -6,7 +6,7 @@
       <header class="uk-comment-header " uk-grid>
         <div class="uk-width-1-4">
           <div class="advert-thumbnail-color" > 
-            <div class="advert-thumbnail" style="background: url([[ post.ID | thumbnail_url ]])">
+            <div class="advert-thumbnail" style="background: url([[post.ID | thumbnail_url]])">
             </div>
           </div>
         </div>
@@ -14,7 +14,7 @@
           <h4 class="uk-comment-title uk-margin-remove"><a class="uk-link-reset" ng-href="#/advert/[[ post.ID ]]">[[ post.post_title ]]</a></h4>
           <ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-remove-top">
             <li><a href="#">[[ post.categorie.name ]]</a></li>
-            <li><a href="#">[[ post.adress[0] ]]</a></li>
+            <li><a href="#">[[ post.adress ]]</a></li>
           </ul>
           <p ng-bind-html="[[ post.post_excerpt ]]" class="uk-margin-remove" style="font-weight: 300"></p>
           <h4 class="uk-h4 uk-margin-remove-top  uk-comment-title">[[ post.price | currency ]] Ar</h4>

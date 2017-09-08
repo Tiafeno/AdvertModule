@@ -69,8 +69,8 @@ app.controller('AdvertFormAddCtrl', function (
   });
 
   $scope.optionalInput = {};
+  /* e.g [{ file: '...', id: 'attachment id...'}] */
   $scope.thumbnailGalleryIDs = [];
-  $scope.thumbnailID = null;
   $scope.showHints = true;
   $scope.picProgress = false;
   $scope.imagePath = advert.assets_plugins_url + 'img/washedout.png';
@@ -121,21 +121,19 @@ app.controller('AdvertFormAddCtrl', function (
     angular.forEach(files, function (value, key) {
       formdata.append('file', value);
     });
+    formdata.append('action', "action_set_thumbnail_post");
+    formdata.append('post_id', advert.post_id);
+    formdata.append('thumbnail_upload_nonce', angular.element('#thumbnail_upload_nonce').val());
     $scope.picProgress = true;
     $http({
       url: advert.ajax_url,
       method: "POST",
       headers: { 'Content-Type': undefined },
-      data: formdata,
-      params: {
-        action: "action_set_thumbnail_post",
-        post_id: advert.post_id,
-        thumbnail_upload_nonce: angular.element('#thumbnail_upload_nonce').val()
-      }
+      data: formdata
     }).success(function (resp) {
-      if (resp.type === 'success')
+      if (resp.type)
         $scope.thumbnailGalleryIDs.push({ file: resp.url, id: resp.attach_id });
-      if (resp.type === 'error')
+      if (!resp.type)
         $log.debug(resp.data);
 
       $scope.picProgress = false;
@@ -167,9 +165,9 @@ app.controller('AdvertFormAddCtrl', function (
     advertdata.append('adress', $scope.advertPost.adress);
     advertdata.append('phone', $scope.advertPost.phone);
     advertdata.append('hidephone', $scope.advertPost.hidephone);
-    advertdata.append('gallery', JSON.stringify(Gallery));
+    advertdata.append('gallery', JSON.stringify( Gallery ));
     advertdata.append('categorie', $scope.advertPost.categorie);
-    advertdata.append('attributs', angular.toJson(attrs));
+    advertdata.append('attributs', angular.toJson( attrs ));
     advertdata.append('action', "action_add_new_advert");
     advertdata.append('post_id', advert.post_id);
 
@@ -203,8 +201,10 @@ app.controller('AdvertFormAddCtrl', function (
         post_id: advert.post_id
       }
     }).success(function (resp) {
-      angular.element(".advert-pic").removeClass('active');
-      angular.element("#" + thumb_id).addClass('active');
+      if (resp.type) {
+        angular.element(".advert-pic").removeClass( 'active' );
+        angular.element("#" + thumb_id).addClass( 'active' );
+      } else { console.warn( resp ); }
       $scope.picProgress = false;
     }).error(function () {
       $scope.picProgress = false;
@@ -222,7 +222,7 @@ app.controller('AdvertFormAddCtrl', function (
 
       factoryServices.httpPostFormdata( delete_formdata )
         .success(function( results ){
-          if (parseInt(results) === 0) return;
+          if (!results.type) { console.warn(results.data); return $scope.picProgress = false; }
           var galleries = _.reject( $scope.thumbnailGalleryIDs, function( gallery ){
             return gallery.id == results.ID;
           });
@@ -234,12 +234,16 @@ app.controller('AdvertFormAddCtrl', function (
   };
 
   this.Initialise = function () {
+    /* Get all category product term */
     factoryServices.getTermsProductCategory().then(function (results) {
       results.data.forEach(function (el) {
         if (el.term_id == 1 || el.slug == 'all') return false;
         $scope.product_cat.push( el );
       });
     }).catch(function () { console.warn('Terms products error') });
+
+    /* Get current post gallery and thumbnail */
+
   };
 
   this.Initialise();

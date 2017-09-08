@@ -37,16 +37,34 @@ final class _Advert extends AdvertController {
       }
 
     });
+    
+    \add_action( 'admin_init', [&$this, 'admin_access'], 100 );
+    \add_action( 'after_setup_theme', [&$this, 'remove_admin_bar']);
+
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
     \add_shortcode('adverts', [ new shortcode\AdvertCode(),'get_adverts']);
     \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
     $this->Model = new AdvertModel();
-
+    
     /* Activate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'install'));
+    \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'deactivate'));
     \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
   }
+
+  public function admin_access() {
+    $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : \home_url( '/' );
+    if ( \is_admin() && !defined('DOING_AJAX') && \current_user_can('advertiser') ) {
+      exit( \wp_redirect( $redirect ) );
+    }
+  }
+
+  public function remove_admin_bar( ) {
+    if (!\current_user_can( 'administrator' ) && !is_admin()) {
+      \show_admin_bar( false );
+    }
+   }
   
   public function __init() {
     \add_action('wp_ajax_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
@@ -71,8 +89,8 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_getParentsTermsCat', array($this, 'getParentsTermsCat'));
     \add_action('wp_ajax_nopriv_getParentsTermsCat', array($this, 'getParentsTermsCat'));
 
-    \add_action('wp_ajax_controller_getProduct', array($this, 'controller_getProduct'));
-    \add_action('wp_ajax_nopriv_controller_getProduct', array($this, 'controller_getProduct'));
+    \add_action('wp_ajax_action_get_advertdetails', array($this, 'action_get_advertdetails'));
+    \add_action('wp_ajax_nopriv_action_get_advertdetails', array($this, 'action_get_advertdetails'));
     
     \register_taxonomy(
       'district',
@@ -89,9 +107,20 @@ final class _Advert extends AdvertController {
   }
   
   public function action_set_thumbnail_post() {
-    if (isset($_REQUEST[ 'thumbnail_upload_nonce' ], $_REQUEST[ 'post_id' ]) &&
-    \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') &&
-    \current_user_can('edit_post', $_REQUEST[ 'post_id' ])
+    $User = null;
+    if (isset($_REQUEST[ 'post_id'])) {
+      $user_id = (int) $_REQUEST[ 'post_id' ];
+      $User = new \WP_User( $user_id );
+    } else {
+      \wp_send_json(array(
+          'data' => 'Variable post_is don\'t define on $http.', 
+          'tracking' => null, 
+          'type' =>  false
+        )
+      );
+    }
+    if (isset($_REQUEST[ 'thumbnail_upload_nonce' ]) &&
+      \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') 
     ) {
       if (!is_int( (int)$_REQUEST[ 'post_id' ])) return;
       require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -99,21 +128,21 @@ final class _Advert extends AdvertController {
       require_once( ABSPATH . 'wp-admin/includes/media.php' );
       $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
       if (\is_wp_error( $attachment_id )) {
-        \wp_send_json(array('data' => 'There was an error uploading the image.', 'tracking' => null, 'type' => 'error'));
+        \wp_send_json(array('data' => 'There was an error uploading the image.', 'tracking' => $attachment_id->get_error_messages(), 'type' => false));
       } else {
         \update_post_meta((int)$_REQUEST[ 'post_id' ], '_thumbnail_id', $attachment_id);
         \wp_send_json(array(
           'data' => 'The image was uploaded successfully!',
           'attach_id' => $attachment_id,
           'url' => \wp_get_attachment_image_src($attachment_id, array(250, 250))[ 0 ],
-          'type' => 'success')
+          'type' => true)
         );
       }
     } else {
       \wp_send_json(array(
           'data' => 'The security check failed, maybe show the user an error.', 
-          'tracking' => null, 
-          'type' => 'error'
+          'tracking' => ['capabilities' => $User], 
+          'type' => false
         )
       );
     }
@@ -125,8 +154,7 @@ final class _Advert extends AdvertController {
       $attachment_id = (int)$_REQUEST[ 'attachment_id' ];
       $post_id = (int)$_REQUEST[ 'post_id' ];
       if (!is_int( $post_id )) return false;
-      
-      $this->Services->setThumbnailbyRequestPostId($attachment_id, $post_id);
+      $this->Services->setThumbnail($attachment_id, $post_id);
     endif;
   }
 
@@ -179,10 +207,10 @@ final class _Advert extends AdvertController {
     $desc = \apply_filters('the_content', $_POST[ 'description' ]);
     
     $form = new \stdClass();
-    $form->state  = $this->req('state');
-    $form->adress = $this->req('adress');
-    $form->phone  = $this->req('phone');
-    $form->hidephone = $this->req('hidephone', 0);
+    $form->state  = $this->req( 'state' );
+    $form->adress = $this->req( 'adress' );
+    $form->phone  = $this->req( 'phone' );
+    $form->hidephone = $this->req( 'hidephone', 0 );
     $form->post_id = $post_id;
 
     /**
@@ -276,14 +304,21 @@ final class _Advert extends AdvertController {
     if (isset( $_REQUEST[ 'lastname' ], $_REQUEST[ 'firstname' ] )) {
       if (!$user_id && \email_exists( $_REQUEST[ 'email' ] ) == false ) {
         if (isset( $_REQUEST[ 'password' ] ) && !empty($_REQUEST['password'])) {
-          $user = \wp_create_user( \sanitize_title( trim($_REQUEST[ 'lastname' ]) ), $_REQUEST[ 'password' ], trim($_REQUEST[ 'email' ]) );
-          if (!\is_wp_error($user)){
-            $user_id = &$user; 
+          /* @return id user */
+          $user_id = \wp_create_user( \sanitize_title( trim($_REQUEST[ 'lastname' ]) ), $_REQUEST[ 'password' ], trim($_REQUEST[ 'email' ]) );
+          if (!\is_wp_error($user_id)){
             /* Register success */
             $update_usr = \wp_update_user([
               'ID' => $user_id,
-              'role' => 'subscriber'
+              'role' => 'advertiser'
             ]);
+            $User = new \WP_User( $user_id );
+            $User->add_cap('upload_files');
+            // $User->add_cap('delete_published_posts');
+            // $User->add_cap('edit_others_posts');
+            // $User->add_cap('edit_posts');
+            // $User->add_cap('delete_others_pages');
+
             if (!is_int($update_usr)) \wp_send_json(['Error on update user role, probably that user doesn\'t exist.']);
             $addform_page_id = \get_option( 'addform_page_id', false );
             $verify = $addform_page_id == false || !is_int( (int)$addform_page_id );
@@ -332,16 +367,32 @@ final class _Advert extends AdvertController {
       return false;
 
     $post_id = (int)trim($_REQUEST[ 'id' ]);
-    $post_type = ( isset($_REQUEST['post_type']) && !empty(trim($_REQUEST['post_type'])) ) ? trim($_REQUEST['post_type']) : 'attachement';
+    $post_type = ( isset($_REQUEST['post_type']) && !empty(trim($_REQUEST['post_type'])) ) ? trim($_REQUEST['post_type']) : 'attachment';
     $args = [
       'p' => $post_id,
       'post_type' => $post_type
     ];
     $attachment = new \WP_Query( $args );
     if ($attachment->have_posts()) {
-      \wp_send_json( \wp_delete_attachment( $post_id ) );
+      $results = \wp_delete_attachment( $post_id );
+      if ($results) {
+        \wp_send_json( [
+          'type' => true,
+          'data' => 'Attachment delete with success',
+          'ID' => $post_id
+        ] );
+      } else {
+        \wp_send_json([
+          'type' => false,
+          'data' => 'Error on delete Attachment'
+        ]);
+      }
+        
     } else {
-      \wp_send_json( $attachment );
+      \wp_send_json( [
+        'type' => false,
+        'data' => 'Attachment doesn\'t exist'
+      ] );
     }
       
     

@@ -2,9 +2,9 @@
 namespace advert;
 /*
 Plugin Name: WP AdVert
-Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
-Description: --------.
-Version: 2.2
+Plugin URI: https://github.com/Tiafeno/AdvertModule
+Description: WP AdVert plugins, It is a module to make announcements of products to sell...
+Version: 3.0
 Author: Tiafeno Finel
 Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2

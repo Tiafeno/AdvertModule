@@ -16,7 +16,6 @@ advert
   })
   .filter('currency', function() {
     return function( input ) {
-      var currency = 'Ar';
       if (isNaN(input)) {
         return input;
       } else {
