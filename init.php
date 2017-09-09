@@ -4,7 +4,7 @@ namespace advert;
 Plugin Name: WP AdVert
 Plugin URI: https://github.com/Tiafeno/AdvertModule
 Description: WP AdVert plugins, It is a module to make announcements of products to sell...
-Version: 3.0.2
+Version: 3.1.0
 Author: Tiafeno Finel
 Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2

@@ -10,45 +10,40 @@
 </style>
 
 <form name="{{form_id}}" id="{{form_id}}" action="{{action}}" method="post" ng-app="LoginAdvertApp" ng-controller="LoginAdvertCtrl as lfc"
-        style="
-        width:80%;
-        margin: auto;
-        padding: 37px 10px 42px 10px;
-        ">
+        style="width:80%; margin: auto; padding: 37px 10px 42px 10px;">
     {{login_form_top}}
 
     {% if login_fail is not null %}
     <div layout-gt-sm="row" layout-align="center center">
         <div class="uk-alert-warning" uk-alert>
             <a class="uk-alert-close" uk-close></a>
-            <h3>Notice</h3>
+            <h3></h3>
             <p> {{login_fail|raw}} </p>
         </div>
     </div>
     {% endif %}
     <div class="uk-padding"></div>
 
-    <div layout-gt-sm="row" layout-align="center center">
-        <md-input-container class="md-block" flex="35" >
+    <div layout="column" layout-align="center center">
+        <md-input-container class="md-block" flex="50" >
             <label>{{label_username}}</label>
             <input ng-cust required type="text" name="log" value="{{value_username}}" >
         </md-input-container>
     </div>
-    <div layout-gt-sm="row" layout-align="center center">
-        <md-input-container class="md-block" flex="35" >
+    <div layout="column" layout-align="center center">
+        <md-input-container class="md-block" flex="50" >
             <label>{{label_password}}</label>
             <input ng-cust required  type="password"  name="pwd" value="">
         </md-input-container>
     </div>
     {{login_form_middle}}
     {% if remember %}
-        <div layout-gt-sm="row" layout-align="center center">
+        <div layout="column" layout-align="center center">
             <md-input-container class="md-block">
                 <md-checkbox name="rememberme" value="forever" {%if value_remember %} ng-checked="true" {% endif %} />
                 {{label_remember}}
                 </md-checkbox>
             </md-input-container>
-
         </div>
     {% endif %}
     <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
@@ -56,7 +51,7 @@
         <input type="hidden" name="redirect_to" value="{{redirect}}" />
 
     </section>
-    <div layout-gt-sm="row" layout-align="center center">
+    <div layout="row" layout-align="center center">
         <span style="display: block;">Vous n'avez pas de compte?</span>
         <md-button style="display: block" class="md-primary" ng-href="{{register_link}}">Crée un compte</md-button>
     </div>

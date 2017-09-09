@@ -23,6 +23,31 @@ class ServicesController {
     }
   }
 
+  public static function getPost( $post_id ) {
+    $posts = \get_post( (int)$post_id );
+    if (!is_null($posts)) {
+      $results = new \stdClass();
+      $results->ID = (int)$post_id;
+      $results->post_content = $posts->post_content;
+      $results->post_title = $posts->post_title;
+
+      $results->gallery = \get_post_meta( $posts->ID, '_product_image_gallery', true );
+      $results->categorie = \get_the_terms( $posts->ID, 'product_cat'); // Array of WP_term or false
+
+      $results->state = \get_post_meta( $posts->ID, '_product_advert_state', true );
+      $results->adress = \get_post_meta( $posts->ID, '_product_advert_adress', true );
+      $results->phone = \get_post_meta( $posts->ID, '_product_advert_phone', true); 
+      $results->hidephone = \get_post_meta( $posts->ID, '_product_advert_hidephone', true );
+      $results->gallery = \get_post_meta( $posts->ID, '_product_image_gallery', true);
+      $results->thumbnail = \get_post_meta( $posts->ID, '_thumbnail_id', true);
+      $results->price = \get_post_meta( $posts->ID, '_price', true);
+
+      return $results;
+    } else {
+      return null;
+    }
+  }
+
   public function getSchemaAdvert(){
     return file_get_contents( \plugin_dir_path(__FILE__)."schema/advert.json");
   }

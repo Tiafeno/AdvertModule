@@ -12,9 +12,9 @@ class AdvertCode {
 		\wp_enqueue_style( 'dashicons' );
 		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
-		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.js', __FILE__), array('angular'));
+		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
+		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
+		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
 		
 	}
@@ -31,10 +31,18 @@ class AdvertCode {
 	}
 
 	/**
+	* [myaccount_advert]
+	**/
+	public static function RenderMyAccount() {
+		global $twig;
+
+	}
+
+	/**
 	* [login_advert]
 	**/
 
-	public static function getLoginForm(){
+	public static function RenderLoginForm(){
 		global $twig, $login_fail;
 
 		$args = [];
@@ -61,7 +69,7 @@ class AdvertCode {
 		$login_form_middle = \apply_filters( 'login_form_middle', '', $args );
 		$login_form_bottom = \apply_filters( 'login_form_bottom', '', $args );
 		
-		\wp_enqueue_script('LoginAdvertCtrl', \plugins_url('/assets/js/login.advert.js', __FILE__), array('angular'));
+		\wp_enqueue_script('LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
@@ -104,11 +112,11 @@ class AdvertCode {
   * Get all adverts list content
   * This is a function shortcode, get all product post type
   *
-  * @function get_adverts
+  * @function RenderAdvertsLists
   * @param $attrs, $content
   * @return wp_send_json (json)
   **/
-  public static function get_adverts($attrs, $content = null) {
+  public static function RenderAdvertsLists($attrs, $content = null) {
 		$attributs = \shortcode_atts(array(
 			'orderBy' => 'date',
 			'order' => 'DESC'
@@ -170,9 +178,9 @@ class AdvertCode {
 			namespace\AdvertCode::setEnqueue();
 			namespace\AdvertCode::setUIKit();
 
-			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.js', __FILE__), ['angular'] );
-			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
-			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert.filter.js', __FILE__), ['advert'] );
+			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
+			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
+			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );
 			\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
 			\wp_localize_script( 'advert-route', 'jsRoute', [
 				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
@@ -180,7 +188,7 @@ class AdvertCode {
 			] );
 
 			\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), ['advert', 'advert-route'] );
-			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
+			\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
 			\wp_localize_script( 'advert-controller', 'adverts', [
 				'thumbnails' => $thumbnails,
 				'posts' => $posts
@@ -215,9 +223,9 @@ class AdvertCode {
 		namespace\AdvertCode::setEnqueue();
 		namespace\AdvertCode::setAngularMaterial();
 
-		\wp_enqueue_script('Register', \plugins_url('/assets/js/register.js', __FILE__), array('angular'));
-		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register.factory.js', __FILE__), array('angular'));
-		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register.advert.js', __FILE__), array('angular'));
+		\wp_enqueue_script('Register', \plugins_url('/assets/js/register/register.js', __FILE__), array('angular'));
+		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register/register.factory.js', __FILE__), array('angular'));
+		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register/register.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertRegisterCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
@@ -242,7 +250,7 @@ class AdvertCode {
 		namespace\AdvertCode::setAngularMaterial();
 		
 		if (!\is_user_logged_in()) {
-			return self::getLoginForm();
+			return self::RenderLoginForm();
 		}
 		
 		$current_user = \wp_get_current_user();
@@ -293,10 +301,10 @@ class AdvertCode {
 
 		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
 		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
-		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform.js', __FILE__), array( 'angular' ));
-		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform.directive.js', __FILE__), ['AddFormapp'] );
-		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform.factory.js', __FILE__), ['AddFormapp'] );
-		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform.controller.js', __FILE__), ['AddFormapp', 'addform-directive', 'addform-factory'] );
+		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform/addform.js', __FILE__), array( 'angular' ));
+		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform/addform.directive.js', __FILE__), ['AddFormapp'] );
+		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform/addform.factory.js', __FILE__), ['AddFormapp'] );
+		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform/addform.controller.js', __FILE__), ['AddFormapp', 'addform-directive', 'addform-factory'] );
 		\wp_localize_script( 'AddFormapp', 'advert', array(
 			'ajax_url' => \admin_url( 'admin-ajax.php' ),
 			'post_id' => $post_id,

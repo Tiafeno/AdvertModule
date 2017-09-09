@@ -20,7 +20,6 @@ abstract class AdvertController {
     foreach ( $parent_terms as $pterm ) {
       $ctgs[] = $pterm;
     }
-
     \wp_send_json($ctgs);
   }
 
@@ -44,23 +43,15 @@ abstract class AdvertController {
   public function action_get_advertdetails() {
     if (!isset( $_REQUEST[ 'post_id' ])) return;
     $post_id = (int) $_REQUEST[ 'post_id' ];
-    $posts = \get_post( $post_id );
-    $results = new \stdClass();
+    $posts = services\ServicesController::getPost( $post_id );
+
     if (!is_null($posts)) {
-      $results->ID = $posts->ID;
-      $results->post_content = $posts->post_content;
-      $results->post_title = $posts->post_title;
-
-      $results->gallery = \get_post_meta( $posts->ID, '_product_image_gallery', true );
-      $results->categorie = \get_the_terms( $posts->ID, 'product_cat'); // Array of WP_term or false
-
-      $results->state = \get_post_meta( $posts->ID, '_product_advert_state', true );
-      $results->adress = \get_post_meta( $posts->ID, '_product_advert_adress', true );
-      $results->phone = \get_post_meta( $posts->ID, '_product_advert_phone', true); 
-      $results->hidephone = \get_post_meta( $posts->ID, '_product_advert_hidephone', true );
-
-      \wp_send_json( [ 'type' => true, 'data' => $results ]);
+      \wp_send_json( [ 'type' => true, 'data' => $posts ]);
     } else \wp_send_json([ 'type' => false, 'tracking' =>  null, 'data' => 'get post content is null']);
+
+  }
+
+  private function get_posts_meta() {
 
   }
 }

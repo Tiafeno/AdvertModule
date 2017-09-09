@@ -42,12 +42,13 @@ routeAdvert.controller('AdvertDetails', function( $scope, factoryServices, $rout
   $scope.product_id = parseInt( $routeParams.id );
   $scope.product_details = {};
   if (!isNaN($scope.product_id)) {
-    factoryServices.getAdvertDetails( $scope.post_id )
-    .then(function( results ){
-      if (results.type) {
-        console.log(results.data);
-      }
-    })
-    .catch(function() {});
+    factoryServices.getAdvertDetails( $scope.product_id )
+      .then(function( results ){
+        var details = results.data;
+        if (details.type) {
+          $scope.product_details = details.data;
+        }
+      })
+      .catch(function() {});
   }
 });

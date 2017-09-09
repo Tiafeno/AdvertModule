@@ -11,6 +11,7 @@ final class _Advert extends AdvertController {
   
   public function __construct() {
     parent::__construct();
+
     // Action WP
     \add_action('init', array( &$this, 'wordpress_init' ));
     \add_action('widgets_init', function () {
@@ -20,16 +21,16 @@ final class _Advert extends AdvertController {
       \add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array(&$this, 'advert_admin_template'), 'dashicons-admin-settings');
     });
 
-    \add_action('wp_loaded', [&$this, 'wordpress_loaded']);
-    \add_action( 'admin_init', [&$this, 'admin_access'], 100 );
-    \add_action( 'after_setup_theme', [&$this, 'remove_admin_bar']);
-    \add_action( 'wp_login_failed', [&$this, 'login_fail'] );  // hook failed login
+    \add_action('wp_loaded', [ &$this, 'wordpress_loaded' ]);
+    \add_action( 'admin_init', [ &$this, 'admin_access' ], 100 );
+    \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
+    \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  // hook failed login
 
     // Shortcode WP
-    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm']);
-    \add_shortcode('adverts', [ new shortcode\AdvertCode(),'get_adverts']);
-    \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'getLoginForm']);
-    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm']);
+    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
+    \add_shortcode('adverts', [ new shortcode\AdvertCode(),'RenderAdvertsLists' ]);
+    \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'RenderLoginForm' ]);
+    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm' ]);
 
     /* create Model instance */
     $this->Model = new AdvertModel();
@@ -40,30 +41,28 @@ final class _Advert extends AdvertController {
     \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
   }
 
-  /** * action wordpress */
+  /** * Begin action */
   public function admin_access() {
-    $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : \home_url( '/' );
-    if ( \is_admin() && !defined('DOING_AJAX') && \current_user_can('advertiser') ) {
-      exit( \wp_redirect( $redirect ) );
+    $redirect = isset( $_SERVER[ 'HTTP_REFERER' ] ) ? $_SERVER[ 'HTTP_REFERER' ] : \home_url( '/' );
+    if ( \is_admin() && !defined( 'DOING_AJAX' ) && \current_user_can( 'advertiser' ) ) {
+      exit( \wp_redirect( $redirect, 301 ) );
     }
   }
 
-  public function remove_admin_bar( ) {
+  public function remove_admin_bar() {
     if (!\current_user_can( 'administrator' ) && !is_admin()) {
       \show_admin_bar( false );
     }
-   }
+  }
   
   public function login_fail() {
     $referrer = $_SERVER[ 'HTTP_REFERER' ];  
     // if there's a valid referrer, and it's not the default log-in screen
     if ( !empty($referrer) && !strstr($referrer, 'wp-login') && !strstr($referrer, 'wp-admin') ) {
-        \wp_redirect( $referrer . '?login=failed' );  // let's append some information (login=failed) to the URL for the theme to use
-        exit;
+        exit(\wp_redirect( $referrer . '?login=failed', 301 ));  // let's append some information (login=failed) to the URL for the theme to use
     }
   }
-
-  /* end action */
+  /** * End action */
   
   public function wordpress_init() {
     \add_action('wp_ajax_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
@@ -122,8 +121,8 @@ final class _Advert extends AdvertController {
     is_admin() ) {
 
       $register_page_id = (int) $_POST[ 'register_page' ];
-      $addform_page_id = (int) $_POST[ 'addform_page'];
-      $login_page_id = (int) $_POST[ 'login_page'];
+      $addform_page_id = (int) $_POST[ 'addform_page' ];
+      $login_page_id = (int) $_POST[ 'login_page' ];
 
       \update_option( 'register_page_id', $register_page_id );
       \update_option( 'addform_page_id', $addform_page_id );
@@ -134,7 +133,7 @@ final class _Advert extends AdvertController {
       $value = trim($_GET[ 'login' ]);
       if ($value != 'failed') return;
       global $login_fail;
-      $login_fail = '<strong>ERROR</strong>: Invalid username or incorrect password.';
+      $login_fail = 'Invalid username or incorrect password.';
     }
   }
   

@@ -65,6 +65,9 @@
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Ville ou code postal *</label>
                     <input ng-cust required name="postal_code" ng-model="register.postal_code">
+                    <div ng-messages="RegisterForm.postal_code.$error">
+                            <div ng-message="required">Veuillez insérer le nom de votre ville ou son code postal.</div>
+                        </div>
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
@@ -76,7 +79,9 @@
                 </md-input-container>
             </div>
             <md-list flex="50">
-                <md-subheader class="md-no-sticky" style="font-size: large; font-weight: bold; color:orange">Votre email et mot de passe</md-subheader>
+                <md-subheader class="md-no-sticky" style="font-size: large; font-weight: bold; color:orange">
+                    Votre email et mot de passe
+                </md-subheader>
                 <md-divider></md-divider>
             </md-list>
 
