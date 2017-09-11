@@ -84,6 +84,9 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
     \add_action('wp_ajax_nopriv_getTermsProductCategory', array($this, 'getTermsProductCategory'));
 
+    \add_action('wp_ajax_action_get_vendors', array($this, 'action_get_vendors'));
+    \add_action('wp_ajax_nopriv_action_get_vendors', array($this, 'action_get_vendors'));
+
     \add_action('wp_ajax_getParentsTermsCat', array($this, 'getParentsTermsCat'));
     \add_action('wp_ajax_nopriv_getParentsTermsCat', array($this, 'getParentsTermsCat'));
 

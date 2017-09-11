@@ -181,6 +181,7 @@ class AdvertCode {
 			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
 			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );
+			\wp_enqueue_script( 'advert-factory', \plugins_url('/assets/js/advert/advert.factory.js', __FILE__), ['advert'] );
 			\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
 			\wp_localize_script( 'advert-route', 'jsRoute', [
 				'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
@@ -225,7 +226,7 @@ class AdvertCode {
 
 		\wp_enqueue_script('Register', \plugins_url('/assets/js/register/register.js', __FILE__), array('angular'));
 		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register/register.factory.js', __FILE__), array('angular'));
-		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register/register.advert.js', __FILE__), array('angular'));
+		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register/register.controller.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertRegisterCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)

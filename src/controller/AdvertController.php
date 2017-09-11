@@ -48,10 +48,11 @@ abstract class AdvertController {
     if (!is_null($posts)) {
       \wp_send_json( [ 'type' => true, 'data' => $posts ]);
     } else \wp_send_json([ 'type' => false, 'tracking' =>  null, 'data' => 'get post content is null']);
-
   }
 
-  private function get_posts_meta() {
-
+  public function action_get_vendors() {
+    $vendors = services\ServicesController::getVendor();
+    \wp_send_json( $vendors );
   }
+
 }

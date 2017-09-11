@@ -47,6 +47,7 @@ routeAdvert.controller('AdvertDetails', function( $scope, factoryServices, $rout
         var details = results.data;
         if (details.type) {
           $scope.product_details = details.data;
+          console.log( details );
         }
       })
       .catch(function() {});
