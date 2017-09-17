@@ -138,7 +138,7 @@
                         </script>
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
-                            <input ng-cust type="text" class="datepicker_{{ vendor.validate }}" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
+                            <input ng-cust type="text" class="datepicker_{{ vendor.validate }} datepicker" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
                             ng-model="advertPost.attributs.{{ vendor.validate }}" data-language='fr' data-position='bottom left' 
                             {% for option in vendor.datepicker %} {{ option.key }}="{{ option.value }}" {% endfor %} >
                         </md-input-container>

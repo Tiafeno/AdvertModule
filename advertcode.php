@@ -269,25 +269,37 @@ class AdvertCode {
 		$post_id = null;
 		if ($Pending->have_posts()){
 			while ($Pending->have_posts()): $Pending->the_post();
-				$post_id = $Pending->post->ID;
+				$postid = $Pending->post->ID;
+				$gallery_ids = \get_post_meta( $postid, '_product_image_gallery', true );
+				$thumbnail_id = \get_post_meta( $postid, '_thumbnail_id', true );
+				if (!empty($gallery_ids)) {
+					$gallery = explode(',', $gallery_ids);
+					while (list(, $id) = each( $gallery )) {
+						\wp_delete_attachment( (int)$id, true );
+					}
+				}
+				if (!empty( $thumbnail_id )) {
+					\wp_delete_attachment( (int)$thumbnail_id, true );
+				}
+				
+				\wp_delete_post( $postid, true );
 				break;
 			endwhile;
-		} else {
-			/*
-			* $current_user->ID
-			* $current_user->user_login
-			* $current_user->user_email
-			*/
-			$post_id = wp_insert_post(array(
-				'post_author' => $current_user->user_login,
-				'post_title' => \wp_strip_all_tags(md5( date( 'Y-m-d H:i:s' ) ) . ' - ' . $current_user->user_login),
-				'post_date' => date( 'Y-m-d H:i:s' ),
-				'post_content' => '',
-				'post_status' => 'pending', /* https://codex.wordpress.org/Post_Status */
-				'post_parent' => '',
-				'post_type' => "product",
-			));
-		}
+		} 
+		/*
+		* $current_user->ID
+		* $current_user->user_login
+		* $current_user->user_email
+		*/
+		$post_id = wp_insert_post(array(
+			'post_author' => $current_user->user_login,
+			'post_title' => \wp_strip_all_tags(md5( date( 'Y-m-d H:i:s' ) ) . ' - ' . $current_user->user_login),
+			'post_date' => date( 'Y-m-d H:i:s' ),
+			'post_content' => '',
+			'post_status' => 'pending', /* https://codex.wordpress.org/Post_Status */
+			'post_parent' => '',
+			'post_type' => "product",
+		));
 
 		\wp_reset_postdata();
 		if (is_null( $post_id )) new \WP_Error('Warning', 'Variable post_id is null');

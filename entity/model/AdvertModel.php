@@ -108,7 +108,7 @@ class AdvertModel{
       if (!\is_wp_error( $post_id )) {
         continue;
       } else {
-        //exit( $post_id->get_error_messages() );
+        exit( $post_id->get_error_messages() );
       }
     }
   }
