@@ -191,18 +191,18 @@
                     </div>
                 </md-input-container>
 
-                <md-input-container flex="50">
+                <md-input-container flex="40">
                     <label>Ville ou code postal</label>
                     <input ng-cust required name="state" ng-model="advertPost.state">
                     <div ng-messages="setAdvertForm.state.$error">
-                        <div ng-message="required">This is required.</div>
+                        <div ng-message="required">Veuillez donner le code postal pour cette annonce.</div>
                     </div>
                 </md-input-container>
-                <md-input-container flex="90">
+                <md-input-container flex="60">
                     <label>Adresse de l'annonce</label>
                     <input ng-cust required name="adress" ng-model="advertPost.adress">
                     <div ng-messages="setAdvertForm.adress.$error" role="alertdialog">
-                        <div ng-message="required">This is required.</div>
+                        <div ng-message="required">Veuillez precisser une adresse pour cette annonce.</div>
                     </div>
                 </md-input-container>
                 <div>
