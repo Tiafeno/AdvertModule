@@ -25,7 +25,10 @@ routeAdvert.factory('factoryServices', function($http, $q) {
   return {
     getAdvertDetails : function( id ) {
       var advert_post = parseInt( id );
-      if (isNaN(advert_post)) return;
+      if (isNaN(advert_post)) {
+        console.warn( 'Error Type: Variable `id` isn\'t int' );
+        return false;
+      }
       return $http.get(jsRoute.ajax_url, {
         params : {
           post_id: id,

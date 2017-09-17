@@ -1,5 +1,5 @@
 <?php
-
+namespace advert\widgets\search;
 /**
  * Created by FALI Crea.
  * User: Tiafeno Finel
@@ -10,7 +10,7 @@
 /**
  * @property TWIG Engine
  */
-class search_Widget extends WP_Widget
+class search_Widget extends \WP_Widget
 {
     private $Template;
 
@@ -28,7 +28,7 @@ class search_Widget extends WP_Widget
         //echo apply_filters('widget_title', $instance['title']);
         echo $args['after_title'];
         echo $this->Template->render('@frontadvert/search.advert.html', array(
-                    'nonce' => wp_nonce_field('search', 'search_nonce')
+                    'nonce' => \wp_nonce_field('search', 'search_nonce')
         ));
         echo $args['after_widget'];
 
@@ -36,19 +36,6 @@ class search_Widget extends WP_Widget
 
     public function form($instance)
     {
-        // $title = isset($instance['title']) ? $instance['title']:'Annonce à la une';
-        // $t = new stdClass();
-        //     $t->Value = $title;
-        //     $t->Name = $this->get_field_name('title');
-        //     $t->Id = $this->get_field_id('title');
-        //
-        // $n = new stdClass();
-        //     $n->Value = isset($instance['number']) ? $instance['number']:'5';
-        //     $n->Name = $this->get_field_name('number');
-        //     $n->Id = $this->get_field_id('number');
-        //
-        // $this->Engine->assign('title',$t);
-        // $this->Engine->assign('number', $n);
-        // $this->Engine->display('NewsLetterForm.html.tpl');
+		
     }
 }

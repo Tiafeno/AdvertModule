@@ -85,6 +85,34 @@ class AdvertModel{
     \remove_role('advertiser');
   }
 
+  public static function create_advert_pages() {
+    if (!is_admin()) return;
+    $contents = [
+      [ 'title' => 'Adverts', 'content' => '[adverts]' ],
+      [ 'title' => 'Sing In', 'content' => '[singin_advert]' ],
+      [ 'title' => 'Login', 'content' => '[login_advert]' ],
+      [ 'title' => 'Add Listing', 'content' => '[addform_advert]' ],
+    ];
+    $contents = [];
+    $user = \wp_get_current_user();
+    while (list(, $content) = each( $contents )) {
+      $post_id = \wp_insert_post(array(
+        'post_author' => $user->user_login,
+        'post_title' => \wp_strip_all_tags( $content[ 'title' ]),
+        'post_date' => date( 'Y-m-d H:i:s' ), 
+        'post_content' => $content[ 'content' ],
+        'post_status' => 'publish', /* https://codex.wordpress.org/Post_Status */
+        'post_parent' => '',
+        'post_type' => "page",
+      ));
+      if (!\is_wp_error( $post_id )) {
+        continue;
+      } else {
+        //exit( $post_id->get_error_messages() );
+      }
+    }
+  }
+
   public static function install() {
     global $wpdb;
     $wpdb->query("CREATE TABLE IF NOT EXISTS {$wpdb->prefix}advert_user" .
@@ -107,6 +135,7 @@ class AdvertModel{
     
     namespace\AdvertModel::setProductCat();
     namespace\AdvertModel::create_role();
+    namespace\AdvertModel::create_advert_pages();
   }
 
   public static function uninstall(){

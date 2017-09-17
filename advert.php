@@ -13,15 +13,15 @@ final class _Advert extends AdvertController {
     parent::__construct();
 
     // Action WP
-    \add_action('init', array( &$this, 'wordpress_init' ));
-    \add_action('widgets_init', function () {
+    \add_action( 'init', array( &$this, 'wordpress_init' ));
+    \add_action( 'search_Widget', function () {
       \register_widget( 'search_Widget' );
     });
-    \add_action('admin_menu', function() {
+    \add_action( 'admin_menu', function() {
       \add_menu_page('Advert', 'Advert', 'manage_options', 'advert', array(&$this, 'advert_admin_template'), 'dashicons-admin-settings');
     });
 
-    \add_action('wp_loaded', [ &$this, 'wordpress_loaded' ]);
+    \add_action( 'wp_loaded', [ &$this, 'wordpress_loaded' ]);
     \add_action( 'admin_init', [ &$this, 'admin_access' ], 100 );
     \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
     \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  // hook failed login
@@ -36,9 +36,9 @@ final class _Advert extends AdvertController {
     $this->Model = new AdvertModel();
     
     /* Activate, Deactivate and Uninstall Plugins */
-    \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'install'));
-    \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'deactivate'));
-    \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array($this->Model, 'uninstall'));
+    \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'install'));
+    \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'deactivate'));
+    \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'uninstall'));
   }
 
   /** * Begin action */
