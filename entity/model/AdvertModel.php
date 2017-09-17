@@ -93,7 +93,7 @@ class AdvertModel{
       [ 'title' => 'Login', 'content' => '[login_advert]' ],
       [ 'title' => 'Add Listing', 'content' => '[addform_advert]' ],
     ];
-    $contents = [];
+    //$contents = [];
     $user = \wp_get_current_user();
     while (list(, $content) = each( $contents )) {
       $post_id = \wp_insert_post(array(

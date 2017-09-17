@@ -69,13 +69,14 @@ class AdvertCode {
 		$login_form_middle = \apply_filters( 'login_form_middle', '', $args );
 		$login_form_bottom = \apply_filters( 'login_form_bottom', '', $args );
 		
+		namespace\AdvertCode::setEnqueue();
+		namespace\AdvertCode::setAngularMaterial();
 		\wp_enqueue_script('LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
 
-		namespace\AdvertCode::setUIKit();
 		$register_link = \get_option( 'register_page_id', false ) ? \get_permalink(\get_option( 'register_page_id', false )) : '#register';
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'login_fail' => $login_fail,
