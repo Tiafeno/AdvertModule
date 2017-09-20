@@ -9,8 +9,8 @@ class AdvertCode {
 	}
 	
 	private static function setEnqueue(){
-		\wp_enqueue_style( 'dashicons' );
-		\wp_enqueue_style( 'custom-style', \plugins_url('/assets/css/custom.css', __FILE__), []);
+		\wp_enqueue_style('dashicons' );
+		\wp_enqueue_style('custom-style', \plugins_url('/assets/css/custom.css', __FILE__), []);
 		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
@@ -32,11 +32,38 @@ class AdvertCode {
 	}
 
 	/**
-	* [myaccount_advert]
+	* [dashboard_advert]
 	**/
-	public static function RenderMyAccount() {
-		global $twig;
+	public static function RenderDashboard() {
+		$current_user = null;
+    if (\is_user_logged_in()) {
+      /*
+      * @function  wp_get_current_user
+      * @return WP_User
+      */
+      $current_user = \wp_get_current_user();
+		} else \wp_send_json( [
+			'type' => false,
+			'data' => 'Error: User not logged'
+		] );
+		namespace\AdvertCode::setEnqueue();
+		namespace\AdvertCode::setAngularMaterial();
+		\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
+		\wp_enqueue_script('DashboardAdvertModule', \plugins_url('/assets/js/dashboard/dashboard.js', __FILE__), array('angular'));
+		\wp_enqueue_script('DashboardAdvertFactory', \plugins_url('/assets/js/dashboard/dashboard.factory.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_enqueue_script('routeDashboard', \plugins_url('/assets/js/route/dashboard.route.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_enqueue_script('DashboardAdvertController', \plugins_url('/assets/js/dashboard/dashboard.controller.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_localize_script('DashboardAdvertController', 'jsDashboard', array(
+			'ajax_url' => \admin_url('admin-ajax.php'),
+			'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
+			'assets_plugins_url' => \plugins_url('/assets/', __FILE__),
+			'_user' => $current_user
+		));
 
+		global $twig;
+		return $twig->render('@frontadvert/dashboard.html', array(
+			
+		));
 	}
 
 	/**
@@ -83,7 +110,7 @@ class AdvertCode {
 		return $twig->render('@frontadvert/loginform.advert.html', array(
 			'login_fail' => $login_fail,
 			'form_id' => $args['form_id'],
-			'action' => \esc_url( site_url( 'wp-login.php', 'login_post' ) ), //$_SERVER[ 'REQUEST_URI' ]
+			'action' => \esc_url( \site_url( 'wp-login.php', 'login_post' ) ), //$_SERVER[ 'REQUEST_URI' ]
 			'login_form_top' => $login_form_top,
 			'login_form_middle' => $login_form_middle,
 			'login_form_bottom' => $login_form_bottom,

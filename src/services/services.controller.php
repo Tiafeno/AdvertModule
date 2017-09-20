@@ -12,7 +12,11 @@ class ServicesController {
 
     $_attachment_id = \get_post_meta( $post_id, '_thumbnail_id', true);
     if (!is_int( $attachment_id )) return;
-    if ((int)$_attachment_id === $attachment_id ) return;
+    if ((int)$_attachment_id === $attachment_id ) \wp_send_json( [
+      'type' => true,
+      'data' => 'Already exist',
+      'status' => $_attachment_id
+    ] );
     $updateStatus = \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
     if ( (true == $updateStatus) || is_int( $updateStatus ) ) {
       \wp_send_json(array('data' => 'Update post success', 'type' => true, 'status' => $updateStatus));

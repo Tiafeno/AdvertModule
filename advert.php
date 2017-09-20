@@ -31,6 +31,7 @@ final class _Advert extends AdvertController {
     \add_shortcode('adverts', [ new shortcode\AdvertCode(),'RenderAdvertsLists' ]);
     \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'RenderLoginForm' ]);
     \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm' ]);
+    \add_shortcode('dashboard_advert', [ new shortcode\AdvertCode(),'RenderDashboard' ]);
 
     /* create Model instance */
     $this->Model = new AdvertModel();
@@ -174,7 +175,11 @@ final class _Advert extends AdvertController {
       require_once( ABSPATH . 'wp-admin/includes/media.php' );
       $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
       if (\is_wp_error( $attachment_id )) {
-        \wp_send_json(array('data' => 'There was an error uploading the image.', 'tracking' => $attachment_id->get_error_messages(), 'type' => false));
+        \wp_send_json(array(
+          'data' => 'There was an error uploading the image.', 
+          'tracking' => $attachment_id->get_error_messages(), 
+          'type' => false)
+        );
       } else {
         \update_post_meta((int)$_REQUEST[ 'post_id' ], '_thumbnail_id', $attachment_id);
         \wp_send_json(array(
@@ -235,28 +240,28 @@ final class _Advert extends AdvertController {
     \wp_set_object_terms($post_id, 'simple', 'product_type');
 
     /* Update post meta, these meta depend a product post_type */
-    \update_post_meta($post_id, '_visibility', 'visible');
-    \update_post_meta($post_id, '_stock_status', 'instock');
-    \update_post_meta($post_id, 'total_sales', '0');
-    \update_post_meta($post_id, '_downloadable', 'no');
-    \update_post_meta($post_id, '_virtual', 'yes');
-    \update_post_meta($post_id, '_regular_price', $cost);
-    \update_post_meta($post_id, '_sale_price', '');
-    \update_post_meta($post_id, '_purchase_note', '');
-    \update_post_meta($post_id, '_featured', 'no');
-    \update_post_meta($post_id, '_weight', '');
-    \update_post_meta($post_id, '_length', '');
-    \update_post_meta($post_id, '_width', '');
-    \update_post_meta($post_id, '_height', '');
-    \update_post_meta($post_id, '_sku', strtoupper( md5( $post_id )) );
-    \update_post_meta($post_id, '_sale_price_dates_from', '');
-    \update_post_meta($post_id, '_sale_price_dates_to', '');
-    \update_post_meta($post_id, '_price', $cost);
-    \update_post_meta($post_id, '_sold_individually', '');
-    \update_post_meta($post_id, '_manage_stock', 'no');
-    \update_post_meta($post_id, '_backorders', 'no');
-    \update_post_meta($post_id, '_stock', '');
-    \update_post_meta($post_id, '_product_image_gallery', implode(",", $gallery));
+    \update_post_meta( $post_id, '_visibility', 'visible');
+    \update_post_meta( $post_id, '_stock_status', 'instock');
+    \update_post_meta( $post_id, 'total_sales', '0');
+    \update_post_meta( $post_id, '_downloadable', 'no');
+    \update_post_meta( $post_id, '_virtual', 'yes');
+    \update_post_meta( $post_id, '_regular_price', $cost);
+    \update_post_meta( $post_id, '_sale_price', '');
+    \update_post_meta( $post_id, '_purchase_note', '');
+    \update_post_meta( $post_id, '_featured', 'no');
+    \update_post_meta( $post_id, '_weight', '');
+    \update_post_meta( $post_id, '_length', '');
+    \update_post_meta( $post_id, '_width', '');
+    \update_post_meta( $post_id, '_height', '');
+    \update_post_meta( $post_id, '_sku', strtoupper( md5( $post_id )) );
+    \update_post_meta( $post_id, '_sale_price_dates_from', '');
+    \update_post_meta( $post_id, '_sale_price_dates_to', '');
+    \update_post_meta( $post_id, '_price', $cost);
+    \update_post_meta( $post_id, '_sold_individually', '');
+    \update_post_meta( $post_id, '_manage_stock', 'no');
+    \update_post_meta( $post_id, '_backorders', 'no');
+    \update_post_meta( $post_id, '_stock', '');
+    \update_post_meta( $post_id, '_product_image_gallery', implode(",", $gallery));
 
     $desc = \apply_filters('the_content', $_POST[ 'description' ]);
     
