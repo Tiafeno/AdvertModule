@@ -93,9 +93,16 @@ class AdvertModel{
       [ 'title' => 'Login', 'content' => '[login_advert]' ],
       [ 'title' => 'Add Listing', 'content' => '[addform_advert]' ],
     ];
-    //$contents = [];
+    
+    /*
+      \update_option( 'register_page_id', $register_page_id );
+      \update_option( 'addform_page_id', $addform_page_id );
+      \update_option( 'login_page_id', $login_page_id );
+    */
     $user = \wp_get_current_user();
     while (list(, $content) = each( $contents )) {
+      $page = \get_page_by_title( $content[ 'title' ] );
+      if (\is_page( $page )) continue;
       $post_id = \wp_insert_post(array(
         'post_author' => $user->user_login,
         'post_title' => \wp_strip_all_tags( $content[ 'title' ]),
@@ -106,6 +113,21 @@ class AdvertModel{
         'post_type' => "page",
       ));
       if (!\is_wp_error( $post_id )) {
+        switch ($content[ 'title' ]) {
+          case 'Sing In':
+            update_option( 'register_page_id', $post_id );
+            break;
+          case 'Add Listing':
+            update_option( 'addform_page_id', $post_id );
+            break;
+          case 'Login':
+            update_option( 'login_page_id', $post_id );
+            break;
+          
+          default:
+            # code...
+            break;
+        }
         continue;
       } else {
         exit( $post_id->get_error_messages() );

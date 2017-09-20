@@ -36,9 +36,21 @@ final class _Advert extends AdvertController {
     $this->Model = new AdvertModel();
     
     /* Activate, Deactivate and Uninstall Plugins */
-    \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'install'));
-    \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'deactivate'));
-    \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array(&$this->Model, 'uninstall'));
+    \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'install'));
+    \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'deactivate'));
+    \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'uninstall'));
+  }
+
+  public static function uninstall(){
+    return AdvetModel::uninstall();
+  }
+
+  public static function deactivate() {
+    return AdvertModel::deactivate();
+  }
+
+  public static function install() {
+    return AdvertModel::install();
   }
 
   /** * Begin action */
@@ -381,7 +393,7 @@ final class _Advert extends AdvertController {
           \wp_send_json(array(
             'type' => 'error', 
             'tracking' => 'Error: Please review $_REQUEST variable, `password` not send or not define. ',
-            'data' => 'Request `password` is not defined.'
+            'data' => 'Request `password` is not define.'
             )
           );
         };

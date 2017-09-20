@@ -1,3 +1,5 @@
+'use strict'
+
 app.controller('AdvertFormAddCtrl', function (
   $scope,
   $http,
@@ -29,11 +31,11 @@ app.controller('AdvertFormAddCtrl', function (
       .join(' ');
   };
 
-  $scope.showSimpleToast = function () {
+  $scope.showSimpleToast = function ( msg = '' ) {
     var pinTo = $scope.getToastPosition();
     $mdToast.show(
       $mdToast.simple()
-        .textContent($window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ="))
+        .textContent( msg )
         .position(pinTo)
         .hideDelay(3000)
     );
@@ -108,8 +110,7 @@ app.controller('AdvertFormAddCtrl', function (
   */
   $scope.uploadFile = function () {
     if ($scope.thumbnailGalleryIDs.length == parseInt($window.atob("Mw=="))) {
-      $scope.showSimpleToast();
-      $log.debug($window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ="));
+      $scope.showSimpleToast( $window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ=") );
       return true;
     }
 

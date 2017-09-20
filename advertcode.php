@@ -10,6 +10,7 @@ class AdvertCode {
 	
 	private static function setEnqueue(){
 		\wp_enqueue_style( 'dashicons' );
+		\wp_enqueue_style( 'custom-style', \plugins_url('/assets/css/custom.css', __FILE__), []);
 		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
 		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
@@ -70,6 +71,7 @@ class AdvertCode {
 		$login_form_bottom = \apply_filters( 'login_form_bottom', '', $args );
 		
 		namespace\AdvertCode::setEnqueue();
+		namespace\AdvertCode::setUIKit();
 		namespace\AdvertCode::setAngularMaterial();
 		\wp_enqueue_script('LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertCtrl', 'advert', array(
@@ -286,6 +288,7 @@ class AdvertCode {
 				break;
 			endwhile;
 		} 
+		\wp_reset_postdata();
 		/*
 		* $current_user->ID
 		* $current_user->user_login

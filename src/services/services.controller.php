@@ -10,13 +10,16 @@ class ServicesController {
     if (!\is_user_logged_in())
       return false;
 
-    if (!is_int( $attachment_id )) return false;
+    $_attachment_id = \get_post_meta( $post_id, '_thumbnail_id', true);
+    if (!is_int( $attachment_id )) return;
+    if ((int)$_attachment_id === $attachment_id ) return;
     $updateStatus = \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
-    if ( $updateStatus ) {
+    if ( (true == $updateStatus) || is_int( $updateStatus ) ) {
       \wp_send_json(array('data' => 'Update post success', 'type' => true, 'status' => $updateStatus));
     } else { 
       \wp_send_json(array(
         'data' => 'Update post failure', 
+        'info' => [ 'postid' => $post_id, 'attachmentid' => $attachment_id],
         'tracking' => 'Service Controller Error: Update post meta thumbnail on services', 
         'error' => $updateStatus,
         'type' => false
