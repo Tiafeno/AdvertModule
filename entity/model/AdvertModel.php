@@ -12,7 +12,7 @@ class AdvertModel {
   }
 
   public static function insert_term($name, $parent_term_id = 0, $taxonomy = 'product_cat') {
-    return \wp_insert_term($name, $taxonomy, ['parent' => $parent_term_id ]);
+    return \wp_insert_term($name, $taxonomy, [ 'parent' => $parent_term_id ]);
   }
 
   public static function setProductCat() {
@@ -41,17 +41,28 @@ class AdvertModel {
     }
   }
 
-  public function setAdvert($form) { // $form is Object Stdclass
-    $Query = $this->wpdb->insert($this->wpdb->prefix."advert", array(
-            'post_id'     => $form->post_id,
-            'state'       => $form->state,
-            'phone' =>       $form->phone,
-            'hidephone' =>  $form->hidephone,
-            'adress'      => $form->adress),
-            array('%d', '%s', '%s', '%d', '%s'));
+  public function add_user( $user_id ) {
+    extract( $_REQUEST, EXTR_PREFIX_SAME, 'user');
+    $Query = $this->wpdb->insert($this->wpdb->prefix."advert_user", array(
+          'id_user'   => $user_id, // int
+          'lastname'  => esc_sql( $lastname ),
+          'firstname' => esc_sql( $firstname ),
+          'society'   => esc_sql( $society ),
+          'adress'       => esc_sql( $adress ),
+          'postal_code'  => esc_sql( $postal_code ),
+          'phone'     => (int)$phone, // int
+          'SIRET'     => esc_sql( $SIRET )
+        ),
+          array('%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s'));
     if (!$Query) {
       return  $this->wpdb->print_error();
-    } else {  return true;  }
+    } else {  
+      $update_usr = \wp_update_user([
+        'ID' => $user_id,
+        'display_name' => $society
+      ]);
+      return \is_wp_error( $update_usr ) ? $update_usr->get_error_messages() : true;
+    }
   }
 
   private static function create_role() {
@@ -147,8 +158,7 @@ class AdvertModel {
         "adress VARCHAR(100) NOT NULL ," .
         "postal_code VARCHAR(255) NOT NULL ," .
         "phone INT(50) NOT NULL ," .
-        "rubric VARCHAR(255) NOT NULL ," .
-        "add_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
+        "add_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );");
         
     $wpdb->query("ALTER TABLE {$wpdb->prefix}advert_user " .
         "ADD CONSTRAINT delete_custom_user " .

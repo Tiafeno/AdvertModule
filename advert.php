@@ -11,6 +11,8 @@ final class _Advert extends AdvertController {
   
   public function __construct() {
     parent::__construct();
+    /* create Model instance */
+    $this->Model = new AdvertModel();
 
     // Action WP
     \add_action( 'init', array( &$this, 'wordpress_init' ));
@@ -24,7 +26,8 @@ final class _Advert extends AdvertController {
     \add_action( 'wp_loaded', [ &$this, 'wordpress_loaded' ]);
     \add_action( 'admin_init', [ &$this, 'admin_access' ], 100 );
     \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
-    \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  // hook failed login
+    \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  /* On login fail */
+    \add_action( 'user_register', [&$this->Model, 'add_user'], 10, 1 ); /* On register user success */
 
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
@@ -32,9 +35,6 @@ final class _Advert extends AdvertController {
     \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'RenderLoginForm' ]);
     \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm' ]);
     \add_shortcode('dashboard_advert', [ new shortcode\AdvertCode(),'RenderDashboard' ]);
-
-    /* create Model instance */
-    $this->Model = new AdvertModel();
     
     /* Activate, Deactivate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'install'));
