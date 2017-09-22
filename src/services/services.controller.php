@@ -1,5 +1,6 @@
 <?php
 namespace advert\src\services;
+use advert\entity\model as Model;
 
 class ServicesController {
   public static $vendor = [];
@@ -67,6 +68,25 @@ class ServicesController {
     } else {
       return null;
     }
+  }
+
+  public static function getUser( $user_id ) {
+    $User = \get_user_by('ID', $user_id);
+    $Model = new Model\AdvertModel();
+
+    /* @function get_advert_user
+    *  @params $user_id (int)
+    *  @return wordpress database results where user_id = $user_id from advert_user
+    */
+    $advertUser = $Model->get_advert_user( $user_id ) [0];
+    $advertUser->user_login = $User->user_login;
+    $advertUser->user_email = $User->user_email;
+    $advertUser->user_registered = $User->user_registered;
+    $advertUser->user_nicename = $User->user_nicename;
+    $advertUser->display_name = $User->display_name;
+    $advertUser->token = $User->user_pass;
+
+    return $advertUser;
   }
 
   public static function getVendor() {
