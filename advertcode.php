@@ -48,16 +48,17 @@ class AdvertCode {
 		] );
 		namespace\AdvertCode::setEnqueue();
 		namespace\AdvertCode::setAngularMaterial();
+		\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), [] );
 		\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
-		\wp_enqueue_script('DashboardAdvertModule', \plugins_url('/assets/js/dashboard/dashboard.js', __FILE__), array('angular'));
-		\wp_enqueue_script('DashboardAdvertFactory', \plugins_url('/assets/js/dashboard/dashboard.factory.js', __FILE__), array('angular', "DashboardAdvertModule"));
-		\wp_enqueue_script('routeDashboard', \plugins_url('/assets/js/route/dashboard.route.js', __FILE__), array('angular', "DashboardAdvertModule"));
-		\wp_enqueue_script('DashboardAdvertController', \plugins_url('/assets/js/dashboard/dashboard.controller.js', __FILE__), array('angular', "DashboardAdvertModule"));
-		\wp_localize_script('DashboardAdvertController', 'jsDashboard', array(
+		\wp_enqueue_script( 'DashboardAdvertModule', \plugins_url('/assets/js/dashboard/dashboard.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'DashboardAdvertFactory', \plugins_url('/assets/js/dashboard/dashboard.factory.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_enqueue_script( 'routeDashboard', \plugins_url('/assets/js/route/dashboard.route.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_enqueue_script( 'DashboardAdvertController', \plugins_url('/assets/js/dashboard/dashboard.controller.js', __FILE__), array('angular', "DashboardAdvertModule"));
+		\wp_localize_script( 'DashboardAdvertController', 'jsDashboard', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__),
-			'_user' => $current_user
+			'_user' => Services\ServicesController::getUser( $current_user->ID )
 		));
 
 		global $twig;

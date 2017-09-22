@@ -57,12 +57,18 @@ class AdvertModel {
     if (!$Query) {
       return  $this->wpdb->print_error();
     } else {  
+      $this->wpdb->flush();
       $update_usr = \wp_update_user([
         'ID' => $user_id,
         'display_name' => $society
       ]);
       return \is_wp_error( $update_usr ) ? $update_usr->get_error_messages() : true;
     }
+  }
+
+  public function get_advert_user( $user_id ) {
+    $sql = $this->wpdb->prepare( "SELECT * FROM {$this->wpdb->prefix}advert_user WHERE id_user = %d", $user_id );
+    return $this->wpdb->get_results( $sql, OBJECT );
   }
 
   private static function create_role() {
