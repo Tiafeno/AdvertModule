@@ -1,0 +1,192 @@
+<style type="text/css">
+  .information {
+    margin-left: 25px;
+  }
+  .information p.edit-avatar{
+    margin: 0;
+    font-size: 12px;
+    color: #34A9F7;
+    cursor: pointer;
+  }
+  .information h2 {
+    margin: 0;
+  }
+  .header-profil {
+    margin-bottom: 40px;
+  }
+  .md-subheader-inner {
+    padding-left: 0 !important;
+  }
+  .has-error {
+    border-bottom: 1px solid red !important;
+  }
+</style>
+
+<md-content layout-padding >
+  <form name="profilForm" layout="column" flex-gt-sm="60" style="margin: auto" >
+    <div layout="row" class="header-profil">
+      <div class="avatar" flex="30">
+        <img ng-src="{{ profil.img_url }}" class="md-card-image" alt="Washed Out">
+      </div>
+      <div class="information" flex="45">
+        <h2>{{ profil.firstname }} {{ profil.lastname }}</h2>
+        <p class="edit-avatar" ng-click="">Modifier l'avatar</p>
+        <p> {{ profil.user_registered | fromNow }}</p>
+      </div>
+    </div>
+
+    <div layout="row" >
+      <md-input-container flex="50">
+        <label>Firstname</label>
+        <input required name="firstname" ng-model="profil.firstname">
+        <div ng-messages="profilForm.firstname.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+
+      <md-input-container flex="50">
+        <label>Lastname</label>
+        <input required name="lastname" ng-model="profil.lastname">
+        <div ng-messages="profilForm.lastname.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+    </div>
+
+    <div layout="row" >
+
+      <md-input-container flex="50">
+        <label>Adress</label>
+        <input required name="adress" ng-model="profil.adress">
+        <div ng-messages="profilForm.adress.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+      <md-input-container flex="20">
+          <label>Postal Code</label>
+          <input required name="postal_code" ng-model="profil.postal_code">
+          <div ng-messages="profilForm.postal_code.$error">
+            <div ng-message="required">This is required.</div>
+          </div>
+        </md-input-container>
+    </div>
+
+    <div layout="row" >
+      <md-input-container flex="30">
+        <label>SIRET</label>
+        <input required type="text" name="siret" ng-model="profil.SIRET" />
+  
+        <div ng-messages="profilForm.siret.$error" role="alert">
+          <div ng-message-exp="['required']">
+            This is required.
+          </div>
+        </div>
+      </md-input-container>
+
+      <md-input-container flex="35">
+        <label>Society</label>
+        <input required type="text" name="society" ng-model="profil.society" />
+  
+        <div ng-messages="profilForm.society.$error" role="alert">
+          <div ng-message-exp="['required']">
+            This is required.
+          </div>
+        </div>
+      </md-input-container>
+    </div>
+
+    <div layout="row" >
+        
+      <md-input-container flex="30">
+        <label>Phone</label>
+        <input required name="phone" ng-model="profil.phone">
+        <div ng-messages="profilForm.phone.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+
+    </div>
+
+    <div layout="row" >
+      
+      <md-input-container flex="30">
+        <label>Username</label>
+        <input required name="user_login" ng-model="profil.user_login">
+        <div ng-messages="profilForm.user_login.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+      <md-input-container flex="70">
+        <label>Adress Email</label>
+        <input required type="email" name="user_email" ng-model="profil.user_email"
+               minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" disabled />
+  
+        <div ng-messages="projectForm.mail.$error" role="alert">
+          <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+            Your email must be between 10 and 100 characters long and look like an e-mail address.
+          </div>
+        </div>
+      </md-input-container>
+
+    </div>
+    
+    <div>
+      <md-button type="submit" class="md-raised md-primary md-button">Modifier mon profil
+      </md-button>
+    </div>
+  </form>
+
+  <!--+ Password formulaire -->
+  <form name="passwordForm" ng-submit="passwordFormSubmit(passwordForm.$valid)" novalidate layout="column" flex-gt-sm="60" style="margin: auto">
+    <md-list flex="50">
+        <md-subheader class="md-no-sticky" style="font-size: large; font-weight: bold; color:orange">Modifier Mot de passe
+        </md-subheader>
+        <md-divider></md-divider>
+    </md-list>
+
+    <div layout="row" >
+        
+      <md-input-container flex="30">
+        <label>Old Password</label>
+        <input type="password" required name="old_password" ng-blur="EventVerifyPassword( $event, passwordForm )"
+         ng-model="old_password">
+        <div ng-messages="passwordForm.old_password.$error">
+          <div ng-message="required">This is required.</div>
+          <div ng-message="verifyPassword">Les mots de passe saisis n'est pas correct. Veuillez réessayer.</div>
+        </div>
+      </md-input-container>
+
+    </div>
+
+    <div layout="row" >
+        
+      <md-input-container flex="50">
+        <label>New Password</label>
+        <input type="password" required minlength="8" name="new_password" ng-keydown="EventTypePassword( $event, passwordForm )" ng-model="new_password">
+        <div ng-messages="passwordForm.new_password.$error">
+          <div ng-message="required">This is required.</div>
+          <div ng-message="oldEqualnew">Le mot de passe que vous avez saisie est identique à l'ancien mot de passe. Veuillez réessayer.</div>
+          <div ng-message="minlength">Votre mot de passe est trop court. Il doit contenir au moins 8 caractères.</div>
+        </div>
+      </md-input-container>
+
+      <md-input-container flex="50">
+        <label>Confirm new password</label>
+        <input type="password" required name="confirm_password" ng-blur="EventEqualsPassword( $event, passwordForm )" ng-model="confirm_password" />
+  
+        <div ng-messages="passwordForm.confirm_password.$error" role="alert">
+          <div ng-message="required">
+            Your email must be between 10 and 100 characters long and look like an e-mail address.
+          </div>
+          <div ng-message="equalsPassword">
+            les mots de passe saisie ne correspond pas
+          </div>
+        </div>
+      </md-input-container>
+    </div>
+    <div layout-align="center">
+        <md-button type="submit" ng-disabled="passwordForm.$invalid" class="md-raised md-primary md-button">Change password
+        </md-button>
+      </div>
+  </form>
+</md-content>
