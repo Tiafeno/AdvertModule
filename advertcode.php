@@ -22,11 +22,11 @@ class AdvertCode {
 
 	public static function setAngularMaterial() {
 		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.min.js', __FILE__), array('angular'));
-		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.min.css', __FILE__));
+		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__));
 	}
 
 	public static function setUIKit() {
-		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.min.css', __FILE__), []);
+		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
 		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
 		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
