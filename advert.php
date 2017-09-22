@@ -27,7 +27,7 @@ final class _Advert extends AdvertController {
     \add_action( 'admin_init', [ &$this, 'admin_access' ], 100 );
     \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
     \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  /* On login fail */
-    \add_action( 'user_register', [&$this->Model, 'add_user'], 10, 1 ); /* On register user success */
+    \add_action( 'user_register', [ &$this->Model, 'add_user' ], 10, 1 ); /* On register user success */
 
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
@@ -105,6 +105,9 @@ final class _Advert extends AdvertController {
 
     \add_action('wp_ajax_action_get_advertdetails', array($this, 'action_get_advertdetails'));
     \add_action('wp_ajax_nopriv_action_get_advertdetails', array($this, 'action_get_advertdetails'));
+
+    \add_action('wp_ajax_action_verify_password', array($this, 'action_verify_password'));
+    \add_action('wp_ajax_nopriv_action_verify_password', array($this, 'action_verify_password'));
     
     \register_taxonomy(
       'district',

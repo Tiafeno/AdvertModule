@@ -40,6 +40,19 @@ abstract class AdvertController {
     \wp_send_json( $ctgs );
   }
 
+  public function action_verify_password() {
+    if (!isset( $_REQUEST[ 'pass' ])) return;
+    if (!\is_user_logged_in()) return;
+    $current_user = \wp_get_current_user();
+    $User = \get_user_by('ID', $current_user->ID);
+
+    $password = trim($_REQUEST[ 'pass' ]);
+    \wp_send_json( [
+      'type' => true,
+      'token' => \wp_check_password( base64_decode($password), $User->user_pass)
+    ] );
+  }
+
   public function action_get_advertdetails() {
     if (!isset( $_REQUEST[ 'post_id' ])) return;
     $post_id = (int) $_REQUEST[ 'post_id' ];
