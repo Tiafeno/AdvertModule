@@ -30,6 +30,25 @@ var routeDashboard = angular.module('routeDashboard', []);
         }
       });
 
+routeDashboard.directive("uploadavatar", function () {
+  return {
+      restrict: 'A',
+      link: function (scope, element) {
+        element.bind('click', function (e) {
+            angular.element('#fileInput').trigger('click');
+        });
+      }
+  }
+})
+.directive('ngUpload', function () {
+  return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var onChangeFunc = scope.$eval(attrs.ngUpload);
+        element.bind('change', onChangeFunc);
+      }
+  };
+})
 routeDashboard.factory('factoryRouteDashboard', function( $http, $window, $q ) {
   return {
     getUser : function() {
@@ -97,6 +116,15 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     if ( form.confirm_password.$modelValue != undefined ) {
       $scope.EventEqualsPassword( $event, form );
     }
+  }
+
+  $scope.EventClickchangeAvatar = function( ) {
+    var files = event.target.files;
+    var formdata = new FormData();
+
+    angular.forEach(files, function (value, key) {
+      formdata.append('file', value);
+    });
   }
 
 });

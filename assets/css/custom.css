@@ -1,3 +1,10 @@
 button, html, input, select, textarea {
   font-family: Roboto,"Helvetica Neue",sans-serif !important;
 }
+
+.datepicker {
+  opacity: 0;
+}
+md-input-container .md-input {
+  opacity: 1;
+}

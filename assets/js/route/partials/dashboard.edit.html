@@ -23,14 +23,15 @@
 </style>
 
 <md-content layout-padding >
-  <form name="profilForm" layout="column" flex-gt-sm="60" style="margin: auto" >
+  <form name="profilForm" layout="column" flex-gt-sm="60" style="margin: auto" novalidate>
     <div layout="row" class="header-profil">
       <div class="avatar" flex="30">
         <img ng-src="{{ profil.img_url }}" class="md-card-image" alt="Washed Out">
+        <input id="fileInput" ng-upload="EventClickchangeAvatar" name="file" type="file" class="ng-hide">
       </div>
       <div class="information" flex="45">
         <h2>{{ profil.firstname }} {{ profil.lastname }}</h2>
-        <p class="edit-avatar" ng-click="">Modifier l'avatar</p>
+        <p class="edit-avatar" uploadavatar>Modifier l'avatar</p>
         <p> {{ profil.user_registered | fromNow }}</p>
       </div>
     </div>
@@ -131,7 +132,7 @@
     </div>
     
     <div>
-      <md-button type="submit" class="md-raised md-primary md-button">Modifier mon profil
+      <md-button type="submit" ng-disabled="profilForm.$invalid" class="md-raised md-primary md-button">Modifier mon profil
       </md-button>
     </div>
   </form>

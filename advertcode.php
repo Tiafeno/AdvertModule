@@ -42,10 +42,8 @@ class AdvertCode {
       * @return WP_User
       */
       $current_user = \wp_get_current_user();
-		} else \wp_send_json( [
-			'type' => false,
-			'data' => 'Error: User not logged'
-		] );
+		} else return AdvertCode::RenderLoginForm();
+		
 		namespace\AdvertCode::setEnqueue();
 		namespace\AdvertCode::setAngularMaterial();
 		\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), [] );
