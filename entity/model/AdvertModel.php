@@ -118,6 +118,7 @@ class AdvertModel {
       [ 'title' => 'Sing In', 'content' => '[singin_advert]' ],
       [ 'title' => 'Login', 'content' => '[login_advert]' ],
       [ 'title' => 'Add Listing', 'content' => '[addform_advert]' ],
+      [ 'title' => 'Dashboard', 'content' => '[dashboard_advert]' ]
     ];
     
     /*
@@ -148,6 +149,9 @@ class AdvertModel {
             break;
           case 'Login':
             update_option( 'login_page_id', $post_id );
+            break;
+          case 'Dashboard':
+            update_option( 'dashboard_page_id', $post_id );
             break;
           
           default:

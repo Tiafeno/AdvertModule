@@ -112,9 +112,10 @@
       
       <md-input-container flex="30">
         <label>Username</label>
-        <input required name="user_login" ng-model="profil.user_login">
+        <input required name="user_login" ng-pattern="/^[a-zA-Z0-9]*$/" ng-model="profil.user_login">
         <div ng-messages="profilForm.user_login.$error">
           <div ng-message="required">This is required.</div>
+          <div ng-message="pattern">Not space .</div>
         </div>
       </md-input-container>
       <md-input-container flex="70">

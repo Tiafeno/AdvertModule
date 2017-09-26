@@ -11,10 +11,12 @@ add_action('plugins_loaded', function() {
     define('ADVERT_TWIG_ENGINE_PATH', \plugin_dir_path(__FILE__) . '/engine/Twig');
   }
   
-  //$loader = new Twig_Loader_Filesystem();
+  /* @var $loader is instance of Twig_Loader_Filesystem
+  ** $loader = new Twig_Loader_Filesystem();
+  */
   $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/front', 'frontadvert');
   $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/admin', 'adminadvert');
-  
+  if (!is_null( $twig )) exit( 'Twig template is already define' );
   $twig = new \Twig_Environment($loader, array(
     'debug' => true,
     'cache' => ADVERT_TWIG_ENGINE_PATH . '/template_cache'

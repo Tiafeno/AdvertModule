@@ -31,6 +31,7 @@ final class _Advert extends AdvertController {
     \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  /* On login fail */
     \add_action( 'user_register', [ &$this->Model, 'add_user' ], 10, 1 ); /* On register user success */
     \add_action( 'before_delete_post', [ &$this->Model, 'verify_before_delete' ], 10, 1);
+    \add_action( 'get_header', [ &$this, 'load_header' ], 10, 1);
 
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
@@ -129,10 +130,26 @@ final class _Advert extends AdvertController {
         'rewrite' => array( 'slug' => 'district' ),
         'hierarchical' => true,
         'show_ui' => true
-        )
-      );
-      
+      )
+    );
+
       return true;
+  }
+
+  public function load_header( $name ) {
+    global $post;
+    if (\is_user_logged_in()) {
+      $login_page_id = \get_option( 'login_page_id', false );
+      if (is_int( (int)$login_page_id ) ) :
+        if ($post->ID != (int)$login_page_id) return true;
+          $url = \home_url( "/" );
+          $dashboad_page_id = \get_option( 'dashboard_page_id', false );
+          if ($dashboad_page_id) 
+            $url = \get_permalink( $dashboad_page_id );
+          \wp_redirect( $url );
+          exit();
+      endif;
+    }
   }
 
   /*
@@ -141,6 +158,7 @@ final class _Advert extends AdvertController {
   * @return void
   */
   public function wordpress_loaded() {
+    
     if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
     \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&
     \current_user_can('edit_post', $_POST[ 'post_id' ])) {
@@ -154,10 +172,12 @@ final class _Advert extends AdvertController {
       $register_page_id = (int) $_POST[ 'register_page' ];
       $addform_page_id = (int) $_POST[ 'addform_page' ];
       $login_page_id = (int) $_POST[ 'login_page' ];
+      $dashboard_page_id = (int) $_POST[ 'dashboard_page' ];
 
       \update_option( 'register_page_id', $register_page_id );
       \update_option( 'addform_page_id', $addform_page_id );
       \update_option( 'login_page_id', $login_page_id );
+      \update_option( 'dashboard_page_id', $dashboard_page_id );
     }
 
     if (isset($_GET[ 'login' ])) {
@@ -235,15 +255,21 @@ final class _Advert extends AdvertController {
 
   public function action_update_dashboard() {
     if (!\is_user_logged_in()) return false;
-
     $User = \wp_get_current_user();
-    $data = $_REQUEST;
+    $params = $_REQUEST;
     $where = [ 'id_user' => $User->ID ];
+    $data = Arrays::remove( $params, 'user_login');
     /* Update user advert */
     $update_user = $this->Model->update_user( $data, $where);
     if (true === $update_user) {
       /* Update user nickname */
-
+      $update_usr = \wp_update_user([
+        'ID' => $User->ID,
+        'nickname' => $params[ 'user_login' ]
+      ]);
+      if (\is_wp_error( $update_user)) {
+        \wp_send_json( [ 'type' => false, 'data' => $update_user->get_error_messages()] );
+      }
       \wp_send_json([
         'type' => true,
         'data' => 'User update with success'
@@ -516,6 +542,7 @@ final class _Advert extends AdvertController {
       'register_page_id' => \get_option( 'register_page_id', false ),
       'login_page_id' => \get_option( 'login_page_id', false),
       'addform_page_id' => \get_option( 'addform_page_id', false ),
+      'dashboard_page_id' => \get_option( 'dashboard_page_id', false ),
       'posts' => $posts
     ];
     print $twig->render('@adminadvert/settings.html', $args);

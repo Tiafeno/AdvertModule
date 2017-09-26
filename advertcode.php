@@ -71,7 +71,7 @@ class AdvertCode {
 
 	public static function RenderLoginForm(){
 		global $twig, $login_fail;
-
+		
 		$args = [];
 		$defaults = array(
 			'echo' => true,
