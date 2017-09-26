@@ -54,12 +54,28 @@ routeDashboard.factory('factoryRouteDashboard', function( $http, $window, $q ) {
     getUser : function() {
       return jsDashboard._user;
     },
+    get_nonce_field: function( field ) {
+      return $http.get( jsDashboard.ajax_url, {
+        params: {
+          action: 'action_render_nonce',
+          fieldnonce: field
+        }
+      });
+    },
     verifyPassword: function( $pass ) {
       return $http.get( jsDashboard.ajax_url, {
         params : {
           pass: $window.btoa( $pass ),
           action: 'action_verify_password'
         }
+      });
+    },
+    $httpPostForm: function( form ) {
+      return $http({
+        url: jsDashboard.ajax_url,
+        method: "POST",
+        headers: { 'Content-Type': undefined },
+        data: form
       });
     }
   };
@@ -69,20 +85,41 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope._user = factoryRouteDashboard.getUser();
   $scope.profil = {};
   $scope.verifyPassword = true;
+  $scope.nonce = null;
   
   var initilize = function() {
-    var KeysUser = Object.keys( $scope._user );
+    var KeysUser = _.keys( $scope._user );
     KeysUser = _.without( KeysUser, 'id_user', 'id_advert_user');
     _.each( KeysUser, function(el, index) {
       $scope.profil[ el ] = $scope._user[ el ];
     });
-    $scope.profil.img_url = jsDashboard.assets_plugins_url + 'img/no-avatar-male.jpg';
+    if ($scope.profil.img_url == null || false === $scope.profil.img_url)
+      $scope.profil.img_url = jsDashboard.assets_plugins_url + 'img/no-avatar-male.jpg';
   }
 
   initilize();
   $scope.EventSubmit = function( $event ) {
+    var formdata = new FormData();
+    var profil = _.omit( $scope.profil, ['id_user', 'img_url', 'id_advert_user'])
+    formdata.append('action', "action_update_dashboard");
+    _.each(profil, function ($value, $key) {
+      formdata.append($key, $value);
+    });
 
-  };
+    factoryRouteDashboard.get_nonce_field( 'update_profil' )
+      .then(function( results ) {
+        factoryRouteDashboard.$httpPostForm( formdata )
+          .success(function( results ) {
+            
+          })
+          .error(function( errno ) {});
+      });
+  }
+
+  $scope.EventformProfilValidate = function( $event ){
+    return ($scope.profilForm.$dirty && $scope.profilForm.$valid) ? false : 
+    ($scope.profilForm.$invalid ? ($scope.profilForm.$dirty ? true : false) : true);
+  }
 
   /* Event ngBlur */
   $scope.EventVerifyPassword = function( $event, form ) {
@@ -121,10 +158,25 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.EventClickchangeAvatar = function( ) {
     var files = event.target.files;
     var formdata = new FormData();
-
+    formdata.append('action', "action_upload_avatar");
     angular.forEach(files, function (value, key) {
       formdata.append('file', value);
     });
+    factoryRouteDashboard.get_nonce_field( 'avatar_upload' )
+      .then(function( results) {
+        var response = results.data;
+        $scope.nonce = response.nonce;
+        formdata.append('nonce', $scope.nonce);
+        factoryRouteDashboard.$httpPostForm( formdata )
+          .success(function( results ) {
+            angular.element('#fileInput').val("");
+            if (results.type)
+              $scope.profil.img_url = results.url;
+          })
+          .error(function( errno ) { console.debug( errno ); })
+
+      })
+    
   }
 
 });

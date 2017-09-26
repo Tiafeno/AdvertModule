@@ -34,12 +34,16 @@ class AdvertModel {
           $parent_term_id = $selfparent[ 'term_id' ];
           foreach ($childs as $child) {
             if ($parent->_id != $child->parent_id) continue;
-            \wp_insert_term($child->name, $taxonomy, ['parent' => $parent_term_id ]);
+            \wp_insert_term($child->name, $taxonomy, [ 'parent' => $parent_term_id ]);
           }
         }
       }
     }
   }
+
+  /*
+  * This function executed if after user register
+  */
 
   public function add_user( $user_id ) {
     extract( $_REQUEST, EXTR_PREFIX_SAME, 'user');
@@ -64,6 +68,11 @@ class AdvertModel {
       ]);
       return \is_wp_error( $update_usr ) ? $update_usr->get_error_messages() : true;
     }
+  }
+
+  public function update_user($data = [], $where = []) {
+    $Query = $this->wpdb->update($this->wpdb->prefix."advert_user", $data, $where);
+    return !$Query ? $this->wpdb->print_error() : true;
   }
 
   public function get_advert_user( $user_id ) {

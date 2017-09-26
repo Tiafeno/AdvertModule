@@ -113,12 +113,9 @@ app.controller('AdvertFormAddCtrl', function (
       $scope.showSimpleToast( $window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ=") );
       return true;
     }
-
     var files = event.target.files;
     var formdata = new FormData();
-    $scope.imagePath = $window.URL.createObjectURL(files[0]);
-    $scope.$apply();
-
+    /* $scope.imagePath = $window.URL.createObjectURL(files[0]); */
     angular.forEach(files, function (value, key) {
       formdata.append('file', value);
     });
@@ -126,22 +123,19 @@ app.controller('AdvertFormAddCtrl', function (
     formdata.append('post_id', advert.post_id);
     formdata.append('thumbnail_upload_nonce', angular.element('#thumbnail_upload_nonce').val());
     $scope.picProgress = true;
-    $http({
-      url: advert.ajax_url,
-      method: "POST",
-      headers: { 'Content-Type': undefined },
-      data: formdata
-    }).success(function (resp) {
-      if (resp.type)
-        $scope.thumbnailGalleryIDs.push({ file: resp.url, id: resp.attach_id });
-      if (!resp.type)
-        $log.debug(resp.data);
-
-      $scope.picProgress = false;
-    }).error(function (errno) {
-      $log.debug(errno);
-      $scope.picProgress = false;
-    });
+    $scope.$apply();
+    factoryServices.httpPostFormdata( formdata )
+      .success(function( resp ) {
+        if (resp.type)
+          $scope.thumbnailGalleryIDs.push({ file: resp.url, id: resp.attach_id });
+        if (!resp.type)
+          console.debug( resp.data );
+        $scope.picProgress = false;
+      })
+      .error(function( errno ) {
+        console.debug( errno );
+        $scope.picProgress = false;
+      });
 
   };
 
@@ -228,9 +222,13 @@ app.controller('AdvertFormAddCtrl', function (
             return gallery.id == results.ID;
           });
           $scope.thumbnailGalleryIDs = galleries;
+          angular.element('#fileInput').val("");
           $scope.picProgress = false;
         })
-        .error(function() { $scope.picProgress = false; });
+        .error(function( errno ) {
+          $scope.picProgress = false; 
+          console.debug( errno );
+        });
     }
   };
 

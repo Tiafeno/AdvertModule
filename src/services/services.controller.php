@@ -86,6 +86,11 @@ class ServicesController {
     $advertUser->display_name = $User->display_name;
     $advertUser->token = $User->user_pass;
 
+    /* Get user avatar */
+    $user_avatar = \get_user_meta( $user_id, '_avatar_', true );
+    if (!empty($user_avatar))
+      $advertUser->img_url = \wp_get_attachment_image_src((int)$user_avatar, array(250, 250))[ 0 ];
+
     return $advertUser;
   }
 

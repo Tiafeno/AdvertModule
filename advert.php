@@ -5,12 +5,14 @@ use advert\src\controller\AdvertController as AdvertController;
 use advert\entity\model\AdvertModel as AdvertModel;
 use advert\libraries\parsedown as parsedown;
 use shortcode\AdvertCode as AdvertCode;
+use Underscore\Types\Arrays;
 
 final class _Advert extends AdvertController {
   private $Model;
   
   public function __construct() {
     parent::__construct();
+
     /* create Model instance */
     $this->Model = new AdvertModel();
 
@@ -28,6 +30,7 @@ final class _Advert extends AdvertController {
     \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
     \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  /* On login fail */
     \add_action( 'user_register', [ &$this->Model, 'add_user' ], 10, 1 ); /* On register user success */
+    \add_action( 'before_delete_post', [ &$this->Model, 'verify_before_delete' ], 10, 1);
 
     // Shortcode WP
     \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
@@ -92,6 +95,9 @@ final class _Advert extends AdvertController {
     
     \add_action('wp_ajax_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
+    
+    \add_action('wp_ajax_action_update_dashboard', array($this, 'action_update_dashboard'));
+    \add_action('wp_ajax_nopriv_action_update_dashboard', array($this, 'action_update_dashboard'));
 
     /* See these function at AdvertController.class.php */
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
@@ -108,6 +114,12 @@ final class _Advert extends AdvertController {
 
     \add_action('wp_ajax_action_verify_password', array($this, 'action_verify_password'));
     \add_action('wp_ajax_nopriv_action_verify_password', array($this, 'action_verify_password'));
+
+    \add_action('wp_ajax_action_render_nonce', array($this, 'action_render_nonce'));
+    \add_action('wp_ajax_nopriv_action_render_nonce', array($this, 'action_render_nonce'));
+
+    \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
+    \add_action('wp_ajax_nopriv_action_upload_avatar', array($this, 'action_upload_avatar'));
     
     \register_taxonomy(
       'district',
@@ -163,7 +175,7 @@ final class _Advert extends AdvertController {
       $User = new \WP_User( $user_id );
     } else {
       \wp_send_json(array(
-          'data' => 'Variable post_is don\'t define on $http.', 
+          'data' => 'Variable post_id don\'t define on $http.', 
           'tracking' => null, 
           'type' =>  false
         )
@@ -219,6 +231,27 @@ final class _Advert extends AdvertController {
       if (!is_int( $post_id )) return false;
       $this->Services->setThumbnail($attachment_id, $post_id);
     endif;
+  }
+
+  public function action_update_dashboard() {
+    if (!\is_user_logged_in()) return false;
+
+    $User = \wp_get_current_user();
+    $data = $_REQUEST;
+    $where = [ 'id_user' => $User->ID ];
+    /* Update user advert */
+    $update_user = $this->Model->update_user( $data, $where);
+    if (true === $update_user) {
+      /* Update user nickname */
+
+      \wp_send_json([
+        'type' => true,
+        'data' => 'User update with success'
+      ]);
+    } else \wp_send_json( [
+      'type' => false,
+      'data' => 'Error on update profil user'
+    ] );
   }
 
   /**
@@ -285,7 +318,7 @@ final class _Advert extends AdvertController {
 
     $post = [
       'ID'     => $post_id,
-      'post_status' => 'publish',
+      'post_status'  => 'publish',
       'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
       'post_content' => $desc,
     ];
@@ -356,7 +389,7 @@ final class _Advert extends AdvertController {
     return isset( $_REQUEST[ $k ] ) ? $_REQUEST[ $k ] : $def;
   }
   
-  public function action_register_user(){
+  public function action_register_user() {
     if (\is_user_logged_in())
       return false;
     
@@ -421,7 +454,7 @@ final class _Advert extends AdvertController {
     ]);
   }
   
-  public function action_delete_post(){
+  public function action_delete_post() {
     if (!\is_user_logged_in())
       return false;
     
@@ -460,7 +493,7 @@ final class _Advert extends AdvertController {
     
   }
   
-  public function action_edit_post(){
+  public function action_edit_post() {
     
   }
   
