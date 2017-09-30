@@ -54,6 +54,7 @@ class AdvertCode {
 		\wp_enqueue_script( 'DashboardAdvertController', \plugins_url('/assets/js/dashboard/dashboard.controller.js', __FILE__), array('angular', "DashboardAdvertModule"));
 		\wp_localize_script( 'DashboardAdvertController', 'jsDashboard', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
+			'logout_url' => \wp_logout_url( home_url( '/' )),
 			'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__),
 			'_user' => Services\ServicesController::getUser( $current_user->ID )

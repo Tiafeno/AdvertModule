@@ -5,7 +5,7 @@ use advert\src\controller\AdvertController as AdvertController;
 use advert\entity\model\AdvertModel as AdvertModel;
 use advert\libraries\parsedown as parsedown;
 use shortcode\AdvertCode as AdvertCode;
-use Underscore\Types\Arrays;
+use advert\libraries\php\underscore\__ as __;
 
 final class _Advert extends AdvertController {
   private $Model;
@@ -190,7 +190,7 @@ final class _Advert extends AdvertController {
   
   public function action_set_thumbnail_post() {
     $User = null;
-    if (isset($_REQUEST[ 'post_id'])) {
+    if (isset($_REQUEST[ 'post_id' ])) {
       $user_id = (int) $_REQUEST[ 'post_id' ];
       $User = new \WP_User( $user_id );
     } else {
@@ -227,7 +227,7 @@ final class _Advert extends AdvertController {
     } else {
       \wp_send_json(array(
           'data' => 'The security check failed, maybe show the user an error.', 
-          'tracking' => ['capabilities' => $User], 
+          'tracking' => [ 'capabilities' => $User ], 
           'type' => false
         )
       );
@@ -253,30 +253,50 @@ final class _Advert extends AdvertController {
     endif;
   }
 
+  /**
+  * This function Update user profil
+  * @function action_update_dashboard
+  * @param, void
+  * @return, json object send
+  **/
   public function action_update_dashboard() {
     if (!\is_user_logged_in()) return false;
     $User = \wp_get_current_user();
     $params = $_REQUEST;
     $where = [ 'id_user' => $User->ID ];
-    $data = Arrays::remove( $params, 'user_login');
+    $wParams = (object) $params;
+    $data = __::without( $params, 
+      $wParams->action,
+      $wParams->user_login, 
+      $wParams->user_email, 
+      $wParams->user_registered, 
+      $wParams->user_nicename, 
+      $wParams->display_name, 
+      $wParams->add_date,
+      $wParams->token
+    );
     /* Update user advert */
-    $update_user = $this->Model->update_user( $data, $where);
+    $update_user = $this->Model->update_user( $data, $where );
     if (true === $update_user) {
-      /* Update user nickname */
-      $update_usr = \wp_update_user([
-        'ID' => $User->ID,
-        'nickname' => $params[ 'user_login' ]
-      ]);
-      if (\is_wp_error( $update_user)) {
-        \wp_send_json( [ 'type' => false, 'data' => $update_user->get_error_messages()] );
+      /* Update user user_login */
+      if ($params[ 'user_login' ] != $User->user_login) {
+        $update_usr = \wp_update_user([
+          'ID' => $User->ID,
+          'user_login' => $params[ 'user_login' ]
+        ]);
+
+        if (\is_wp_error( $update_user )) {
+          \wp_send_json( [ 'type' => false, 'data' => $update_user->get_error_messages()] );
+        } else {
+          \wp_send_json([
+            'type' => true, 'data' => 'User update with success'
+          ]);
+        }
       }
-      \wp_send_json([
-        'type' => true,
-        'data' => 'User update with success'
-      ]);
     } else \wp_send_json( [
       'type' => false,
-      'data' => 'Error on update profil user'
+      'data' => 'Error on update profil user',
+      'tracking' => $update_user
     ] );
   }
 

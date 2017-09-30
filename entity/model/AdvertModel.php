@@ -71,8 +71,8 @@ class AdvertModel {
   }
 
   public function update_user($data = [], $where = []) {
-    $Query = $this->wpdb->update($this->wpdb->prefix."advert_user", $data, $where);
-    return !$Query ? $this->wpdb->print_error() : true;
+    $Query = $this->wpdb->update("{$this->wpdb->prefix}advert_user", $data, $where);
+    return ($Query === false) ? $this->wpdb->last_query : true;
   }
 
   public function get_advert_user( $user_id ) {
