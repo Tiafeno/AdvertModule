@@ -30,25 +30,44 @@ var routeDashboard = angular.module('routeDashboard', []);
         }
       });
 
-routeDashboard.directive("uploadavatar", function () {
-  return {
+routeDashboard
+  .directive("uploadavatar", function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+          element.bind('click', function (e) {
+              angular.element('#fileInput').trigger('click');
+          });
+        }
+    }
+  })
+  .directive('ngUpload', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+          var onChangeFunc = scope.$eval(attrs.ngUpload);
+          element.bind('change', onChangeFunc);
+        }
+    };
+  })
+  .directive('logout', function() {
+    return {
       restrict: 'A',
-      link: function (scope, element) {
-        element.bind('click', function (e) {
-            angular.element('#fileInput').trigger('click');
+      scope: {},
+      controller: function($scope, $window) {
+        $scope.redirectURL = function( url ) {
+          $window.location.href = url;
+          $scope.$apply();
+        }
+      },
+      link: function(scope, element, attrs) {
+        element.bind('click', function() {
+          var url = jsDashboard.logout_url;
+          scope.redirectURL( url );
         });
       }
-  }
-})
-.directive('ngUpload', function () {
-  return {
-      restrict: 'A',
-      link: function (scope, element, attrs) {
-        var onChangeFunc = scope.$eval(attrs.ngUpload);
-        element.bind('change', onChangeFunc);
-      }
-  };
-})
+    }
+  })
 routeDashboard.factory('factoryRouteDashboard', function( $http, $window, $q ) {
   return {
     getUser : function() {

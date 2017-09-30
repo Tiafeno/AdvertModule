@@ -2,7 +2,7 @@
   .information {
     margin-left: 25px;
   }
-  .information p.edit-avatar{
+  .information p.edit-avatar, .information p.logout{
     margin: 0;
     font-size: 12px;
     color: #34A9F7;
@@ -23,7 +23,7 @@
 </style>
 
 <md-content layout-padding >
-  <form name="profilForm" layout="column" flex-gt-sm="60" style="margin: auto" novalidate>
+  <form name="profilForm" ng-submit="EventSubmit( $event )" layout="column" flex-gt-sm="60" style="margin: auto" novalidate>
     <div layout="row" class="header-profil">
       <div class="avatar" flex="30">
         <img ng-src="{{ profil.img_url }}" class="md-card-image" alt="Washed Out">
@@ -32,6 +32,7 @@
       <div class="information" flex="45">
         <h2>{{ profil.firstname }} {{ profil.lastname }}</h2>
         <p class="edit-avatar" uploadavatar>Modifier l'avatar</p>
+        <p class="logout" logout>Déconnecter</p>
         <p> {{ profil.user_registered | fromNow }}</p>
       </div>
     </div>
