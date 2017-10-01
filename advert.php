@@ -284,7 +284,7 @@ final class _Advert extends AdvertController {
         $update_usr = $wpdb->update( $wpdb->users,
         [ 'user_login' => trim($params[ 'user_login' ]) ],
         [ 'ID' => $User->ID ]);
-        if (false === $update_user) {
+        if (false === $update_usr) {
           \wp_send_json( [ 
             'type' => false, 'data' => 'Error on update user_login'] 
           );
