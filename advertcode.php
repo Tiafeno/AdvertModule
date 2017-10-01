@@ -23,6 +23,7 @@ class AdvertCode {
 	public static function setAngularMaterial() {
 		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.min.js', __FILE__), array('angular'));
 		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__));
+		\wp_enqueue_style('material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
 	}
 
 	public static function setUIKit() {
@@ -37,10 +38,6 @@ class AdvertCode {
 	public static function RenderDashboard() {
 		$current_user = null;
     if (\is_user_logged_in()) {
-      /*
-      * @function  wp_get_current_user
-      * @return WP_User
-      */
       $current_user = \wp_get_current_user();
 		} else return AdvertCode::RenderLoginForm();
 		
