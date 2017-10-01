@@ -12,7 +12,11 @@
 <form name="{{form_id}}" id="{{form_id}}" action="{{action}}" method="post" ng-app="LoginAdvertApp" ng-controller="LoginAdvertCtrl as lfc"
         style="width:80%; margin: auto; padding: 37px 10px 42px 10px;">
     {{login_form_top}}
-
+    <md-toolbar class="md-theme-light" style="width: 40%; margin: auto">
+        <h2 class="md-toolbar-tools">
+          <span style="color: aliceblue; text-transform: uppercase; letter-spacing: 2px;">Login</span>
+        </h2>
+      </md-toolbar>
     {% if login_fail is not null %}
     <div layout-gt-sm="row" layout-align="center center">
         <div class="uk-alert-warning" uk-alert>

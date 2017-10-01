@@ -7,7 +7,7 @@ class AdvertModel {
 
   public function __construct() {
     global $wpdb;
-    $this->wpdb = $wpdb;
+    $this->wpdb = &$wpdb;
     return;
   }
 

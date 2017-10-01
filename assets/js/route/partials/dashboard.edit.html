@@ -2,11 +2,26 @@
   .information {
     margin-left: 25px;
   }
-  .information p.edit-avatar, .information p.logout{
+  .avatar {
+    position: relative;
+  }
+  p.edit-avatar, .information p.logout{
     margin: 0;
-    font-size: 12px;
-    color: #34A9F7;
     cursor: pointer;
+  }
+  p.edit-avatar {
+    position: absolute;
+    color: brown;
+    padding: 5px;
+  }
+  .loading-avatar {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .information p.logout {
+    color: #34A9F7;
+    font-size: 12px;
   }
   .information h2 {
     margin: 0;
@@ -26,12 +41,13 @@
   <form name="profilForm" ng-submit="EventSubmit( $event )" layout="column" flex-gt-sm="60" style="margin: auto" novalidate>
     <div layout="row" class="header-profil">
       <div class="avatar" flex="30">
+        <p class="edit-avatar" uploadavatar><i class="material-icons">add_a_photo</i></p>
+        <md-progress-circular ng-disabled="progress.avatar" class="md-accent loading-avatar" md-diameter="40"></md-progress-circular>
         <img ng-src="{{ profil.img_url }}" class="md-card-image" alt="Washed Out">
         <input id="fileInput" ng-upload="EventClickchangeAvatar" name="file" type="file" class="ng-hide">
       </div>
       <div class="information" flex="45">
         <h2>{{ profil.firstname }} {{ profil.lastname }}</h2>
-        <p class="edit-avatar" uploadavatar>Modifier l'avatar</p>
         <p class="logout" logout>Déconnecter</p>
         <p> {{ profil.user_registered | fromNow }}</p>
       </div>

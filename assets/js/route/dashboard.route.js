@@ -8,7 +8,8 @@ dashboard.config(['$routeProvider', function( $routeProvider ) {
     })
     .when('/profil/edit', {
       templateUrl: jsDashboard.partials_uri + 'dashboard.edit.html',
-      controller: 'Dashboard_EditCtrl'
+      controller: 'Dashboard_EditCtrl',
+      controllerAs: 'EditCtrl'
     })
     .when('/timeline', {
       templateUrl: jsDashboard.partials_uri + 'dashboard.timeline.html',
@@ -102,10 +103,13 @@ routeDashboard.factory('factoryRouteDashboard', function( $http, $window, $q ) {
 
 routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, factoryRouteDashboard ) {
   $scope._user = factoryRouteDashboard.getUser();
+  $scope.progress = {};
   $scope.profil = {};
   $scope.verifyPassword = true;
   $scope.nonce = null;
   
+  $scope.progress.avatar = true;
+  console.log( $scope.progress );
   var initilize = function() {
     var KeysUser = _.keys( $scope._user );
     KeysUser = _.without( KeysUser, 'id_user', 'id_advert_user');
@@ -114,7 +118,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     });
     if ($scope.profil.img_url == null || false === $scope.profil.img_url)
       $scope.profil.img_url = jsDashboard.assets_plugins_url + 'img/no-avatar-male.jpg';
-  }
+  };
 
   initilize();
   $scope.EventSubmit = function( $event ) {
@@ -181,6 +185,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     angular.forEach(files, function (value, key) {
       formdata.append('file', value);
     });
+    $scope.progress.avatar = false;
     factoryRouteDashboard.get_nonce_field( 'avatar_upload' )
       .then(function( results) {
         var response = results.data;
@@ -188,11 +193,15 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
         formdata.append('nonce', $scope.nonce);
         factoryRouteDashboard.$httpPostForm( formdata )
           .success(function( results ) {
+            $scope.progress.avatar = true;
             angular.element('#fileInput').val("");
             if (results.type)
               $scope.profil.img_url = results.url;
           })
-          .error(function( errno ) { console.debug( errno ); })
+          .error(function( errno ) { 
+            $scope.progress.avatar = true;
+            console.debug( errno ); 
+          })
 
       })
     
