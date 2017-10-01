@@ -279,14 +279,15 @@ final class _Advert extends AdvertController {
     $update_user = $this->Model->update_user( $data, $where );
     if (true === $update_user) {
       /* Update user user_login */
-      if ($params[ 'user_login' ] != $User->user_login) {
-        $update_usr = \wp_update_user([
-          'ID' => $User->ID,
-          'user_login' => $params[ 'user_login' ]
-        ]);
-
-        if (\is_wp_error( $update_user )) {
-          \wp_send_json( [ 'type' => false, 'data' => $update_user->get_error_messages()] );
+      global $wpdb;
+      if (trim($params[ 'user_login' ]) != trim($User->user_login)) {
+        $update_usr = $wpdb->update( $wpdb->users,
+        [ 'user_login' => trim($params[ 'user_login' ]) ],
+        [ 'ID' => $User->ID ]);
+        if (false === $update_user) {
+          \wp_send_json( [ 
+            'type' => false, 'data' => 'Error on update user_login'] 
+          );
         } else {
           \wp_send_json([
             'type' => true, 'data' => 'User update with success'
