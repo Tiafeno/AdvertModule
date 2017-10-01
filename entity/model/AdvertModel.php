@@ -111,6 +111,12 @@ class AdvertModel {
     \remove_role('advertiser');
   }
 
+  public static function create_your_society() {
+    if (\is_user_logged_in())
+      return false;
+    $User = \wp_get_current_user();
+  }
+
   public static function create_advert_pages() {
     if (!is_admin()) return;
     $contents = [

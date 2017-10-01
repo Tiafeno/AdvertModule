@@ -284,6 +284,7 @@ final class _Advert extends AdvertController {
         $update_usr = $wpdb->update( $wpdb->users,
         [ 'user_login' => trim($params[ 'user_login' ]) ],
         [ 'ID' => $User->ID ]);
+        $wpdb->flush();
         if (false === $update_usr) {
           \wp_send_json( [ 
             'type' => false, 'data' => 'Error on update user_login'] 
@@ -456,11 +457,10 @@ final class _Advert extends AdvertController {
             ]);
             $User = new \WP_User( $user_id );
             $User->add_cap('upload_files');
-            // $User->add_cap('delete_published_posts');
-            // $User->add_cap('edit_others_posts');
-            // $User->add_cap('edit_posts');
-            // $User->add_cap('delete_others_pages');
-
+            /* $User->add_cap('delete_published_posts');
+               $User->add_cap('edit_others_posts');
+               $User->add_cap('edit_posts');
+               $User->add_cap('delete_others_pages'); */
             if (!is_int($update_usr)) \wp_send_json(['Error on update user role, probably that user doesn\'t exist.']);
             $addform_page_id = \get_option( 'addform_page_id', false );
             $verify = $addform_page_id == false || !is_int( (int)$addform_page_id );
@@ -473,30 +473,35 @@ final class _Advert extends AdvertController {
           } else {
             \wp_send_json([
               'type' => 'error',
-              'tracking' => 'Error: Create user.',
+              'tracking' => 'Create user.',
               'data' => $user->get_error_messages()
             ]);
           }
         } else {
           \wp_send_json(array(
             'type' => 'error', 
-            'tracking' => 'Error: Please review $_REQUEST variable, `password` not send or not define. ',
+            'tracking' => 'Please review $_REQUEST variable, probably that `password` don\'t send or not define. ',
             'data' => 'Request `password` is not define.'
             )
           );
-        };
-        \wp_send_json(array('type'=>'success', 'data'=> $user_id));
+        }
+
+        \wp_send_json(array(
+          'type' => 'success', 
+          'data' => $user_id
+          )
+        );
       } else {
         \wp_send_json(array(
           'type' => 'error', 
-          'tracking' => 'Error: Adress `email` or `user` already exists. ',
+          'tracking' => 'Adress `email` or `user` already exists. ',
           'data' => 'User already exists.'
           )
         );
       }
     } else \wp_send_json([
       'type' => 'error',
-      'tracking' => 'Error: Please review Request variable, `lastname` or `firstname` is not define.',
+      'tracking' => 'Please review Request variable, probably that `lastname` or `firstname` is not define.',
       'data' => 'There are variables not defined in the query.'
     ]);
   }

@@ -1,5 +1,6 @@
 'use strict'
 
+/* Route provider */
 dashboard.config(['$routeProvider', function( $routeProvider ) {
   $routeProvider
     .when('/profil', {
@@ -21,16 +22,18 @@ dashboard.config(['$routeProvider', function( $routeProvider ) {
 }]);
 
 var routeDashboard = angular.module('routeDashboard', []);
-    routeDashboard
-      .filter('fromNow', function() {
-        return function( input ) {
-          var _dt = input.trim();
-          if (typeof moment == 'undefined') return _dt + ' - moment.js not define';
-          moment.locale('fr');
-          return moment( _dt ).fromNow();
-        }
-      });
+/* Module filter */
+routeDashboard
+  .filter('fromNow', function() {
+    return function( input ) {
+      var _dt = input.trim();
+      if (typeof moment == 'undefined') return _dt + ' - moment.js not define';
+      moment.locale('fr');
+      return moment( _dt ).fromNow();
+    }
+  });
 
+/* Module directive */
 routeDashboard
   .directive("uploadavatar", function () {
     return {
@@ -69,6 +72,8 @@ routeDashboard
       }
     }
   })
+
+/* Module factory services */
 routeDashboard.factory('factoryRouteDashboard', function( $http, $window, $q ) {
   return {
     getUser : function() {
@@ -109,7 +114,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.nonce = null;
   
   $scope.progress.avatar = true;
-  console.log( $scope.progress );
+  
   var initilize = function() {
     var KeysUser = _.keys( $scope._user );
     KeysUser = _.without( KeysUser, 'id_user', 'id_advert_user');
@@ -121,6 +126,8 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   };
 
   initilize();
+  
+  /* Event on submit form profil edit  */
   $scope.EventSubmit = function( $event ) {
     var formdata = new FormData();
     var profil = _.omit( $scope.profil, ['id_user', 'img_url', 'id_advert_user'])
@@ -139,12 +146,13 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
       });
   }
 
+  /* Check if form is dirty and valid */
   $scope.EventformProfilValidate = function( $event ){
     return ($scope.profilForm.$dirty && $scope.profilForm.$valid) ? false : 
     ($scope.profilForm.$invalid ? ($scope.profilForm.$dirty ? true : false) : true);
   }
 
-  /* Event ngBlur */
+  /* Event ngBlur, Verify if password is correct before change */
   $scope.EventVerifyPassword = function( $event, form ) {
     factoryRouteDashboard.verifyPassword( form.old_password.$modelValue ).then(function( results ) {
       var resp = results.data;
@@ -153,7 +161,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     })
   };
 
-  /* Event ngBlur */
+  /* Event ngBlur, Verify if verify password is equal a new password */
   $scope.EventEqualsPassword = function( $event, form) {
     var pass = form.new_password.$modelValue;
     var confirmPass = form.confirm_password.$modelValue;
@@ -161,7 +169,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     form.confirm_password.$setValidity('equalsPassword', status);
   };
 
-  /* Event ngKeydown */
+  /* Event ngKeydown, Verify if old password is not equal a new password */
   $scope.EventTypePassword = function( $event, form ) {
     var old_password = form.old_password.$modelValue;
     var new_password = form.new_password.$modelValue;
@@ -177,7 +185,8 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
       $scope.EventEqualsPassword( $event, form );
     }
   }
-
+  
+  /* Event on change avatar and save */
   $scope.EventClickchangeAvatar = function( ) {
     var files = event.target.files;
     var formdata = new FormData();
