@@ -42,7 +42,7 @@
     <div layout="row" class="header-profil">
       <div class="avatar" flex="30">
         <p class="edit-avatar" uploadavatar><i class="material-icons">add_a_photo</i></p>
-        <md-progress-circular ng-disabled="progress.avatar" class="md-accent loading-avatar" md-diameter="40"></md-progress-circular>
+        <md-progress-circular ng-show="!progress.avatar" class="md-accent loading-avatar" md-diameter="40"></md-progress-circular>
         <img ng-src="{{ profil.img_url }}" class="md-card-image" alt="Washed Out">
         <input id="fileInput" ng-upload="EventClickchangeAvatar" name="file" type="file" class="ng-hide">
       </div>
@@ -155,7 +155,7 @@
   </form>
 
   <!--+ Password formulaire -->
-  <form name="passwordForm" ng-submit="passwordFormSubmit(passwordForm.$valid)" novalidate layout="column" flex-gt-sm="60" style="margin: auto">
+  <form name="passwordForm" ng-submit="EventChangePassword(passwordForm.$valid)" novalidate layout="column" flex-gt-sm="60" style="margin: auto">
     <md-list flex="50">
         <md-subheader class="md-no-sticky" style="font-size: large; font-weight: bold; color:orange">Modifier Mot de passe
         </md-subheader>

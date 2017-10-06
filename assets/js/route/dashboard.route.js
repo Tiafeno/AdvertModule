@@ -114,6 +114,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.nonce = null;
   
   $scope.progress.avatar = true;
+  $scope.progress.password_change = true;
   
   var initilize = function() {
     var KeysUser = _.keys( $scope._user );
@@ -139,10 +140,11 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     factoryRouteDashboard.get_nonce_field( 'update_profil' )
       .then(function( results ) {
         factoryRouteDashboard.$httpPostForm( formdata )
-          .success(function( results ) {
+          .then(function successCallback( results ) {
             
-          })
-          .error(function( errno ) {});
+          }, function errorCallback( errno ) {
+            console.warn( errno );
+          });
       });
   }
 
@@ -201,19 +203,32 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
         $scope.nonce = response.nonce;
         formdata.append('nonce', $scope.nonce);
         factoryRouteDashboard.$httpPostForm( formdata )
-          .success(function( results ) {
+          .then(function successCallback( results ) {
+            var $data = results.data;
             $scope.progress.avatar = true;
             angular.element('#fileInput').val("");
-            if (results.type)
-              $scope.profil.img_url = results.url;
-          })
-          .error(function( errno ) { 
+            if ($data.type) {
+              $scope.profil.img_url = $data.url;
+            } else {
+              console.debug( $data );
+            }
+          }, function errorCallback( errno ) {
             $scope.progress.avatar = true;
             console.debug( errno ); 
-          })
+          });
 
       })
     
+  };
+
+  $scope.EventChangePassword = function( isValid ) {
+    if (isValid) {
+      $scope.progress.password_change = false;
+      
+
+    } else {
+      return false;
+    }
   }
 
 });
