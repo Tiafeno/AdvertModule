@@ -16,6 +16,7 @@ add_action('plugins_loaded', function() {
   */
   $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/front', 'frontadvert');
   $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/admin', 'adminadvert');
+  $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/mail', 'mail');
   if (!is_null( $twig )) exit( 'Twig template is already define' );
   $twig = new \Twig_Environment($loader, array(
     'debug' => true,

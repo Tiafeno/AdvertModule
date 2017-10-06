@@ -86,19 +86,16 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_nopriv_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
     
     \add_action('wp_ajax_action_add_new_advert', array($this, 'action_add_new_advert'));
-    \add_action('wp_ajax_nopriv_action_add_new_advert', array($this, 'action_add_new_advert'));
     
     \add_action('wp_ajax_action_register_user', array($this, 'action_register_user'));
     \add_action('wp_ajax_nopriv_action_register_user', array($this, 'action_register_user'));
     
     \add_action('wp_ajax_action_delete_post', array($this, 'action_delete_post'));
-    \add_action('wp_ajax_nopriv_action_delete_post', array($this, 'action_delete_post'));
     
     \add_action('wp_ajax_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     
     \add_action('wp_ajax_action_update_dashboard', array($this, 'action_update_dashboard'));
-    \add_action('wp_ajax_nopriv_action_update_dashboard', array($this, 'action_update_dashboard'));
 
     /* See these function at AdvertController.class.php */
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
@@ -116,11 +113,12 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_action_verify_password', array($this, 'action_verify_password'));
     \add_action('wp_ajax_nopriv_action_verify_password', array($this, 'action_verify_password'));
 
+    \add_action('wp_ajax_action_change_password', array($this, 'action_change_password'));
+
     \add_action('wp_ajax_action_render_nonce', array($this, 'action_render_nonce'));
     \add_action('wp_ajax_nopriv_action_render_nonce', array($this, 'action_render_nonce'));
 
     \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
-    \add_action('wp_ajax_nopriv_action_upload_avatar', array($this, 'action_upload_avatar'));
     
     \register_taxonomy(
       'district',
@@ -291,9 +289,13 @@ final class _Advert extends AdvertController {
           );
         } else {
           \wp_send_json([
-            'type' => true, 'data' => 'User update with success'
+            'type' => true, 'data' => 'User profil and login name update with success'
           ]);
         }
+      } else {
+        \wp_send_json([
+          'type' => true, 'data' => 'User update with success'
+        ]);
       }
     } else \wp_send_json( [
       'type' => false,

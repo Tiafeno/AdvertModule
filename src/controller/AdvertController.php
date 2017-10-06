@@ -45,6 +45,26 @@ abstract class AdvertController {
     \wp_send_json( $ctgs );
   }
 
+  public function action_change_password() {
+    if (!isset( $_REQUEST[ 'pass' ])) 
+      \wp_send_json( [
+        'type' => false,
+        'data' => 'Probably, an request error params'
+      ] );
+    if (!\is_user_logged_in()) 
+      return;
+    // if (defined('DOING_AJAX') && DOING_AJAX)
+    //   return false;
+    $password = base64_decode( trim($_REQUEST[ 'pass' ]) );
+    $User = \wp_get_current_user();
+    /* @function wp_set_password( $password, $user_id ) */
+    \wp_set_password( $password, $User->ID );
+    \wp_send_json( [
+      'type' => true,
+      'data' => 'Password update successfuly!'
+    ] );
+  }
+
   public function action_verify_password() {
     if (!isset( $_REQUEST[ 'pass' ])) return;
     if (!\is_user_logged_in()) return;

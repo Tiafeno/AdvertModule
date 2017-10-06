@@ -116,7 +116,7 @@
     <div layout="row" >
         
       <md-input-container flex="30">
-        <label>Phone</label>
+        <label>Phone (+261)</label>
         <input required name="phone" ng-model="profil.phone">
         <div ng-messages="profilForm.phone.$error">
           <div ng-message="required">This is required.</div>
@@ -180,7 +180,7 @@
         
       <md-input-container flex="50">
         <label>New Password</label>
-        <input type="password" required minlength="8" name="new_password" ng-keydown="EventTypePassword( $event, passwordForm )" ng-model="new_password">
+        <input type="password" required minlength="8" name="new_password" ng-keyup="EventTypePassword( $event, passwordForm )" ng-model="new_password">
         <div ng-messages="passwordForm.new_password.$error">
           <div ng-message="required">This is required.</div>
           <div ng-message="oldEqualnew">Le mot de passe que vous avez saisie est identique à l'ancien mot de passe. Veuillez réessayer.</div>

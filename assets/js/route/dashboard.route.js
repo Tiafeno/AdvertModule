@@ -134,7 +134,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
     var profil = _.omit( $scope.profil, ['id_user', 'img_url', 'id_advert_user'])
     formdata.append('action', "action_update_dashboard");
     _.each(profil, function ($value, $key) {
-      formdata.append($key, $value);
+      formdata.append($key, $value.trim());
     });
 
     factoryRouteDashboard.get_nonce_field( 'update_profil' )
@@ -175,7 +175,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.EventTypePassword = function( $event, form ) {
     var old_password = form.old_password.$modelValue;
     var new_password = form.new_password.$modelValue;
-    var status = (old_password == new_password);
+    var status = (old_password != new_password);
     if (form.old_password.$modelValue != undefined) {
       form.new_password.$setValidity('oldEqualnew', status);
     }
@@ -224,8 +224,21 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.EventChangePassword = function( isValid ) {
     if (isValid) {
       $scope.progress.password_change = false;
-      
-
+      var httpform = new FormData();
+      httpform.append('action', 'action_change_password');
+      httpform.append('pass', $window.btoa( $scope.new_password ))
+      factoryRouteDashboard.$httpPostForm( httpform )
+        .then(function success( results ) {
+          var $data = results.data;
+          if (!$data.type) console.debug( $data.data );
+          $scope.passwordForm.$setUntouched();
+          $scope.passwordForm.$setPristine();
+          $window.setTimeout(function() {
+            location.reload();
+          }, 1500);
+        }, function error( errno ) {
+          $scope.EventChangePassword( true );
+        });
     } else {
       return false;
     }
