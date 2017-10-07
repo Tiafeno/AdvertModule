@@ -141,7 +141,11 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
       .then(function( results ) {
         factoryRouteDashboard.$httpPostForm( formdata )
           .then(function successCallback( results ) {
-            
+            var data = results.data;
+            if (data.reload != undefined && data.reload) 
+              $window.setTimeout(function() {
+                location.reload();
+              }, 1500);
           }, function errorCallback( errno ) {
             console.warn( errno );
           });

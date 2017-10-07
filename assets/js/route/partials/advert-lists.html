@@ -1,22 +1,38 @@
+<style type="text/css">
+.material-icons {
+  text-transform: lowercase !important;
+}
+.uk-badge {
+  color: white !important;
+  font-size: 12px !important;
+}
+h4.advert-price {
+  font-weight: 700;
+  color: #0a6ed2;
+}
+a.advert-adress{
+  color: inherit;
+}
+</style>
 <div class="uk-section">
-  <div class="uk-container uk-container-large">
+  <div class="uk-container uk-container-small">
     <article class="uk-comment" ng-repeat="post in posts">
       <header class="uk-comment-header " uk-grid>
         <div class="uk-width-1-4">
           <div class="advert-thumbnail-color" > 
-            <div class="advert-thumbnail" style="background: url([[post.ID | thumbnail_url]])">
+            <div class="advert-thumbnail" style="background: url( [[post.img_url]] )">
             </div>
           </div>
         </div>
         <div class="uk-width-3-4">
-          <h4 class="uk-comment-title uk-margin-remove"><a class="uk-link-reset" ng-href="#/advert/[[ post.ID ]]">[[ post.post_title ]]</a></h4>
-          <ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-remove-top">
-            <li><a href="#">[[ post.categorie.name ]]</a></li>
-            <li><a href="#">[[ post.adress ]]</a></li>
+          <h4 class="uk-comment-title uk-margin-remove"><a class="uk-link-reset" ng-href="#!/advert/[[ post.ID ]]">[[ post.post_title ]]</a></h4>
+          <ul class="uk-comment-meta uk-subnav uk-subnav-divider uk-margin-remove-top uk-margin-remove-bottom">
+            <li><a href="#">  [[ post.categorie.name ]]</a></li>
+            <li> <i class="material-icons">place</i> <a href="#" class="advert-adress"> [[ post.adress ]] </a></li>
+            <li><span class="uk-badge item-date">[[ post.post_date | postDate ]]</span></li>
           </ul>
-          <p ng-bind-html="[[ post.post_excerpt ]]" class="uk-margin-remove" style="font-weight: 300"></p>
-          <h4 class="uk-h4 uk-margin-remove-top  uk-comment-title">[[ post.price | currency ]] Ar</h4>
-          <span class="uk-badge item-date">[[ post.post_date | postDate ]]</span>
+          <h4 class="uk-h4 uk-margin-remove-top  uk-comment-title advert-price">[[ post.price | currency ]] Ar</h4>
+          <!-- <p ng-bind-html="[[ post.post_excerpt ]]" class="uk-margin-remove" style="font-weight: 300"></p> -->
         </div>
         <div class="uk-divider-small"> </div>
       </header>

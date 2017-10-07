@@ -6,11 +6,10 @@ advert
       if (isNaN(input)) {
         return input;
       } else {
-        var post = _.find( adverts.thumbnails, function( thumbnail ) {
-          return thumbnail.post_id = parseInt( input );
+        var _pt = _.find( adverts.thumbnails, function( thumbnail ) {
+          return thumbnail.post_id == parseInt( input );
         });
-        if (post.thumbnail_url == false) return '';
-        return post.thumbnail_url;
+        return (_pt.thumbnail_url == false) ? '' : _pt.thumbnail_url;
       }
     }
   })
@@ -19,7 +18,7 @@ advert
       if (isNaN(input)) {
         return input;
       } else {
-        input = parseFloat(input);
+        input = parseFloat( input );
         return input.toFixed(2).replace(/./g, function(c, i, a) {
           return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c ;
       });
@@ -28,8 +27,7 @@ advert
   })
   .filter('postDate', function() {
     return function( input ) {
-      var postdate = input.trim();
-
+      var postdate = input;
       moment.locale('fr');
       return moment( postdate ).fromNow();
     }

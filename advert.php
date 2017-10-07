@@ -30,7 +30,7 @@ final class _Advert extends AdvertController {
     \add_action( 'after_setup_theme', [ &$this, 'remove_admin_bar' ]);
     \add_action( 'wp_login_failed', [ &$this, 'login_fail' ] );  /* On login fail */
     \add_action( 'user_register', [ &$this->Model, 'add_user' ], 10, 1 ); /* On register user success */
-    \add_action( 'before_delete_post', [ &$this->Model, 'verify_before_delete' ], 10, 1);
+    \add_action( 'before_delete_post', [ &$this, 'verify_before_delete' ], 10, 1);
     \add_action( 'get_header', [ &$this, 'load_header' ], 10, 1);
 
     // Shortcode WP
@@ -289,7 +289,7 @@ final class _Advert extends AdvertController {
           );
         } else {
           \wp_send_json([
-            'type' => true, 'data' => 'User profil and login name update with success'
+            'type' => true, 'reload' => true, 'data' => 'User profil and login name update with success'
           ]);
         }
       } else {
@@ -420,7 +420,7 @@ final class _Advert extends AdvertController {
         \wp_send_json([
           'type' => true, 
           'data' => 'Update post with attributs',
-          'redirect_url' => null
+          'redirect_url' => $this->Services->getAdvertDetailsUrl( $current_post_id )
           ]
         );
       } else {

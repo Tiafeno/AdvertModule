@@ -1,6 +1,6 @@
 'use strict'
 
-advert.controller('AdvertController', function ($scope, $window, Advertfactory) {
+advert.controller('AdvertController', function ($scope, $window, $filter, Advertfactory) {
   var self = this;
   $scope.vendors = [];
   self.Initialize = function () {
@@ -16,7 +16,11 @@ advert.controller('AdvertController', function ($scope, $window, Advertfactory) 
       });
   }
   self.Initialize();
-  $scope.posts = _.union(adverts.posts);
+  var _pt = _.union(adverts.posts);
+  $scope.posts = _.map(_pt, function( el ) {
+    el.img_url = $filter( 'thumbnail_url' )( el.ID );
+    return el;
+  });
 })
   .config(function ($interpolateProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');

@@ -116,4 +116,8 @@ class ServicesController {
     return file_get_contents( \plugin_dir_path(__FILE__)."schema/advert.json");
   }
 
+  public function getAdvertDetailsUrl( $post_id ) {
+    return \home_url('/') . "#!/advert/" . $post_id;
+  }
+
 }

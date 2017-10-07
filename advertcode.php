@@ -204,7 +204,7 @@ class AdvertCode {
 			}
 			namespace\AdvertCode::setEnqueue();
 			namespace\AdvertCode::setUIKit();
-
+			\wp_enqueue_style('material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
 			\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
 			\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 			\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );

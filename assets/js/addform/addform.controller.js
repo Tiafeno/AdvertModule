@@ -125,14 +125,14 @@ app.controller('AdvertFormAddCtrl', function (
     $scope.picProgress = true;
     $scope.$apply();
     factoryServices.httpPostFormdata( formdata )
-      .success(function( resp ) {
-        if (resp.type)
-          $scope.thumbnailGalleryIDs.push({ file: resp.url, id: resp.attach_id });
-        if (!resp.type)
-          console.debug( resp.data );
+      .then(function successCallback( resp ) {
+        var data = resp.data;
+        if (data.type)
+          $scope.thumbnailGalleryIDs.push({ file: data.url, id: data.attach_id });
+        if (!data.type)
+          console.debug( data );
         $scope.picProgress = false;
-      })
-      .error(function( errno ) {
+      }, function errorCallback( errno ) {
         console.debug( errno );
         $scope.picProgress = false;
       });
@@ -166,11 +166,12 @@ app.controller('AdvertFormAddCtrl', function (
     advertdata.append('action', "action_add_new_advert");
     advertdata.append('post_id', advert.post_id);
 
-    factoryServices.httpPostFormdata( advertdata ).success(function (results) {
+    factoryServices.httpPostFormdata( advertdata )
+    .then(function successCallback( results ) {
       if (parseInt(results) === 0) return $scope.activated = false; 
       $scope.activated = false;
-
-      if (results.type) {
+      var data = results.data;
+      if (data.type) {
         $scope.thumbnailGalleryIDs = [];
         $scope.advertPost = {};
         $scope.setAdvertForm.$setUntouched();
@@ -178,10 +179,12 @@ app.controller('AdvertFormAddCtrl', function (
       }
       /* redirect */
       $window.setTimeout(function() {
-        if (results.type)
-          $window.location.href = results.redirect_url;
+        if (data.type)
+          $window.location.href = data.redirect_url;
       }, 2500);
-    }).error(function () { $scope.activated = false; });
+    }, function erroCallback( errno ) {
+      $scope.activated = false;
+    });
     
   };
 
@@ -216,16 +219,16 @@ app.controller('AdvertFormAddCtrl', function (
       delete_formdata.append('id', post_id);
 
       factoryServices.httpPostFormdata( delete_formdata )
-        .success(function( results ){
-          if (!results.type) { console.warn(results.data); return $scope.picProgress = false; }
+        .then(function successCallback( results ){
+          var data = results.data;
+          if (!data.type) { console.warn( data ); return $scope.picProgress = false; }
           var galleries = _.reject( $scope.thumbnailGalleryIDs, function( gallery ){
-            return gallery.id == results.ID;
+            return gallery.id == data.ID;
           });
           $scope.thumbnailGalleryIDs = galleries;
           angular.element('#fileInput').val("");
           $scope.picProgress = false;
-        })
-        .error(function( errno ) {
+        }, function errorCallback( errno ) {
           $scope.picProgress = false; 
           console.debug( errno );
         });
