@@ -128,6 +128,7 @@ abstract class AdvertController {
     $posts = services\ServicesController::getPost( $post_id );
 
     if (!is_null($posts)) {
+      
       \wp_send_json( [ 'type' => true, 'data' => $posts ]);
     } else \wp_send_json([ 'type' => false, 'tracking' =>  null, 'data' => 'get post content is null']);
   }

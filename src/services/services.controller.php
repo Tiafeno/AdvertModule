@@ -33,25 +33,36 @@ class ServicesController {
     }
   }
 
+  public static function getAttachmentUrl( $post_id ) {
+    if (!is_int( $post_id ))
+      return null;
+    $url = \wp_get_attachment_image_src($post_id, 'full')[ 0 ];
+    return $url;
+
+  }
+
   public static function getPost( $post_id ) {
     if (!function_exists('wc_get_product')) return false;
     $_product = \wc_get_product( (int)$post_id );
     if (!is_null($_product)) {
+      $urlsGallery = [];
+      $gallery = $_product->get_gallery_image_ids();
+      array_push( $gallery, $_product->get_image_id() );
+      while (list(, $id) = each( $gallery )) {
+        $urlsGallery[] = self::getAttachmentUrl( (int)$id );
+      }
+
       $results = new \stdClass();
       $results->ID = (int)$_product->get_id();
       $results->post_content = $_product->get_description();
       $results->post_excerpt = $_product->get_short_description();
       $results->post_title = $_product->get_title();
-
-      $results->gallery = $_product->get_gallery_image_ids();
-      $results->categorie = \get_the_terms( $_product->get_id(), 'product_cat'); // Array of WP_term or false
-
+      $results->categorie = \get_the_terms( $_product->get_id(), 'product_cat' ); // Array of WP_term or false
       $results->state = \get_post_meta( $_product->get_id(), '_product_advert_state', true );
       $results->adress = \get_post_meta( $_product->get_id(), '_product_advert_adress', true );
-      $results->phone = \get_post_meta( $_product->get_id(), '_product_advert_phone', true); 
+      $results->phone = \get_post_meta( $_product->get_id(), '_product_advert_phone', true ); 
       $results->hidephone = \get_post_meta( $_product->get_id(), '_product_advert_hidephone', true );
-      $results->gallery = \get_post_meta( $_product->get_id(), '_product_image_gallery', true);
-      $results->thumbnail = $_product->get_image_id();
+      $results->pictures = &$urlsGallery;
       $results->price = $_product->get_price();
 
       $attrs = $_product->has_attributes() ? $_product->get_attributes() : null;

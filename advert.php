@@ -34,11 +34,11 @@ final class _Advert extends AdvertController {
     \add_action( 'get_header', [ &$this, 'load_header' ], 10, 1);
 
     // Shortcode WP
-    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(),'RenderAddForm' ]);
-    \add_shortcode('adverts', [ new shortcode\AdvertCode(),'RenderAdvertsLists' ]);
-    \add_shortcode('login_advert', [ new shortcode\AdvertCode(),'RenderLoginForm' ]);
-    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(),'RenderRegisterForm' ]);
-    \add_shortcode('dashboard_advert', [ new shortcode\AdvertCode(),'RenderDashboard' ]);
+    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(), 'RenderAddForm' ]);
+    \add_shortcode('adverts', [ new shortcode\AdvertCode(), 'RenderAdvertsLists' ]);
+    \add_shortcode('login_advert', [ new shortcode\AdvertCode(), 'RenderLoginForm' ]);
+    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(), 'RenderRegisterForm' ]);
+    \add_shortcode('dashboard_advert', [ new shortcode\AdvertCode(), 'RenderDashboard' ]);
     
     /* Activate, Deactivate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'install'));
