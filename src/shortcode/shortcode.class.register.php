@@ -8,7 +8,7 @@ final class RegisterCode {
   /*
 	* [singin_advert]
 	*/
-	public static function RenderRegisterForm($attrs, $content){
+	public static function Render($attrs, $content){
 		global $twig;
 		if (is_null( $twig )){
 			print 'Active or install Template Engine TWIG';
