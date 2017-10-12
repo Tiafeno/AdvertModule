@@ -68,7 +68,7 @@ app.controller('AdvertFormAddCtrl', function (
         return false;   
     }   
     return true; 
- } 
+  } 
   /*
   ** upload image and set thumbnail
   */
@@ -78,6 +78,7 @@ app.controller('AdvertFormAddCtrl', function (
       return true;
     }
     var files = event.target.files; // @return array of FileList
+    if (files[0].name === undefined) return true;
     var verifyFile = validateFileExtension( files[0].name );
     if (!verifyFile) {
       alertify.error("File format invalid, please upload an jpg, jpeg, png, gif or bmp");

@@ -30,7 +30,7 @@ final class AdvertCode {
 				'ajax_url' => \admin_url( 'admin-ajax.php' ),
 				'post_id' => $params->post_id,
 				'vendors' => $params->vendors,
-				'products_cat_child' => $params->product_cat,
+				'products_cat_child' => $params->products_cat,
 				'assets_plugins_url' => \plugins_url( "/assets/", __FILE__ )
 			));
 		}
