@@ -6,53 +6,9 @@ app.controller('AdvertFormAddCtrl', function (
   $log,
   $window,
   $element,
-  $mdToast,
   alertify,
   factoryServices
 ) {
-
-  var last = { bottom: true, top: false, left: false, right: true };
-  $scope.toastPosition = angular.extend({}, last);
-  function sanitizePosition() {
-    var current = $scope.toastPosition;
-    if (current.bottom && last.top) current.top = false;
-    if (current.top && last.bottom) current.bottom = false;
-    if (current.right && last.left) current.left = false;
-    if (current.left && last.right) current.right = false;
-
-    last = angular.extend({}, current);
-  }
-
-  $scope.getToastPosition = function () {
-    sanitizePosition();
-    return Object.keys($scope.toastPosition)
-      .filter(function (pos) {
-        return $scope.toastPosition[ pos ];
-      })
-      .join(' ');
-  };
-
-  $scope.showSimpleToast = function ( msg = '' ) {
-    var pinTo = $scope.getToastPosition();
-    $mdToast.show(
-      $mdToast.simple()
-        .textContent( msg )
-        .position(pinTo)
-        .hideDelay(3000)
-    );
-  };
-
-  $scope.showActionToast = function(msg, btn) {
-    var pinTo = $scope.getToastPosition();
-    var toast = $mdToast.simple()
-      .textContent( msg )
-      .action( btn )
-      .highlightAction(true)
-      .position( pinTo );
-    $mdToast.show( toast ).then(function( response ) {
-      console.log(response);
-    });
-  }
 
   $scope.range = function (min, max, step) {
     step = step || 1;
@@ -106,15 +62,27 @@ app.controller('AdvertFormAddCtrl', function (
     }
   }, true);
 
+  /* Verify file extension before upload */
+  var validateFileExtension = function ( file ) {
+    if (!/(\.bmp|\.gif|\.jpg|\.jpeg|\.png)$/i.test( file )) {    
+        return false;   
+    }   
+    return true; 
+ } 
   /*
   ** upload image and set thumbnail
   */
   $scope.uploadFile = function () {
     if ($scope.thumbnailGalleryIDs.length == parseInt($window.atob("Mw=="))) {
-      $scope.showSimpleToast( $window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ=") );
+      alertify.error( $window.atob("Tm9tYnJlIGxpbWl0ZSBkZXMgcGhvdG9zIGF0dGVpbnQ=") );
       return true;
     }
-    var files = event.target.files;
+    var files = event.target.files; // @return array of FileList
+    var verifyFile = validateFileExtension( files[0].name );
+    if (!verifyFile) {
+      alertify.error("File format invalid, please upload an jpg, jpeg, png, gif or bmp");
+      return true;
+    }
     var formdata = new FormData();
     /* $scope.imagePath = $window.URL.createObjectURL(files[0]); */
     angular.forEach(files, function (value, key) {
@@ -133,7 +101,7 @@ app.controller('AdvertFormAddCtrl', function (
             $scope.thumbnailGalleryIDs.push({ file: data.url, id: data.attach_id });
           } else {
             var params = {};
-            params.content = data.data;
+            params.content = (data.data === undefined) ? data : data.data;
             $scope.showDialog( params );
           }
         }

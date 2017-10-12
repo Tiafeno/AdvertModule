@@ -84,7 +84,7 @@ final class AdvertCode {
 
 	public static function LoginEnqueue() {
 		\wp_enqueue_script( 'LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
-		\wp_localize_script('AdvertCtrl', 'advert', array(
+		\wp_localize_script( 'AdvertCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
@@ -102,7 +102,7 @@ final class AdvertCode {
 		\wp_enqueue_script( 'angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
-		\wp_enqueue_script( 'alertify', \plugins_url('/assets/components/alertify/js/ngAlertify.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'alertify-js', \plugins_url('/assets/components/alertify/js/ngAlertify.js', __FILE__), array('angular'));
 		
 	}
 
