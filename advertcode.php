@@ -38,7 +38,7 @@ final class AdvertCode {
 
 	public static function AdvertsEnqueue( $params ) {
 		if ( ! $params instanceof \stdClass) die( 'Variable params isn\'t instance of stdClass' );
-		\wp_enqueue_style('material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
+		\wp_enqueue_style( 'material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
 		\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
 		\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 		\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );
@@ -57,10 +57,10 @@ final class AdvertCode {
 	}
 
 	public static function RegisterEnqueue() {
-		\wp_enqueue_script('Register', \plugins_url('/assets/js/register/register.js', __FILE__), array('angular'));
-		\wp_enqueue_script('RegisterFactory', \plugins_url('/assets/js/register/register.factory.js', __FILE__), array('angular'));
-		\wp_enqueue_script('AdvertRegisterCtrl', \plugins_url('/assets/js/register/register.controller.js', __FILE__), array('angular'));
-		\wp_localize_script('AdvertRegisterCtrl', 'advert', array(
+		\wp_enqueue_script( 'Register', \plugins_url('/assets/js/register/register.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'RegisterFactory', \plugins_url('/assets/js/register/register.factory.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'AdvertRegisterCtrl', \plugins_url('/assets/js/register/register.controller.js', __FILE__), array('angular'));
+		\wp_localize_script( 'AdvertRegisterCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
@@ -83,7 +83,7 @@ final class AdvertCode {
 	}
 
 	public static function LoginEnqueue() {
-		\wp_enqueue_script('LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'LoginAdvertCtrl', \plugins_url('/assets/js/login/login.advert.js', __FILE__), array('angular'));
 		\wp_localize_script('AdvertCtrl', 'advert', array(
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
@@ -91,28 +91,31 @@ final class AdvertCode {
 	}
 	
 	public static function setEnqueue(){
-		\wp_enqueue_style('jquery' );
-		\wp_enqueue_style('dashicons' );
-		\wp_enqueue_style('custom-style', \plugins_url('/assets/css/custom.css', __FILE__), []);
-		\wp_enqueue_script('underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
-		\wp_enqueue_script('angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
-		\wp_enqueue_script('aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));
-		\wp_enqueue_script('angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
+		\wp_enqueue_style( 'jquery' );
+		\wp_enqueue_style( 'dashicons' );
+		\wp_enqueue_style( 'custom-style', \plugins_url('/assets/css/custom.css', __FILE__), []);
+		\wp_enqueue_style( 'alertify-style', \plugins_url('/assets/components/alertify/css/alertify.css', __FILE__), []);
+
+		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
+		\wp_enqueue_script( 'angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
+		\wp_enqueue_script( 'aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
+		\wp_enqueue_script( 'alertify', \plugins_url('/assets/components/alertify/js/ngAlertify.js', __FILE__), array('angular'));
 		
 	}
 
 	public static function setAngularMaterial() {
-		\wp_enqueue_script('material', \plugins_url('/assets/components/angular-material/angular-material.min.js', __FILE__), array('angular'));
-		\wp_enqueue_style('material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__));
-		\wp_enqueue_style('material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
+		\wp_enqueue_script( 'material', \plugins_url('/assets/components/angular-material/angular-material.min.js', __FILE__), array('angular'));
+		\wp_enqueue_style( 'material-style', \plugins_url('/assets/components/angular-material/angular-material.css', __FILE__));
+		\wp_enqueue_style( 'material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
 	}
 
 	public static function setUIKit() {
-		\wp_enqueue_style('uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
-		\wp_enqueue_script('uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
-		\wp_enqueue_script('uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
+		\wp_enqueue_style( 'uikit-style', \plugins_url('/assets/components/uikit/css/uikit.css', __FILE__), []);
+		\wp_enqueue_script( 'uikit', \plugins_url('/assets/components/uikit/js/uikit.min.js', __FILE__), ['jquery']);
+		\wp_enqueue_script( 'uikit-icon', \plugins_url('/assets/components/uikit/js/uikit-icon.min.js', __FILE__), array('uikit-style'));
 	}
 
 }

@@ -1,5 +1,5 @@
 'use strict'
 
-var app = angular.module('AddFormapp', ['ngMaterial', 'ngMessages']);
+var app = angular.module('AddFormapp', ['ngMaterial', 'ngMessages', "ngAlertify"]);
 
 	

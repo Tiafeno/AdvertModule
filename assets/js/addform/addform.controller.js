@@ -7,6 +7,7 @@ app.controller('AdvertFormAddCtrl', function (
   $window,
   $element,
   $mdToast,
+  alertify,
   factoryServices
 ) {
 
@@ -127,16 +128,30 @@ app.controller('AdvertFormAddCtrl', function (
     factoryServices.httpPostFormdata( formdata )
       .then(function successCallback( resp ) {
         var data = resp.data;
-        if (data.type)
-          $scope.thumbnailGalleryIDs.push({ file: data.url, id: data.attach_id });
-        if (!data.type)
-          console.debug( data );
+        if (resp.status != undefined && resp.status == 200) {
+          if (true === data.type) {
+            $scope.thumbnailGalleryIDs.push({ file: data.url, id: data.attach_id });
+          } else {
+            var params = {};
+            params.content = data.data;
+            $scope.showDialog( params );
+          }
+        }
         $scope.picProgress = false;
       }, function errorCallback( errno ) {
         console.debug( errno );
         $scope.picProgress = false;
       });
 
+  };
+
+  $scope.showDialog = function( params ) {
+    var title = (params.title === undefined) ? 'Information' : params.title;
+    alertify.alert(params.content, function ( ev ) {
+      // user clicked "ok"
+      ev.preventDefault();
+      alertify.success("You've clicked OK");
+    });
   };
 
   $scope.setFormSubmit = function (isValid) {
@@ -188,6 +203,7 @@ app.controller('AdvertFormAddCtrl', function (
     
   };
 
+  /* Event on click button set default image */
   $scope.onClicksetDefaultThumb = function (thumb_id, $event) {
     $scope.picProgress = true;
     $http({
@@ -209,6 +225,7 @@ app.controller('AdvertFormAddCtrl', function (
     });
   };
 
+  /* Event on click delete image */
   $scope.onClickDeleteThumb = function (post_id) {
     if (typeof post_id == "number") {
       $scope.picProgress = true;

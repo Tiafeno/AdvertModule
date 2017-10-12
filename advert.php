@@ -193,6 +193,13 @@ final class _Advert extends AdvertController {
     }
   }
   
+  /*
+  ** @function action_set_thumbnail_post
+  ** This function upload a image
+  ** @action, shortcode addform
+  ** @param, void
+  ** @return, json type
+  */ 
   public function action_set_thumbnail_post() {
     $User = null;
     if (isset($_REQUEST[ 'post_id' ])) {
@@ -216,7 +223,7 @@ final class _Advert extends AdvertController {
       $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
       if (\is_wp_error( $attachment_id )) {
         \wp_send_json(array(
-          'data' => 'There was an error uploading the image.', 
+          'data' => 'There was an error uploading the image. Probably, the uploaded file exceeds the upload_max_filesize.', 
           'tracking' => $attachment_id->get_error_messages(), 
           'type' => false)
         );
