@@ -41,7 +41,8 @@ routeAdvert.factory('factoryServices', function($http, $q) {
 
 routeAdvert.controller('AdvertListsController', function( $scope,) {
 });
-routeAdvert.controller('AdvertDetails', function( $scope, factoryServices, $routeParams ) {
+
+routeAdvert.controller('AdvertDetails', function( $scope, $mdDialog, factoryServices, $routeParams ) {
   $scope.product_id = parseInt( $routeParams.id );
   $scope.product_details = {};
   if (!isNaN($scope.product_id)) {
@@ -54,5 +55,26 @@ routeAdvert.controller('AdvertDetails', function( $scope, factoryServices, $rout
         }
       })
       .catch(function() {});
+  }
+
+  /* Event on click show phone number button */
+  $scope.EventviewPhoneNumber = function( ev ) {
+    var elementPhone = angular.element( '#show-phone-number' );
+    var test = parseInt( $scope.product_details.hidephone );
+    if (test) {
+      elementPhone.val( $scope.product_details.phone );
+    } else {
+      /* alert user */
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent( angular.element( 'body' ) )
+          .clickOutsideToClose(true)
+          .title('Information')
+          .textContent('Le numero que vous demandez est privee')
+          .ariaLabel('Alert Dialog Demo')
+          .ok('Ok')
+          .targetEvent(ev)
+      );
+    }
   }
 });

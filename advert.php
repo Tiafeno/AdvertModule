@@ -4,8 +4,15 @@ namespace advert\plugins;
 use advert\src\controller\AdvertController as AdvertController;
 use advert\entity\model\AdvertModel as AdvertModel;
 use advert\libraries\parsedown as parsedown;
-use shortcode\AdvertCode as AdvertCode;
 use advert\libraries\php\underscore\__ as __;
+use advert\src\services\url as UrlServices;
+
+use advert\shortcode\AdvertCode as AdvertCode;
+use advert\shortcode\addform as addform;
+use advert\shortcode\adverts as adverts;
+use advert\shortcode\dashboard as dashboard;
+use advert\shortcode\login as login;
+use advert\shortcode\register as register;
 
 final class _Advert extends AdvertController {
   private $Model;
@@ -34,11 +41,11 @@ final class _Advert extends AdvertController {
     \add_action( 'get_header', [ &$this, 'load_header' ], 10, 1);
 
     // Shortcode WP
-    \add_shortcode('addform_advert', [ new shortcode\AdvertCode(), 'RenderAddForm' ]);
-    \add_shortcode('adverts', [ new shortcode\AdvertCode(), 'RenderAdvertsLists' ]);
-    \add_shortcode('login_advert', [ new shortcode\AdvertCode(), 'RenderLoginForm' ]);
-    \add_shortcode('singin_advert', [ new shortcode\AdvertCode(), 'RenderRegisterForm' ]);
-    \add_shortcode('dashboard_advert', [ new shortcode\AdvertCode(), 'RenderDashboard' ]);
+    \add_shortcode('addform_advert', [ new addform\AddformCode(), 'Render' ]);
+    \add_shortcode('adverts', [ new adverts\AdvertsCode(), 'Render' ]);
+    \add_shortcode('login_advert', [ new login\LoginCode(), 'Render' ]);
+    \add_shortcode('singin_advert', [ new register\RegisterCode(), 'Render' ]);
+    \add_shortcode('dashboard_advert', [ new dashboard\DashboardCode(), 'Render' ]);
     
     /* Activate, Deactivate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'install'));
@@ -418,9 +425,9 @@ final class _Advert extends AdvertController {
         }
         \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
         \wp_send_json([
-          'type' => true, 
-          'data' => 'Update post with attributs',
-          'redirect_url' => $this->Services->getAdvertDetailsUrl( $current_post_id )
+            'type' => true, 
+            'data' => 'Update post with attributs',
+            'redirect_url' => UrlServices\ServiceUrlController::getAdvertDetailsUrl( $current_post_id )
           ]
         );
       } else {
@@ -567,9 +574,9 @@ final class _Advert extends AdvertController {
     $posts = \get_posts( $params );
     $args = [
       'nonce' => \wp_nonce_field('advert_settings', 'advert_settings_nonce'),
-      'register_page_id' => \get_option( 'register_page_id', false ),
-      'login_page_id' => \get_option( 'login_page_id', false),
-      'addform_page_id' => \get_option( 'addform_page_id', false ),
+      'register_page_id'  => \get_option( 'register_page_id', false ),
+      'login_page_id'     => \get_option( 'login_page_id', false),
+      'addform_page_id'   => \get_option( 'addform_page_id', false ),
       'dashboard_page_id' => \get_option( 'dashboard_page_id', false ),
       'posts' => $posts
     ];

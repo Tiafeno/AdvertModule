@@ -16,21 +16,21 @@ class AdvertModel {
   }
 
   public static function setProductCat() {
-    $Services = new Services\ServicesController();
-    $SchemaAdvert = json_decode( $Services->getSchemaAdvert() );
+    $srvs = new Services\ServicesController();
+    $SchemaAdvert = json_decode( $srvs->getSchemaAdvert() );
     $parents = $SchemaAdvert->product_cat;
     $childs = $SchemaAdvert->product_cat_child;
     $taxonomy = 'product_cat';
 
     foreach ($parents as $parent) {
-      $verify = \term_exists($parent->slug, $taxonomy); // return array('term_id'=> x,'term_taxonomy_id'=>x))
+      $verify = \term_exists( $parent->slug, $taxonomy ); // return array('term_id'=> x,'term_taxonomy_id'=>x))
       if (is_null( $verify )) {
         
         $isParent = \wp_insert_term($parent->name, $taxonomy, 
           [ 'slug' => $parent->slug, 'parent' => 0 ]
         );
         if (!\is_wp_error( $isParent )) { 
-          $selfparent = \term_exists( $parent->slug, $taxonomy);
+          $selfparent = \term_exists( $parent->slug, $taxonomy );
           $parent_term_id = $selfparent[ 'term_id' ];
           foreach ($childs as $child) {
             if ($parent->_id != $child->parent_id) continue;
@@ -41,6 +41,21 @@ class AdvertModel {
     }
   }
 
+  public static function setDistricts() {
+    $srvs = new Services\ServicesController();
+    $districts = json_decode( $srvs->getSchemaDistricts() );
+    $taxonomy = 'district';
+    foreach ($districts as $district) {
+      $verify = \term_exists( $district->name, $taxonomy);
+      if (!is_null( $verify )) continue;
+      $isInsert = \wp_insert_term( $district->name, $taxonomy, [
+        'slug' => $district->code,
+        'parent' => 0
+      ]);
+      return (!\is_wp_error( $isInsert )) ? true : false;
+    }
+
+  }
   /*
   * This function executed if after user register
   */
@@ -72,7 +87,7 @@ class AdvertModel {
 
   public function update_user($data = [], $where = []) {
     $Query = $this->wpdb->update("{$this->wpdb->prefix}advert_user", $data, $where);
-    return ($Query === false) ? $this->wpdb->last_query : true;
+    return (false === $Query) ? $this->wpdb->last_query : true;
   }
 
   public function get_advert_user( $user_id ) {
@@ -191,6 +206,7 @@ class AdvertModel {
         "ON DELETE CASCADE ON UPDATE NO ACTION;");
     
     namespace\AdvertModel::setProductCat();
+    namespace\AdvertModel::setDistricts();
     namespace\AdvertModel::create_role();
     namespace\AdvertModel::create_advert_pages();
   }

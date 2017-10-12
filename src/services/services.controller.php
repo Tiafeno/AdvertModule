@@ -1,8 +1,9 @@
 <?php
 namespace advert\src\services;
 use advert\entity\model as Model;
+use advert\src\services\url as UrlServices;
 
-class ServicesController {
+final class ServicesController {
   public static $vendor = [];
 
   public function __construct(){}
@@ -33,14 +34,6 @@ class ServicesController {
     }
   }
 
-  public static function getAttachmentUrl( $post_id ) {
-    if (!is_int( $post_id ))
-      return null;
-    $url = \wp_get_attachment_image_src($post_id, 'full')[ 0 ];
-    return $url;
-
-  }
-
   public static function getPost( $post_id ) {
     if (!function_exists('wc_get_product')) return false;
     $_product = \wc_get_product( (int)$post_id );
@@ -49,7 +42,7 @@ class ServicesController {
       $gallery = $_product->get_gallery_image_ids();
       array_push( $gallery, $_product->get_image_id() );
       while (list(, $id) = each( $gallery )) {
-        $urlsGallery[] = self::getAttachmentUrl( (int)$id );
+        $urlsGallery[] = UrlServices\ServiceUrlController::getAttachmentUrl( (int)$id );
       }
 
       $results = new \stdClass();
@@ -123,12 +116,13 @@ class ServicesController {
     return $vendor_id; // translate
   }
 
-  public function getSchemaAdvert(){
+  public function getSchemaAdvert() {
     return file_get_contents( \plugin_dir_path(__FILE__)."schema/advert.json");
   }
 
-  public function getAdvertDetailsUrl( $post_id ) {
-    return \home_url('/') . "#!/advert/" . $post_id;
+  public function getSChemaDistricts() {
+    return file_get_contents( \plugin_dir_path(__FILE__)."schema/districts.json");
   }
+
 
 }

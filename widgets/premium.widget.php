@@ -1,4 +1,5 @@
 <?php
+namespace advert\widgets\premium;
 
 /**
 * Created by FALI Crea.
@@ -11,13 +12,18 @@
 * @property TWIG Engine
 */
 
-class Premium_Widget extends WP_Widget{
+class Premium_Widget extends \WP_Widget{
 
   private $Template;
 
   public function __construct(){
-    global $TWIG;
-    $this->Template = $TWIG;
+    global $twig;
+		if (is_null( $twig )){
+			print 'Active or install Template Engine TWIG';
+			return;
+    }
+    
+    $this->Template = $twig;
     parent::__construct("premium_advert", "Advert > Premium Box", array('description' => ''));
   }
 

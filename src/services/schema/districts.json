@@ -1,0 +1,52 @@
+[
+  {
+    "_id": 1,
+    "name": "Antananarivo",
+    "code": 101
+  },
+  {
+    "_id": 2,
+    "name": "Diego Suarez",
+    "code": 0
+  },
+  {
+    "_id": 3,
+    "name": "Tamatave",
+    "code": 0
+  },
+  {
+    "_id": 4,
+    "name": "Majunga",
+    "code": 0
+  },
+  {
+    "_id": 5,
+    "name": "Tulear",
+    "code": 0
+  },
+  {
+    "_id": 6,
+    "name": "Fort Dauphin",
+    "code": 0
+  },
+  {
+    "_id": 7,
+    "name": "Antsirabe",
+    "code": 0
+  },
+  {
+    "_id": 8,
+    "name": "Fianarantsoa",
+    "code": 0
+  },
+  {
+    "_id": 9,
+    "name": "Nosy Be",
+    "code": 0
+  },
+  {
+    "_id": 10,
+    "name": "Other",
+    "code": 0
+  }
+]
