@@ -530,6 +530,7 @@ final class _Advert extends AdvertController {
     ];
     $attachment = new \WP_Query( $args );
     if ($attachment->have_posts()) {
+      \wp_reset_postdata();
       $results = \wp_delete_attachment( $post_id );
       if ($results) {
         \wp_send_json( [

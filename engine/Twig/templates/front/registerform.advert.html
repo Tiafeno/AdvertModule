@@ -20,7 +20,7 @@
         <form name="RegisterForm" ng-submit="registerFormSubmit(RegisterForm.$valid)" novalidate>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Nom *</label>
+                    <label>Nom </label>
                     <input ng-cust required name="firstname" ng-model="register.firstname">
                     <div ng-messages="RegisterForm.firstname.$error">
                         <div ng-message="required">Veuillez saisir un nom.</div>
@@ -28,7 +28,7 @@
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Prénom *</label>
+                    <label>Prénom </label>
                     <input ng-cust required name="lastname" ng-model="register.lastname">
                     <div ng-messages="RegisterForm.lastname.$error">
                         <div ng-message="required">Veuillez saisir un prénom.</div>
@@ -37,7 +37,7 @@
             </div>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>SIRET *</label>
+                    <label>SIRET </label>
                     <input ng-cust required name="SIRET" ng-model="register.SIRET">
                     <div ng-messages="RegisterForm.SIRET.$error">
                         <div ng-message="required">Veuillez saisir un numéro de Siret.</div>
@@ -45,7 +45,7 @@
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Nom de la société *</label>
+                    <label>Nom de la société </label>
                     <input ng-cust required name="society" ng-model="register.society">
                     <div ng-messages="RegisterForm.society.$error">
                         <div ng-message="required">Veuillez renseigner le nom de la société.</div>
@@ -54,7 +54,7 @@
             </div>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Adresse *</label>
+                    <label>Adresse </label>
                     <input ng-cust required name="adress" ng-model="register.adress">
                     <div ng-messages="RegisterForm.adress.$error">
                         <div ng-message="required">Saisissez l'adresse de votre société.</div>
@@ -63,7 +63,7 @@
             </div>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Code postal *</label>
+                    <label>Code postal </label>
                     <input ng-cust required name="postal_code" ng-model="register.postal_code">
                     <div ng-messages="RegisterForm.postal_code.$error">
                             <div ng-message="required">Veuillez insérer le code postal pour ce annonce.</div>
@@ -71,7 +71,7 @@
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Téléphone *</label>
+                    <label>Téléphone </label>
                     <input ng-cust required name="phone" ng-model="register.phone">
                     <div ng-messages="RegisterForm.phone.$error">
                         <div ng-message="required">Veuillez insérer un numéro de téléphone.</div>
@@ -87,17 +87,20 @@
 
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Adresse email *</label>
+                    <label>Adresse email </label>
                     <input type="email" ng-cust required name="email" ng-model="register.email">
                     <div ng-messages="RegisterForm.email.$error">
                         <div ng-message="email">Veuillez insérer une adresse email valide.</div>
                         <div ng-message="required">Veuillez insérer une adresse email.</div>
                     </div>
                 </md-input-container>
+                
+                <md-input-container class="md-block" flex-gt-sm>
+                </md-input-container>
             </div>
             <div layout-gt-sm="row">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Mot de passe *</label>
+                    <label>Mot de passe</label>
                     <input ng-cust required name="password" minlength="8" type="password" ng-model="register.password">
                     <div class="hint" ng-if="true"><p style="font-size:12px;">Pour plus de sécurité, votre mot de passe
                     doit contenir au moins 8 caractères dont 1 chiffre et 1 lettre</p></div>
@@ -112,7 +115,7 @@
                     } 
                 </style>
                 <md-input-container class="md-block" flex-gt-sm>
-                    <label>Confirmer le mot de passe *</label>
+                    <label>Confirmer le mot de passe</label>
                     <input ng-cust required name="rpassword" type="password" ng-model="register.rpassword" 
                         ng-class="{'has-error': register.password != register.rpassword}" >
                     <div ng-messages="RegisterForm.rpassword.$error">
