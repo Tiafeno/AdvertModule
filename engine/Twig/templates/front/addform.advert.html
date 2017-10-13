@@ -52,11 +52,8 @@
         </div>
     </div>
 
-    <div flex-gt-sm="50" flex style="
-        margin-left: 15px;
-        padding: 10px;
-    ">
-        <md-content style="padding-left:10px">
+    <div flex-gt-sm="50" flex style="margin-left: 15px; padding: 10px;">
+        <md-content style="padding: 0 10px;">
             <md-list flex>
                 <md-subheader class="md-no-sticky" style="
                     border-left: .6180469716em solid rgba(0,0,0,.15);
@@ -67,8 +64,7 @@
             </md-list>
             <form name="setAdvertForm" ng-submit="setFormSubmit(setAdvertForm.$valid)" novalidate>
                 <div layout="row" layout-sm="column" layout-align="space-around">
-                    <md-progress-circular md-mode="indeterminate" ng-show="progressbar"
-                                          md-diameter="40"></md-progress-circular>
+                    <md-progress-circular md-mode="indeterminate" ng-show="progressbar" md-diameter="40"></md-progress-circular>
                 </div>
                 <md-subheader ng-show="messages.fr.warn.show" class="md-warn" style="text-align:center">
                     {{messages.fr.warn.msg}}
@@ -98,15 +94,15 @@
                         </md-select>
                     </md-input-container>
                 </div>
-                
+
                 <div layout="column" layout-padding style="background: rgba(249, 250, 251, 0.82); border-top: .6180469716em solid rgba(0,0,0,.15);" >
                 {% for vendor in vendors %}
                     {% if vendor.type in ['text', 'number', 'tel'] %}
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
-                            <input ng-cust {% if vendor.scope.required %} ng-required="optionalInput.{{ vendor.validate }}" {% endif %} 
-                            type="{{ vendor.type }}" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
-                            ng-model="advertPost.attributs.{{ vendor.validate }}" 
+                            <input ng-cust {% if vendor.scope.required %} ng-required="optionalInput.{{ vendor.validate }}" {% endif %}
+                            type="{{ vendor.type }}" name="{{ vendor.validate }}" id="{{ vendor.validate }}"
+                            ng-model="advertPost.attributs.{{ vendor.validate }}"
                             {% if vendor.scope.maxlength %} maxlength="{{ vendor.scope.maxlength }}" {% endif %} >
                             <div ng-messages="setAdvertForm.{{ vendor.validate }}.$error">
                                 {% if vendor.scope.required %}
@@ -134,8 +130,8 @@
                         </script>
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
                             <label for="{{ vendor.validate }}">{{ vendor.id }}</label>
-                            <input ng-cust type="text" class="datepicker_{{ vendor.validate }} datepicker" name="{{ vendor.validate }}" id="{{ vendor.validate }}" 
-                            ng-model="advertPost.attributs.{{ vendor.validate }}" data-language='fr' data-position='bottom left' 
+                            <input ng-cust type="text" class="datepicker_{{ vendor.validate }} datepicker" name="{{ vendor.validate }}" id="{{ vendor.validate }}"
+                            ng-model="advertPost.attributs.{{ vendor.validate }}" data-language='fr' data-position='bottom left'
                             {% for option in vendor.datepicker %} {{ option.key }}="{{ option.value }}" {% endfor %} >
                         </md-input-container>
                     {% endif %}
@@ -167,7 +163,7 @@
                 {% endfor %}
                     <md-input-container class="md-block">
                         <label>Texte de l'annonce</label>
-                        <textarea ng-model="advertPost.description" style="font-size: 14px; line-height: 1.5;" name="description" 
+                        <textarea ng-model="advertPost.description" style="font-size: 14px; line-height: 1.5;" name="description"
                         md-maxlength="500" rows="5" md-select-on-focus required></textarea>
                         <div ng-messages="setAdvertForm.description.$error">
                             <div ng-message="required">Veuillez rédiger un texte d'annonce.</div>
