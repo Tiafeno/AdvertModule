@@ -17,31 +17,31 @@ final class AdvertsCode {
   * @return mixed
   **/
   public static function Render($attrs, $content = null) {
-		
+
 		$attributs = \shortcode_atts(array(
 			'orderBy' => 'date',
 			'order' => 'DESC'
 		), $attrs);
-		
+
     $user_id = null;
     if (\is_user_logged_in()) {
       /*
       * @function  wp_get_current_user
-      * Will set the current user, if the current user is not set. 
+      * Will set the current user, if the current user is not set.
       * The current user will be set to the logged-in person.
-      * If no user is logged-in, then it will set the current user to 0 
+      * If no user is logged-in, then it will set the current user to 0
       * @return WP_User
       */
       $current_user = \wp_get_current_user();
       $user_id = $current_user->ID;
 		}
-		
-		/* 
+
+		/*
 		* @var $thumbnails
-		* e.g [{'post_id': 154, 'thumbnail_url': '...'}] , 
+		* e.g [{'post_id': 154, 'thumbnail_url': '...'}] ,
 		* PS: `post_id` is id post product type or not thumbnail post id
 		*/
-		$thumbnails = []; 
+		$thumbnails = [];
 		$posts = [];
 		$args = [
 			'post_type' => 'product',
@@ -70,7 +70,7 @@ final class AdvertsCode {
 				]);
 			endwhile;
 		}
-		
+
 		if ($adverts->have_posts()) {
 			global $twig;
 			if (is_null( $twig )) {
@@ -83,16 +83,7 @@ final class AdvertsCode {
 			$params->posts = &$posts;
 			$params->thumbnails = &$thumbnails;
 			shortcode\AdvertCode::AdvertsEnqueue( $params );
-
-			/* create filter twig */
-			$get_post_thumbnail = new \Twig_SimpleFilter('get_full_post_thumbnail', function( $id ) {
-				return \get_the_post_thumbnail_url( $id, 'full' );
-			});
-			$twig->addFilter( $get_post_thumbnail );
-
-			return $twig->render('@frontadvert/advert.html', array(
-				'user_id' => $user_id
-			));
+			return $twig->render('@frontadvert/advert.html', []);
 		}
 		\wp_reset_postdata();
 		return 'No post!';

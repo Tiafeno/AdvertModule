@@ -53,7 +53,7 @@ final class AdvertCode {
 		\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
 		\wp_localize_script( 'advert-controller', 'adverts', [
 			'thumbnails' => $params->thumbnails,
-			'posts' => $param->posts
+			'posts' => $params->posts
 		] );
 	}
 
@@ -98,7 +98,7 @@ final class AdvertCode {
 		\wp_enqueue_style( 'alertify-style', \plugins_url('/assets/components/alertify/css/alertify.css', __FILE__), []);
 
 		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
-		\wp_enqueue_script( 'angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
+		\wp_enqueue_script( 'angular', \plugins_url('/assets/components/angular/angular.min.js', __FILE__), array('jquery'));
 		\wp_enqueue_script( 'aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));

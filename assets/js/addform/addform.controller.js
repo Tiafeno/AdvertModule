@@ -208,11 +208,11 @@ app.controller('AdvertFormAddCtrl', function (
       delete_formdata.append('id', post_id);
 
       factoryServices.httpPostFormdata( delete_formdata )
-        .then(function successCallback( results ){
+        .then(function successCallback( results ) {
           var data = results.data;
           if (!data.type) { console.warn( data ); return $scope.picProgress = false; }
           var galleries = _.reject( $scope.thumbnailGalleryIDs, function( gallery ){
-            return gallery.id == data.ID;
+            return gallery.id === data.ID;
           });
           $scope.thumbnailGalleryIDs = galleries;
           angular.element('#fileInput').val("");
