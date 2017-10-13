@@ -14,14 +14,15 @@ final class AdvertsCode {
   *
   * @function RenderAdvertsLists
   * @param $attrs, $content
-  * @return wp_send_json (json)
+  * @return mixed
   **/
   public static function Render($attrs, $content = null) {
+		
 		$attributs = \shortcode_atts(array(
 			'orderBy' => 'date',
 			'order' => 'DESC'
 		), $attrs);
-
+		
     $user_id = null;
     if (\is_user_logged_in()) {
       /*
@@ -82,7 +83,7 @@ final class AdvertsCode {
 			$params->posts = &$posts;
 			$params->thumbnails = &$thumbnails;
 			shortcode\AdvertCode::AdvertsEnqueue( $params );
-			
+
 			/* create filter twig */
 			$get_post_thumbnail = new \Twig_SimpleFilter('get_full_post_thumbnail', function( $id ) {
 				return \get_the_post_thumbnail_url( $id, 'full' );

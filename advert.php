@@ -16,7 +16,7 @@ use advert\shortcode\register as register;
 
 final class _Advert extends AdvertController {
   private $Model;
-  
+
   public function __construct() {
     parent::__construct();
 
@@ -40,30 +40,22 @@ final class _Advert extends AdvertController {
     \add_action( 'before_delete_post', [ &$this, 'verify_before_delete' ], 10, 1);
     \add_action( 'get_header', [ &$this, 'load_header' ], 10, 1);
 
-    // Shortcode WP
+    // Custom adVert shortcode Wordpress
     \add_shortcode('addform_advert', [ new addform\AddformCode(), 'Render' ]);
     \add_shortcode('adverts', [ new adverts\AdvertsCode(), 'Render' ]);
     \add_shortcode('login_advert', [ new login\LoginCode(), 'Render' ]);
     \add_shortcode('singin_advert', [ new register\RegisterCode(), 'Render' ]);
     \add_shortcode('dashboard_advert', [ new dashboard\DashboardCode(), 'Render' ]);
-    
+
     /* Activate, Deactivate and Uninstall Plugins */
     \register_activation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'install'));
     \register_deactivation_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'deactivate'));
     \register_uninstall_hook( \plugin_dir_path( __FILE__ ) . 'init.php', array('_Advert', 'uninstall'));
   }
-
-  public static function uninstall(){
-    return AdvetModel::uninstall();
-  }
-
-  public static function deactivate() {
-    return AdvertModel::deactivate();
-  }
-
-  public static function install() {
-    return AdvertModel::install();
-  }
+  /* Hook register function */
+  public static function uninstall(){ return AdvetModel::uninstall(); }
+  public static function deactivate() { return AdvertModel::deactivate(); }
+  public static function install() { return AdvertModel::install(); }
 
   /** * Begin action */
   public function admin_access() {
@@ -78,30 +70,30 @@ final class _Advert extends AdvertController {
       \show_admin_bar( false );
     }
   }
-  
+
   public function login_fail() {
-    $referrer = $_SERVER[ 'HTTP_REFERER' ];  
+    $referrer = $_SERVER[ 'HTTP_REFERER' ];
     // if there's a valid referrer, and it's not the default log-in screen
     if ( !empty($referrer) && !strstr($referrer, 'wp-login') && !strstr($referrer, 'wp-admin') ) {
         exit(\wp_redirect( $referrer . '?login=failed', 301 ));  // let's append some information (login=failed) to the URL for the theme to use
     }
   }
   /** * End action */
-  
+
   public function wordpress_init() {
     \add_action('wp_ajax_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_post', array($this, 'action_set_thumbnail_post'));
-    
+
     \add_action('wp_ajax_action_add_new_advert', array($this, 'action_add_new_advert'));
-    
+
     \add_action('wp_ajax_action_register_user', array($this, 'action_register_user'));
     \add_action('wp_ajax_nopriv_action_register_user', array($this, 'action_register_user'));
-    
+
     \add_action('wp_ajax_action_delete_post', array($this, 'action_delete_post'));
-    
+
     \add_action('wp_ajax_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
-    
+
     \add_action('wp_ajax_action_update_dashboard', array($this, 'action_update_dashboard'));
 
     /* See these function at AdvertController.class.php */
@@ -126,7 +118,7 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_nopriv_action_render_nonce', array($this, 'action_render_nonce'));
 
     \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
-    
+
     \register_taxonomy(
       'district',
       'product',
@@ -141,6 +133,9 @@ final class _Advert extends AdvertController {
       return true;
   }
 
+  /*
+  ** This function is an wordpress action 'get_header'
+  */
   public function load_header( $name ) {
     global $post;
     if (\is_user_logged_in()) {
@@ -149,7 +144,7 @@ final class _Advert extends AdvertController {
         if ($post->ID != (int)$login_page_id) return true;
           $url = \home_url( "/" );
           $dashboad_page_id = \get_option( 'dashboard_page_id', false );
-          if ($dashboad_page_id) 
+          if ($dashboad_page_id)
             $url = \get_permalink( $dashboad_page_id );
           \wp_redirect( $url );
           exit();
@@ -163,14 +158,14 @@ final class _Advert extends AdvertController {
   * @return void
   */
   public function wordpress_loaded() {
-    
+
     if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
     \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&
     \current_user_can('edit_post', $_POST[ 'post_id' ])) {
       $this->_action_add_new_advert();
     }
 
-    if (isset($_POST[ 'advert_settings_nonce' ]) && 
+    if (isset($_POST[ 'advert_settings_nonce' ]) &&
     \wp_verify_nonce($_POST[ 'advert_settings_nonce' ], 'advert_settings') &&
     is_admin() ) {
 
@@ -192,14 +187,14 @@ final class _Advert extends AdvertController {
       $login_fail = 'Invalid username or incorrect password.';
     }
   }
-  
+
   /*
   ** @function action_set_thumbnail_post
   ** This function upload a image
   ** @action, shortcode addform
   ** @param, void
   ** @return, json type
-  */ 
+  */
   public function action_set_thumbnail_post() {
     $User = null;
     if (isset($_REQUEST[ 'post_id' ])) {
@@ -207,14 +202,14 @@ final class _Advert extends AdvertController {
       $User = new \WP_User( $user_id );
     } else {
       \wp_send_json(array(
-          'data' => 'Variable post_id don\'t define on $http.', 
-          'tracking' => null, 
+          'data' => 'Variable post_id don\'t define on $http.',
+          'tracking' => null,
           'type' =>  false
         )
       );
     }
     if (isset($_REQUEST[ 'thumbnail_upload_nonce' ]) &&
-      \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload') 
+      \wp_verify_nonce($_REQUEST[ 'thumbnail_upload_nonce' ], 'thumbnail_upload')
     ) {
       if (!is_int( (int)$_REQUEST[ 'post_id' ])) return;
       require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -223,8 +218,8 @@ final class _Advert extends AdvertController {
       $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
       if (\is_wp_error( $attachment_id )) {
         \wp_send_json(array(
-          'data' => 'There was an error uploading the image. Probably, the uploaded file exceeds the upload_max_filesize.', 
-          'tracking' => $attachment_id->get_error_messages(), 
+          'data' => 'There was an error uploading the image. Probably, the uploaded file exceeds the upload_max_filesize.',
+          'tracking' => $attachment_id->get_error_messages(),
           'type' => false)
         );
       } else {
@@ -238,8 +233,8 @@ final class _Advert extends AdvertController {
       }
     } else {
       \wp_send_json(array(
-          'data' => 'The security check failed, maybe show the user an error.', 
-          'tracking' => [ 'capabilities' => $User ], 
+          'data' => 'The security check failed, maybe show the user an error.',
+          'tracking' => [ 'capabilities' => $User ],
           'type' => false
         )
       );
@@ -251,7 +246,7 @@ final class _Advert extends AdvertController {
   * Update or set post a attachment thumbnail
   *
   * @function action_set_thumbnail_id
-  * This is a action $http function, action update or set a post an a thumbnail id 
+  * This is a action $http function, action update or set a post an a thumbnail id
   *
   * @param, void
   * @return, JSON : with `type` value true or false. 0 if user isn't logged
@@ -277,13 +272,13 @@ final class _Advert extends AdvertController {
     $params = $_REQUEST;
     $where = [ 'id_user' => $User->ID ];
     $wParams = (object) $params;
-    $data = __::without( $params, 
+    $data = __::without( $params,
       $wParams->action,
-      $wParams->user_login, 
-      $wParams->user_email, 
-      $wParams->user_registered, 
-      $wParams->user_nicename, 
-      $wParams->display_name, 
+      $wParams->user_login,
+      $wParams->user_email,
+      $wParams->user_registered,
+      $wParams->user_nicename,
+      $wParams->display_name,
       $wParams->add_date,
       $wParams->token
     );
@@ -298,8 +293,8 @@ final class _Advert extends AdvertController {
         [ 'ID' => $User->ID ]);
         $wpdb->flush();
         if (false === $update_usr) {
-          \wp_send_json( [ 
-            'type' => false, 'data' => 'Error on update user_login'] 
+          \wp_send_json( [
+            'type' => false, 'data' => 'Error on update user_login']
           );
         } else {
           \wp_send_json([
@@ -326,7 +321,7 @@ final class _Advert extends AdvertController {
   *
   * @function action_add_new_advert
   * @param, void
-  * @return, JSON with type `false`,`true` and `0` if user isn't logged or request post_id not send 
+  * @return, JSON with type `false`,`true` and `0` if user isn't logged or request post_id not send
   **/
   public function action_add_new_advert() {
     if (!isset( $_REQUEST[ 'post_id' ] )) return false;
@@ -336,7 +331,7 @@ final class _Advert extends AdvertController {
     $cost = (float)$_REQUEST[ 'cost' ];
     $gallery = json_decode( $this->req($_REQUEST[ 'gallery' ], []) );
     if (!is_array( $gallery )) $gallery = array();
-    
+
     \wp_set_object_terms($post_id, 'simple', 'product_type');
 
     /* Update post meta, these meta depend a product post_type */
@@ -364,7 +359,7 @@ final class _Advert extends AdvertController {
     \update_post_meta( $post_id, '_product_image_gallery', implode(",", $gallery));
 
     $desc = \apply_filters('the_content', $_POST[ 'description' ]);
-    
+
     $form = new \stdClass();
     $form->state  = $this->req( 'state' );
     $form->adress = $this->req( 'adress' );
@@ -373,7 +368,7 @@ final class _Advert extends AdvertController {
     $form->post_id = $post_id;
 
     /**
-    * Update post meta, custom key 
+    * Update post meta, custom key
     */
     \update_post_meta( $post_id, '_product_advert_state', $form->state );
     \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
@@ -391,27 +386,27 @@ final class _Advert extends AdvertController {
     $current_post_id = \wp_update_post( $post, true );
     if (\is_wp_error( $current_post_id )) {
       \wp_send_json(array(
-          'data' => $current_post_id->get_error_messages(), 
-          'tracking' => 'Error: Update Post product ', 
+          'data' => $current_post_id->get_error_messages(),
+          'tracking' => 'Error: Update Post product ',
           'type' => false
         )
       );
     } else {
 
-      /* 
-      * Set term product_cat to this post, 
-      * if the term exist in product_cat taxonomy 
+      /*
+      * Set term product_cat to this post,
+      * if the term exist in product_cat taxonomy
       */
       $categorie = (int) $_REQUEST[ 'categorie' ];
       $term = \term_exists( $categorie, 'product_cat');
       if (!is_null( $term )){
         $post_terms = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
-        if (\is_wp_error( $post_terms )) 
+        if (\is_wp_error( $post_terms ))
           \wp_send_json( [
             'type' => false,
-            'tracking' => 'Error: On set post terms ', 
-            'data' => $post_terms->get_error_messages() 
-            ] 
+            'tracking' => 'Error: On set post terms ',
+            'data' => $post_terms->get_error_messages()
+            ]
           );
       }
 
@@ -428,35 +423,35 @@ final class _Advert extends AdvertController {
             'is_visible' => 1,
             'is_variation' => 0,
             'is_taxonomy' => 0 // !important
-          ]; 
+          ];
         }
         \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
         \wp_send_json([
-            'type' => true, 
+            'type' => true,
             'data' => 'Update post with attributs',
             'redirect_url' => UrlServices\ServiceUrlController::getAdvertDetailsUrl( $current_post_id )
           ]
         );
       } else {
         \wp_send_json( [
-          'type' => true, 
+          'type' => true,
           'data' => 'Update post with success without attributs!'
-          ] 
+          ]
         );
       }
-      
+
     }
   }
-  
+
   /* This is Lambda function to get REQUEST header content */
   public function req($k, $def=''){
     return isset( $_REQUEST[ $k ] ) ? $_REQUEST[ $k ] : $def;
   }
-  
+
   public function action_register_user() {
     if (\is_user_logged_in())
       return false;
-    
+
     if (!isset( $_REQUEST[ 'email' ], $_REQUEST[ 'password' ] ))
       return false;
     $user_id = \username_exists( \sanitize_title($_REQUEST[ 'lastname' ]) );
@@ -495,7 +490,7 @@ final class _Advert extends AdvertController {
           }
         } else {
           \wp_send_json(array(
-            'type' => 'error', 
+            'type' => 'error',
             'tracking' => 'Please review $_REQUEST variable, probably that `password` don\'t send or not define. ',
             'data' => 'Request `password` is not define.'
             )
@@ -503,13 +498,13 @@ final class _Advert extends AdvertController {
         }
 
         \wp_send_json(array(
-          'type' => 'success', 
+          'type' => 'success',
           'data' => $user_id
           )
         );
       } else {
         \wp_send_json(array(
-          'type' => 'error', 
+          'type' => 'error',
           'tracking' => 'Adress `email` or `user` already exists. ',
           'data' => 'User already exists.'
           )
@@ -521,11 +516,11 @@ final class _Advert extends AdvertController {
       'data' => 'There are variables not defined in the query.'
     ]);
   }
-  
+
   public function action_delete_post() {
     if (!\is_user_logged_in())
       return false;
-    
+
     if (!isset( $_REQUEST[ 'id' ] ))
       return false;
 
@@ -551,28 +546,28 @@ final class _Advert extends AdvertController {
           'data' => 'Error on delete Attachment'
         ]);
       }
-        
+
     } else {
       \wp_send_json( [
         'type' => false,
         'data' => 'Attachment doesn\'t exist'
       ] );
     }
-      
-    
+
+
   }
-  
+
   public function action_edit_post() {
-    
+
   }
-  
+
   public function action_upload_img() {
     /*
     * https://codex.wordpress.org/Function_Reference/media_handle_upload
     * https://codex.wordpress.org/Function_Reference/wp_insert_attachment
     */
   }
-  
+
   public function advert_admin_template() {
     global $twig;
     $params = [
@@ -590,7 +585,5 @@ final class _Advert extends AdvertController {
     ];
     print $twig->render('@adminadvert/settings.html', $args);
   }
-  
+
 }
-
-

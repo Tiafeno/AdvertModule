@@ -3,41 +3,42 @@ namespace advert\shortcode;
 use advert\src\services as Services;
 
 /* @import shortcode class */
-include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.addform.php' );
-include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.adverts.php' );
-include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.dashboard.php' );
-include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.login.php' );
-include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.register.php' );
+if (!class_exists( 'AddformCode' ))
+	include_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.addform.php' );
+
+require_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.adverts.php' );
+require_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.dashboard.php' );
+require_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.login.php' );
+require_once(  \plugin_dir_path( __FILE__ ) . '/src/shortcode/shortcode.class.register.php' );
 
 
 final class AdvertCode {
-	
+
 	public function __construct() {
 		return;
 	}
 
 	public static function AddformEnqueue( $params ) {
-		if ($params instanceof \stdClass) {
-			\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
-			\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), [ 'advert' ]);
-			\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
-			\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
-			\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform/addform.js', __FILE__), [ 'angular' ]);
-			\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform/addform.directive.js', __FILE__), [ 'AddFormapp' ] );
-			\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform/addform.factory.js', __FILE__), [ 'AddFormapp' ] );
-			\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform/addform.controller.js', __FILE__), [ 'AddFormapp', 'addform-directive', 'addform-factory' ] );
-			\wp_localize_script( 'AddFormapp', 'advert', array(
-				'ajax_url' => \admin_url( 'admin-ajax.php' ),
-				'post_id' => $params->post_id,
-				'vendors' => $params->vendors,
-				'products_cat_child' => $params->products_cat,
-				'assets_plugins_url' => \plugins_url( "/assets/", __FILE__ )
-			));
-		}
+		if ( ! $params instanceof \stdClass) die( 'Variable params isn\'t instance of stdClass' );
+		\wp_enqueue_style( 'advert', \plugins_url('/assets/css/advert.css', __FILE__), array());
+		\wp_enqueue_style( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/css/datepicker.css', __FILE__), [ 'advert' ]);
+		\wp_enqueue_script( 'air-datepicker', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/datepicker.min.js', __FILE__), [ 'jquery' ]);
+		\wp_enqueue_script( 'datepicker-lang-fr', \plugins_url('/libraries/node_modules/air-datepicker/dist/js/i18n/datepicker.fr.js', __FILE__), [ 'air-datepicker' ]);
+		\wp_enqueue_script( 'AddFormapp', \plugins_url('/assets/js/addform/addform.js', __FILE__), [ 'angular' ]);
+		\wp_enqueue_script( 'addform-directive', \plugins_url('/assets/js/addform/addform.directive.js', __FILE__), [ 'AddFormapp' ] );
+		\wp_enqueue_script( 'addform-factory', \plugins_url('/assets/js/addform/addform.factory.js', __FILE__), [ 'AddFormapp' ] );
+		\wp_enqueue_script( 'addform-controller', \plugins_url('/assets/js/addform/addform.controller.js', __FILE__), [ 'AddFormapp', 'addform-directive', 'addform-factory' ] );
+		\wp_localize_script( 'AddFormapp', 'advert', array(
+			'ajax_url' => \admin_url( 'admin-ajax.php' ),
+			'post_id' => $params->post_id,
+			'vendors' => $params->vendors,
+			'products_cat_child' => $params->products_cat,
+			'assets_plugins_url' => \plugins_url( "/assets/", __FILE__ )
+		));
 	}
 
 	public static function AdvertsEnqueue( $params ) {
-		if ( ! $params instanceof \stdClass) die( 'Variable params isn\'t instance of stdClass' );
+		if ( ! $params instanceof \stdClass) die( 'Variable `params` isn\'t instance of stdClass' );
 		\wp_enqueue_style( 'material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
 		\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
 		\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
@@ -89,7 +90,7 @@ final class AdvertCode {
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
 	}
-	
+
 	public static function setEnqueue(){
 		\wp_enqueue_style( 'jquery' );
 		\wp_enqueue_style( 'dashicons' );
@@ -103,7 +104,7 @@ final class AdvertCode {
 		\wp_enqueue_script( 'angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-sanitize', \plugins_url('/assets/components/angular-sanitize/angular-sanitize.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'alertify-js', \plugins_url('/assets/components/alertify/js/ngAlertify.js', __FILE__), array('angular'));
-		
+
 	}
 
 	public static function setAngularMaterial() {
