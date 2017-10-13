@@ -64,11 +64,11 @@ app.controller('AdvertFormAddCtrl', function (
 
   /* Verify file extension before upload */
   var validateFileExtension = function ( file ) {
-    if (!/(\.bmp|\.gif|\.jpg|\.jpeg|\.png)$/i.test( file )) {    
-        return false;   
-    }   
-    return true; 
-  } 
+    if (!/(\.bmp|\.gif|\.jpg|\.jpeg|\.png)$/i.test( file )) {
+        return false;
+    }
+    return true;
+  }
   /*
   ** upload image and set thumbnail
   */
@@ -152,7 +152,7 @@ app.controller('AdvertFormAddCtrl', function (
 
     factoryServices.httpPostFormdata( advertdata )
     .then(function successCallback( results ) {
-      if (parseInt(results) === 0) return $scope.activated = false; 
+      if (parseInt(results) === 0) return $scope.activated = false;
       $scope.activated = false;
       var data = results.data;
       if (data.type) {
@@ -169,7 +169,7 @@ app.controller('AdvertFormAddCtrl', function (
     }, function erroCallback( errno ) {
       $scope.activated = false;
     });
-    
+
   };
 
   /* Event on click button set default image */
@@ -183,13 +183,16 @@ app.controller('AdvertFormAddCtrl', function (
         attachment_id: parseInt(thumb_id),
         post_id: advert.post_id
       }
-    }).success(function (resp) {
-      if (resp.type) {
+    }).then(function successCallback( results ) {
+      var data = results.data;
+      if (data.type) {
         angular.element(".advert-pic").removeClass( 'active' );
         angular.element("#" + thumb_id).addClass( 'active' );
-      } else { console.warn( resp ); }
+      } else {
+        console.warn( resp );
+      }
       $scope.picProgress = false;
-    }).error(function () {
+    }, function errorCallback() {
       $scope.picProgress = false;
     });
   };
@@ -215,7 +218,7 @@ app.controller('AdvertFormAddCtrl', function (
           angular.element('#fileInput').val("");
           $scope.picProgress = false;
         }, function errorCallback( errno ) {
-          $scope.picProgress = false; 
+          $scope.picProgress = false;
           console.debug( errno );
         });
     }
