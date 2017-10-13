@@ -7,7 +7,7 @@ final class ServicesController {
   public static $vendor = [];
 
   public function __construct(){}
-    
+
   public function setThumbnail( $attachment_id, $post_id ) { // Action
     if (!\is_user_logged_in())
       return false;
@@ -22,15 +22,15 @@ final class ServicesController {
     $updateStatus = \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
     if ( (true == $updateStatus) || is_int( $updateStatus ) ) {
       \wp_send_json(array('data' => 'Update post success', 'type' => true, 'status' => $updateStatus));
-    } else { 
+    } else {
       \wp_send_json(array(
-        'data' => 'Update post failure', 
+        'data' => 'Update post failure',
         'info' => [ 'postid' => $post_id, 'attachmentid' => $attachment_id],
-        'tracking' => 'Service Controller Error: Update post meta thumbnail on services', 
+        'tracking' => 'Service Controller Error: Update post meta thumbnail on services',
         'error' => $updateStatus,
         'type' => false
         )
-      ); 
+      );
     }
   }
 
@@ -42,7 +42,10 @@ final class ServicesController {
       $gallery = $_product->get_gallery_image_ids();
       array_push( $gallery, $_product->get_image_id() );
       while (list(, $id) = each( $gallery )) {
-        $urlsGallery[] = UrlServices\ServiceUrlController::getAttachmentUrl( (int)$id );
+        $urlsGallery[] = [
+          'full' => UrlServices\ServiceUrlController::getAttachmentUrl( (int)$id ),
+          'thumbnail' => UrlServices\ServiceUrlController::getAttachmentUrl( (int)$id , [100, 100])
+        ];
       }
 
       $results = new \stdClass();
@@ -53,7 +56,7 @@ final class ServicesController {
       $results->categorie = \get_the_terms( $_product->get_id(), 'product_cat' ); // Array of WP_term or false
       $results->state = \get_post_meta( $_product->get_id(), '_product_advert_state', true );
       $results->adress = \get_post_meta( $_product->get_id(), '_product_advert_adress', true );
-      $results->phone = \get_post_meta( $_product->get_id(), '_product_advert_phone', true ); 
+      $results->phone = \get_post_meta( $_product->get_id(), '_product_advert_phone', true );
       $results->hidephone = \get_post_meta( $_product->get_id(), '_product_advert_hidephone', true );
       $results->pictures = &$urlsGallery;
       $results->price = $_product->get_price();
@@ -65,7 +68,7 @@ final class ServicesController {
           array_push($_, [ 'attr' => self::getAttributName( $validate ), 'value' => $attribute->get_options() ]);
         }
       }
-      return [ 
+      return [
         'post' => $results,
         'attributs' => $_
       ];
