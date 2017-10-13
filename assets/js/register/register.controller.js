@@ -34,11 +34,11 @@ register.controller('AdvertFormRegisterCtrl', function (
 	$scope.showActionToast = function(msg, btn) {
 		var pinTo = $scope.getToastPosition();
 		var toast = $mdToast.simple()
-		.textContent( msg )
-		.action( btn )
-		.highlightAction(true)
-		.hideDelay(3000)
-		.position( pinTo );
+			.textContent( msg )
+			.action( btn )
+			.highlightAction(true)
+			.hideDelay(3000)
+			.position( pinTo );
 		$mdToast.show( toast ).then(function( response ) { /* @return string, ok */
 			
 		});
@@ -70,22 +70,20 @@ register.controller('AdvertFormRegisterCtrl', function (
 		$scope.activated = true;
 
 		registerFactory.register_user( registerdata )
-			.success(function(resp) {
+			.then(function successCallback( resp ) {
+				var data = resp.data;
 				$scope.activated = false;
-				
 				$scope.RegisterForm.$setUntouched();
 				$scope.RegisterForm.$setPristine();
-
 				/* Set toasted */
-				$scope.showActionToast(resp.data, 'OK');
+				$scope.showActionToast(data.data, 'OK');
 				/* redirect add form if success */
 				if (resp.type == 'success')
 					$window.setTimeout(function(){
-						$window.location.href = resp.redirect_url;
+						$window.location.href = data.redirect_url;
 					}, 2500)
 				
-			})
-			.error(function() {
+			}, function errorCallback( errno ) {
 				$scope.activated = false;
 			});
 	};
