@@ -21,7 +21,7 @@ final class DashboardCode {
 		
 		shortcode\AdvertCode::setEnqueue();
 		shortcode\AdvertCode::setAngularMaterial();
-		shortcode\AdvertCdoe::DashboardEnqueue( $user );
+		shortcode\AdvertCode::DashboardEnqueue( $user );
 		global $twig;
 		return $twig->render('@frontadvert/dashboard.html', array(
 			
