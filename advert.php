@@ -468,10 +468,6 @@ final class _Advert extends AdvertController {
             ]);
             $User = new \WP_User( $user_id );
             $User->add_cap('upload_files');
-            /* $User->add_cap('delete_published_posts');
-               $User->add_cap('edit_others_posts');
-               $User->add_cap('edit_posts');
-               $User->add_cap('delete_others_pages'); */
             if (!is_int($update_usr)) \wp_send_json(['Error on update user role, probably that user doesn\'t exist.']);
             $addform_page_id = \get_option( 'addform_page_id', false );
             $verify = $addform_page_id == false || !is_int( (int)$addform_page_id );

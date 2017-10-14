@@ -50,6 +50,8 @@ final class AdvertCode {
 			'ajax_url' => \admin_url( 'admin-ajax.php' )
 		] );
 		\wp_enqueue_script( 'moment', \plugins_url('/assets/components/moment/moment-with-locales.min.js', __FILE__), ['advert', 'advert-route'] );
+		\wp_enqueue_script( 'moment-tz', \plugins_url('/assets/components/moment/moment-timezone-with-data.js', __FILE__), ['moment', 'advert', 'advert-route'] );
+		\wp_enqueue_script( 'advert-directive', \plugins_url('/assets/js/advert/advert.directive.js', __FILE__), ['advert', 'advert-route'] );
 		\wp_enqueue_script( 'advert-controller', \plugins_url('/assets/js/advert/advert.controller.js', __FILE__), ['advert', 'advert-route'] );
 		\wp_localize_script( 'advert-controller', 'adverts', [
 			'thumbnails' => $params->thumbnails,

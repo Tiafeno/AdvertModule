@@ -1,0 +1,66 @@
+<div class="advert-loading" ng-show="showLoading">
+  <div class="spinner">
+    <div class="dot1"></div>
+    <div class="dot2"></div>
+  </div>
+</div>
+
+<div class="uk-section" ng-show="!showLoading">
+  <div class="uk-container uk-container-small advert-slider">
+    <div class="advert-detail-container">
+      <div class="advert-detail-bg advert-bg" zoombg style="height: 380px;">
+      </div>
+    </div>
+  </div>
+  <div class="uk-container uk-container-small advert-content">
+    <div uk-grid>
+      <div class="uk-width-1-2 uk-margin-top">
+        <h2 class="uk-text-lead uk-margin-remove-bottom">Description</h2>
+        <p class="uk-text-muted" ng-bind-html="product_details.post.post_content"></p>
+      </div>
+      <div class="uk-width-1-2 uk-margin-top">
+        <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center" style="margin-bottom: 4rem;" uk-grid>
+            <div ng-repeat="picture in product_details.post.pictures track by $index" class="advert-detail-container ">
+                <div class="uk-background-muted advert-detail-bg advert-list-details" picture-refer="[[ $index ]]" advertslider adverts-click="EventClickSlide( idx )" style="background-image: url( [[picture.thumbnail]] )"></div>
+            </div>
+        </div>
+        <div>
+          <p class="advret-price uk-text-lead"><span class="uk-label advert-label">Prix: </span>[[ product_details.post.price | currency ]] AR</p>
+        </div>
+        <div uk-margin>
+          <div uk-grid>
+            <div class="uk-width-1-1 uk-width-1-2@m">
+              <button ng-click="EventviewPhoneNumber( $event )" id="numberView" class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">
+                Voir le telephone
+              </button>
+            </div>
+            <div class="uk-width-1-1 uk-width-1-2@m uk-margin-remove-top"> <button class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">Envoyer un e-mail</button> </div>
+          </div>
+          <div class="uk-margin-remove-top" uk-grid>
+            <div class="uk-width-1-1 uk-width-1-2@m">
+              <button class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">Modifier</button>
+            </div>
+            <div class="uk-width-1-1 uk-width-1-2@m uk-margin-remove-top">
+              <button ng-click="EventdeletePost( $event )" class="advert-button uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom uk-text-left">Supprimer</button>
+            </div>
+          </div>
+          <div>
+            <button class="advert-button uk-button uk-button-secondary uk-width-1-1">Mettre en avant</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="uk-margin-large">
+      <hr>
+      <div uk-grid>
+        <div class="uk-width-1-1 uk-width-1-2@m">
+          <p class="uk-text-muted uk-margin-remove-bottom">Mise en ligne [[ product_details.post.date_create.date | moment ]]</p>
+          <p class="uk-text-muted uk-margin-remove-top">Par <b>[[ product_details.post.author_name ]]</b>
+        </div>
+        <div class="uk-width-1-1 uk-width-1-2@m">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

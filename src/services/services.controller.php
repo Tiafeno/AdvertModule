@@ -60,6 +60,13 @@ final class ServicesController {
       $results->hidephone = \get_post_meta( $_product->get_id(), '_product_advert_hidephone', true );
       $results->pictures = &$urlsGallery;
       $results->price = $_product->get_price();
+      $results->date_create = $_product->get_date_created();
+
+      $post = \get_post( $results->ID );
+      $Model = new Model\AdvertModel();
+      $advertUser = $Model->get_advert_user( (int)$post->post_author );
+      $results->author_name = $advertUser->lastname.' '.$advertUser->firstname;
+      $results->post_author = $post->post_author;
 
       $attrs = $_product->has_attributes() ? $_product->get_attributes() : null;
       $_ = [];
@@ -85,7 +92,7 @@ final class ServicesController {
     *  @params $user_id (int)
     *  @return wordpress database results where user_id = $user_id from advert_user
     */
-    $advertUser = $Model->get_advert_user( $user_id ) [0];
+    $advertUser = $Model->get_advert_user( $user_id );
     $advertUser->user_login = $User->user_login;
     $advertUser->user_email = $User->user_email;
     $advertUser->user_registered = $User->user_registered;

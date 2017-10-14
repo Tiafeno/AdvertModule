@@ -25,11 +25,11 @@ class AdvertModel {
     foreach ($parents as $parent) {
       $verify = \term_exists( $parent->slug, $taxonomy ); // return array('term_id'=> x,'term_taxonomy_id'=>x))
       if (is_null( $verify )) {
-        
-        $isParent = \wp_insert_term($parent->name, $taxonomy, 
+
+        $isParent = \wp_insert_term($parent->name, $taxonomy,
           [ 'slug' => $parent->slug, 'parent' => 0 ]
         );
-        if (!\is_wp_error( $isParent )) { 
+        if (!\is_wp_error( $isParent )) {
           $selfparent = \term_exists( $parent->slug, $taxonomy );
           $parent_term_id = $selfparent[ 'term_id' ];
           foreach ($childs as $child) {
@@ -75,7 +75,7 @@ class AdvertModel {
           array('%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s'));
     if (!$Query) {
       return  $this->wpdb->print_error();
-    } else {  
+    } else {
       $this->wpdb->flush();
       $update_usr = \wp_update_user([
         'ID' => $user_id,
@@ -92,7 +92,7 @@ class AdvertModel {
 
   public function get_advert_user( $user_id ) {
     $sql = $this->wpdb->prepare( "SELECT * FROM {$this->wpdb->prefix}advert_user WHERE id_user = %d", $user_id );
-    return $this->wpdb->get_results( $sql, OBJECT );
+    return $this->wpdb->get_row( $sql, OBJECT );
   }
 
   private static function create_role() {
@@ -141,7 +141,7 @@ class AdvertModel {
       [ 'title' => 'Add Listing', 'content' => '[addform_advert]' ],
       [ 'title' => 'Dashboard', 'content' => '[dashboard_advert]' ]
     ];
-    
+
     /*
       \update_option( 'register_page_id', $register_page_id );
       \update_option( 'addform_page_id', $addform_page_id );
@@ -154,7 +154,7 @@ class AdvertModel {
       $post_id = \wp_insert_post(array(
         'post_author' => $user->user_login,
         'post_title' => \wp_strip_all_tags( $content[ 'title' ]),
-        'post_date' => date( 'Y-m-d H:i:s' ), 
+        'post_date' => date( 'Y-m-d H:i:s' ),
         'post_content' => $content[ 'content' ],
         'post_status' => 'publish', /* https://codex.wordpress.org/Post_Status */
         'post_parent' => '',
@@ -174,7 +174,7 @@ class AdvertModel {
           case 'Dashboard':
             update_option( 'dashboard_page_id', $post_id );
             break;
-          
+
           default:
             # code...
             break;
@@ -199,12 +199,12 @@ class AdvertModel {
         "postal_code VARCHAR(255) NOT NULL ," .
         "phone INT(50) NOT NULL ," .
         "add_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );");
-        
+
     $wpdb->query("ALTER TABLE {$wpdb->prefix}advert_user " .
         "ADD CONSTRAINT delete_custom_user " .
         "FOREIGN KEY (id_user) REFERENCES {$wpdb->prefix}users(ID) " .
         "ON DELETE CASCADE ON UPDATE NO ACTION;");
-    
+
     namespace\AdvertModel::setProductCat();
     namespace\AdvertModel::setDistricts();
     namespace\AdvertModel::create_role();

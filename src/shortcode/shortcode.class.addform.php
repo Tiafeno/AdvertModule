@@ -26,7 +26,7 @@ final class AddformCode {
 		$args = [
 			'post_type' => "product",
 			'post_status' => [ 'pending' ],
-			'post_author' => $current_user->user_login
+			'author' => $current_user->ID
 		];
 		$Pending = new \WP_Query( $args );
 		$post_id = null;
@@ -55,7 +55,7 @@ final class AddformCode {
 		* $current_user->user_email
 		*/
 		$post_id = \wp_insert_post(array(
-			'post_author' => $current_user->user_login,
+			'post_author' => $current_user->ID,
 			'post_title' => \wp_strip_all_tags(md5( date( 'Y-m-d H:i:s' ) ) . ' - ' . $current_user->user_login),
 			'post_date' => date( 'Y-m-d H:i:s' ),
 			'post_content' => '',
