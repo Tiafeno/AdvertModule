@@ -30,15 +30,18 @@
         <div uk-margin>
           <div uk-grid>
             <div class="uk-width-1-1 uk-width-1-2@m">
-              <button ng-click="EventviewPhoneNumber( $event )" id="numberView" class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">
+              <button ng-click="EventviewPhoneNumber( $event )" id="numberView" class="advert-button uk-button uk-button-secondary
+              uk-width-1-1 uk-margin-small-bottom uk-text-left">
                 Voir le telephone
               </button>
             </div>
-            <div class="uk-width-1-1 uk-width-1-2@m uk-margin-remove-top"> <button class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">Envoyer un e-mail</button> </div>
+            <div class="uk-width-1-1 uk-width-1-2@m uk-margin-remove-top"> <button class="advert-button uk-button uk-button-secondary uk-width-1-1
+              uk-margin-small-bottom uk-text-left">Envoyer un e-mail</button> </div>
           </div>
           <div class="uk-margin-remove-top" uk-grid>
             <div class="uk-width-1-1 uk-width-1-2@m">
-              <button class="advert-button uk-button uk-button-secondary uk-width-1-1 uk-margin-small-bottom uk-text-left">Modifier</button>
+              <button  class="advert-button uk-button uk-button-secondary
+              uk-width-1-1 uk-margin-small-bottom uk-text-left"><a ng-href="#!advert/[[product_details.post.ID]]/edit" >Modifier</a></button>
             </div>
             <div class="uk-width-1-1 uk-width-1-2@m uk-margin-remove-top">
               <button ng-click="EventdeletePost( $event )" class="advert-button uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom uk-text-left">Supprimer</button>

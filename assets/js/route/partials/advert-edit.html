@@ -1,0 +1,66 @@
+<div class="uk-section uk-section-small">
+  <div class="uk-container uk-container-small">
+    <div uk-grid>
+      <div class="uk-width-1-1 uk-width-1-2@m uk-margin-top">
+        <div>
+          <h1 class="uk-text-lead">[[ products.post.post_title ]]</h1>
+          <div>
+            <p class="advret-price uk-text-lead uk-margin-remove"><span class="uk-label advert-label">Prix: </span>[[ products.post.price | currency ]] AR</p>
+            <p class="uk-text-lead uk-margin-remove"><span class="uk-label advert-label">Adresse: </span>[[ products.post.adress ]]</p>
+            <p class="uk-text-lead uk-margin-remove"><span class="uk-label advert-label">State: </span>[[ products.post.state ]]</p>
+            <p class="uk-text-lead uk-margin-remove"><span class="uk-label advert-label">Phone: </span>[[ products.post.phone ]]</p>
+            <hr>
+            <div>
+              <h4 class="uk-text-lead">Description</h4>
+              <p class="uk-text-muted uk-margin-remove" ng-bind-html="products.post.post_content"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="uk-width-1-1 uk-width-1-2@m uk-margin-top">
+        <form name="editForm" ng-submit="formEditSubmit( $event )" class="uk-form-stacked" novalidate>
+          <div class="uk-margin">
+            <label class="uk-form-label" for="form-stacked-text">Titre</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" ng-model="products.post.post_title" id="form-stacked-text" type="text" name="title" required>
+                <div ng-messages="editForm.title.$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+            </div>
+          </div>
+
+          <div class="uk-margin">
+            <label class="uk-form-label" for="form-stacked-text">Description</label>
+            <div class="uk-form-controls">
+                <textarea class="uk-textarea" ng-model="products.post.post_content" name="content" rows="5" required></textarea>
+                <div ng-messages="editForm.content.$error">
+                  <div ng-message="required">Veuillez rédiger un texte d'annonce.</div>
+                </div>
+            </div>
+          </div>
+
+          <div class="uk-margin">
+            <label class="uk-form-label" for="form-stacked-text">State</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" ng-model="products.post.state" id="form-stacked-text" type="text" name="state" required>
+                <div ng-messages="editForm.state.$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+            </div>
+          </div>
+
+          <div class="uk-margin">
+            <label class="uk-form-label" for="form-stacked-text">Phone</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" ng-model="products.post.phone" id="form-stacked-text" type="text" name="phone" required>
+                <div ng-messages="editForm.phone.$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

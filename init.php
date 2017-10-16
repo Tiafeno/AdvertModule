@@ -13,9 +13,14 @@ include_once( plugin_dir_path(__FILE__) . '/autoload.php' );
 include_once( plugin_dir_path(__FILE__) . '/libraries/php/underscore/underscore.php' );
 include_once( plugin_dir_path(__FILE__) . '/libraries/php/parsedown/Parsedown.php' );
 include_once( plugin_dir_path(__FILE__) . '/src/services/services.controller.php' );
+
+include_once( plugin_dir_path(__FILE__) . '/src/factory/factory.controller.php' );
 include_once( plugin_dir_path(__FILE__) . '/src/services/services.url.controller.php' );
+include_once( plugin_dir_path(__FILE__) . '/src/services/services.request.controller.php' );
+
 include_once( plugin_dir_path(__FILE__) . '/src/controller/AdvertController.php' );
-include_once( plugin_dir_path(__FILE__) . '/src/interfaces/user.interface.php' );
+
+include_once( plugin_dir_path(__FILE__) . '/src/components/interfaces/user.interface.php' );
 include_once( plugin_dir_path(__FILE__) . '/src/components/user.class.php' );
 include_once( plugin_dir_path(__FILE__) . '/advert.php' );
 include_once( plugin_dir_path(__FILE__) . '/advertcode.php' );

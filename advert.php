@@ -114,10 +114,13 @@ final class _Advert extends AdvertController {
 
     \add_action('wp_ajax_action_change_password', array($this, 'action_change_password'));
 
+    \add_action('wp_ajax_action_get_nonce', array($this, 'action_get_nonce'));
+
     \add_action('wp_ajax_action_render_nonce', array($this, 'action_render_nonce'));
     \add_action('wp_ajax_nopriv_action_render_nonce', array($this, 'action_render_nonce'));
 
     \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
+    \add_action('wp_ajax_action_update_product', array($this, 'action_update_product'));
 
     \register_taxonomy(
       'district',

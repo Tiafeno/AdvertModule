@@ -174,6 +174,9 @@ class AdvertModel {
           case 'Dashboard':
             update_option( 'dashboard_page_id', $post_id );
             break;
+          case 'Adverts':
+            update_option( 'adverts_page_id', $post_id );
+            break;
 
           default:
             # code...

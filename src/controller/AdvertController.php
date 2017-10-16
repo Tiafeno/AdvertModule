@@ -1,6 +1,7 @@
 <?php
 namespace advert\src\controller;
 use advert\src\services as services;
+use advert\src\factory as factory;
 
 abstract class AdvertController {
   public $Services;
@@ -11,6 +12,10 @@ abstract class AdvertController {
     $this->Services = new services\ServicesController();
   }
 
+  /*
+  ** action 'before_delete_post'
+  ** This function check if post type is only product
+  */
   public function verify_before_delete( $postid ) {
     global $post_type;
     if ('product' != $post_type) return;
@@ -46,12 +51,12 @@ abstract class AdvertController {
   }
 
   public function action_change_password() {
-    if (!isset( $_REQUEST[ 'pass' ])) 
+    if (!isset( $_REQUEST[ 'pass' ]))
       \wp_send_json( [
         'type' => false,
         'data' => 'Probably, an request error params'
       ] );
-    if (!\is_user_logged_in()) 
+    if (!\is_user_logged_in())
       return;
     // if (defined('DOING_AJAX') && DOING_AJAX)
     //   return false;
@@ -79,8 +84,8 @@ abstract class AdvertController {
   }
 
   public function action_render_nonce() {
-    if (isset( $_REQUEST[ 'fieldnonce' ])) {
-      $fieldnonce = trim( $_REQUEST[ 'fieldnonce' ]);
+    $fieldnonce = service\ServicesRequestHttp::req('fieldnonce');
+    if (false != $fieldnonce) {
       \wp_send_json( [
         'type' => true,
         'nonce' => \wp_create_nonce( $fieldnonce )
@@ -88,9 +93,23 @@ abstract class AdvertController {
     }
   }
 
+  public function action_get_nonce( $paramNonce = false ) {
+    $inputNonce = service\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    if (false != $inputNonce) {
+      $factory = new factory\Factory( $inputNonce );
+      return $factory->getNonce();
+    }
+  }
+
+  public function action_update_product( $paramNonce = false ) {
+    $formNonce = service\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    if ($formNonce === false) return false;
+    
+  }
+
   public function action_upload_avatar() {
     if (!\is_user_logged_in()) return false;
-    if (isset($_REQUEST[ 'nonce' ]) && 
+    if (isset($_REQUEST[ 'nonce' ]) &&
     \wp_verify_nonce($_REQUEST[ 'nonce' ], 'avatar_upload')) {
       $User = \wp_get_current_user();
       /* delete preview avatar */
@@ -105,8 +124,8 @@ abstract class AdvertController {
       $attachment_id = \media_handle_upload('file', 0);
       if (\is_wp_error( $attachment_id )) {
         \wp_send_json(array(
-          'data' => 'There was an error uploading the image.', 
-          'tracking' => $attachment_id->get_error_messages(), 
+          'data' => 'There was an error uploading the image.',
+          'tracking' => $attachment_id->get_error_messages(),
           'type' => false)
         );
       } else {
@@ -128,7 +147,7 @@ abstract class AdvertController {
     $posts = services\ServicesController::getPost( $post_id );
 
     if (!is_null($posts)) {
-      
+
       \wp_send_json( [ 'type' => true, 'data' => $posts ]);
     } else \wp_send_json([ 'type' => false, 'tracking' =>  null, 'data' => 'get post content is null']);
   }

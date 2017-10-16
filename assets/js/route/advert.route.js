@@ -15,6 +15,10 @@ advert.config(['$routeProvider', function( $routeProvider ) {
       templateUrl : jsRoute.partials_uri + 'advert-details.html',
       controller : 'AdvertDetails'
     })
+    .when('/advert/:id/edit', {
+      templateUrl : jsRoute.partials_uri + 'advert-edit.html',
+      controller : 'AdvertEdit'
+    })
     .otherwise({
       redirectTo: '/advert'
     });
@@ -36,27 +40,69 @@ routeAdvert
             action: 'action_get_advertdetails'
           }
         });
+      },
+      getNonceField : function( nonce ) {
+        if (_.isEmpty( nonce )) return false;
+        return $http.get( jsRoute.ajax_url, {
+          params : {
+            name_nonce: nonce,
+            action: 'action_get_nonce'
+          }
+        });
       }
     }
+  })
+  .service('$routeServices', function() {
+    var self = this;
+    var post_details = {};
+    self.getDetails = function() {
+      return post_details;
+    };
+    self.setDetails = function( details ) {
+      return post_details = details;
+    };
+  })
+
+routeAdvert
+  .controller('AdvertListsController', function( $scope, $routeServices ) {
+
   });
 
 routeAdvert
-  .controller('AdvertListsController', function( $scope,) {
+  .controller('AdvertEdit', function( $scope, $routeServices, $routeParams, factoryServices ) {
+    $scope.products = $routeServices.getDetails();
+    $scope.products_id = parseInt( $routeParams.id );
+    $scope.submitEditForm = function( isValid ) {
+
+    };
+    this.Initialize = function() {
+      if (_.isEmpty( $scope.products )){
+        factoryServices.getAdvertDetails( $scope.products_id )
+          .then(function( results ) {
+            var details = results.data;
+            $scope.products = details.data;
+          })
+          .catch()
+      }
+    };
+    this.Initialize();
   });
 
 routeAdvert
-  .controller('AdvertDetails', function( $scope, factoryServices, alertify, $routeParams ) {
+  .controller('AdvertDetails', function( $scope, $routeParams, $location, $routeServices, factoryServices, alertify ) {
     $scope.product_id = parseInt( $routeParams.id );
     $scope.refer = 0;
     $scope.showLoading = true;
     $scope.product_details = {};
     if (!isNaN($scope.product_id)) {
+      /* get products post details */
       factoryServices.getAdvertDetails( $scope.product_id )
         .then(function( results ){
           $scope.showLoading = false;
           var details = results.data;
           if (details.type) {
             $scope.product_details = details.data;
+            $routeServices.setDetails( $scope.product_details );
             /* set image in slider */
             var pictures =  $scope.product_details.post.pictures;
             if (!_.isEmpty( pictures )) {
@@ -66,7 +112,7 @@ routeAdvert
                   'background' : '#151515 url( ' + pictures[ 0 ].full + ' )'
                 });
             }
-          }
+          } else console.warn( details.data );
         })
         .catch(function() {});
     }
@@ -75,39 +121,40 @@ routeAdvert
       $scope.refer = parseInt( idx );
     };
 
+    $scope.go = function( path ) {
+      $location.path( path );
+    };
+
     /* Event on click show phone number button */
     $scope.EventviewPhoneNumber = function( ev ) {
       var _hidephone = $scope.product_details.post.hidephone;
       var _phone = $scope.product_details.post.phone;
-      var elementPhone = angular.element( numberView );
-      var test = parseInt( _hidephone );
-      if (test) {
-        elementPhone.html( _phone );
+      var __elementPhone = angular.element( numberView );
+      var _hide = parseInt( _hidephone );
+      if (!_hide) {
+        __elementPhone.html( _phone );
       } else {
         /* alert user */
         var content = "Numero de telephone n'est pas disponible";
         alertify.alert(content, function ( ev ) {
-          // user clicked "ok"
           ev.preventDefault();
         });
       }
-    }
+    };
 
     /* run on click delete this product */
     $scope.EventdeletePost = function( ev ) {
-      var message = "Voulez vous vraiment supprimer cette annonce";
+      var _message = "Voulez vous vraiment supprimer cette annonce";
       alertify
         .okBtn("Oui")
         .cancelBtn("Non")
-        .confirm( message , function (ev) {
-            // ok
+        .confirm( _message , function (ev) { /* ok */
             ev.preventDefault();
-        }, function(ev) {
-            // cancel
+        }, function(ev) { /* cancel */
             ev.preventDefault();
 
         });
-    }
+    };
   })
   .directive('advertslider', function( $parse ) {
     return {
