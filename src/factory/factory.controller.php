@@ -15,7 +15,7 @@ final class Factory {
   public function getNonce() {
     return $this->Nonce;
   }
-  public function verifyNonce() {
-
+  public function verifyNonce( $name ) {
+    return \wp_verify_nonce($this->Nonce, $name);
   }
 }

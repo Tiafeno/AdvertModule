@@ -29,5 +29,9 @@ include_once( plugin_dir_path(__FILE__) . '/entity/model/AdvertModel.php' );
 include_once( plugin_dir_path(__FILE__) . '/widgets/search.widget.php' );
 include_once( plugin_dir_path(__FILE__) . '/widgets/premium.widget.php' );
 
+/* Constant config advert */
+define('_update_product_nonce_', 'update_product_nonce');
+define('_update_profil_nonce_', 'update_profil_nonce');
+
 use advert\plugins;
 new plugins\_Advert();

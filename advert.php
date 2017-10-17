@@ -5,7 +5,6 @@ use advert\src\controller\AdvertController as AdvertController;
 use advert\entity\model\AdvertModel as AdvertModel;
 use advert\libraries\parsedown as parsedown;
 use advert\libraries\php\underscore\__ as __;
-use advert\src\services\url as UrlServices;
 
 use advert\shortcode\AdvertCode as AdvertCode;
 use advert\shortcode\addform as addform;
@@ -13,6 +12,9 @@ use advert\shortcode\adverts as adverts;
 use advert\shortcode\dashboard as dashboard;
 use advert\shortcode\login as login;
 use advert\shortcode\register as register;
+
+use advert\src\services\url as UrlServices;
+use advert\shortcode\services as services;
 
 final class _Advert extends AdvertController {
   private $Model;
@@ -269,7 +271,10 @@ final class _Advert extends AdvertController {
   * @param, void
   * @return, json object send
   **/
-  public function action_update_dashboard() {
+  public function action_update_dashboard( $paramNonce = false ) {
+    $Nonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    if ($Nonce === false) \wp_send_json([ 'Missing Nonce!' ]);
+    if (!\wp_verify_nonce( $Nonce, _update_profil_nonce_ ) ) \wp_send_json([ 'Nonce isn\'t valide' ]);
     if (!\is_user_logged_in()) return false;
     $User = \wp_get_current_user();
     $params = $_REQUEST;

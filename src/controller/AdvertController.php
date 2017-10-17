@@ -84,7 +84,7 @@ abstract class AdvertController {
   }
 
   public function action_render_nonce() {
-    $fieldnonce = service\ServicesRequestHttp::req('fieldnonce');
+    $fieldnonce = services\ServicesRequestHttp::req('fieldnonce');
     if (false != $fieldnonce) {
       \wp_send_json( [
         'type' => true,
@@ -94,7 +94,7 @@ abstract class AdvertController {
   }
 
   public function action_get_nonce( $paramNonce = false ) {
-    $inputNonce = service\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    $inputNonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
     if (false != $inputNonce) {
       $factory = new factory\Factory( $inputNonce );
       return $factory->getNonce();
@@ -102,9 +102,13 @@ abstract class AdvertController {
   }
 
   public function action_update_product( $paramNonce = false ) {
-    $formNonce = service\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    $formNonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
     if ($formNonce === false) return false;
-    
+    $factory = new factory\Factory( _update_product_nonce_ );
+    if ($factory->verifyNonce( $formNonce )) {
+
+    }
+
   }
 
   public function action_upload_avatar() {

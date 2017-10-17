@@ -116,7 +116,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
   $scope.progress.avatar = true;
   $scope.progress.password_change = true;
   
-  var initilize = function() {
+  var initialize = function() {
     var KeysUser = _.keys( $scope._user );
     KeysUser = _.without( KeysUser, 'id_user', 'id_advert_user');
     _.each( KeysUser, function(el, index) {
@@ -126,7 +126,7 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
       $scope.profil.img_url = jsDashboard.assets_plugins_url + 'img/no-avatar-male.jpg';
   };
 
-  initilize();
+  initialize();
   
   /* Event on submit form profil edit  */
   $scope.EventSubmit = function( $event ) {
@@ -137,8 +137,14 @@ routeDashboard.controller('Dashboard_EditCtrl', function( $scope, $window, facto
       formdata.append($key, $value.trim());
     });
 
-    factoryRouteDashboard.get_nonce_field( 'update_profil' )
+    var nonceField = 'update_profil_nonce';
+    factoryRouteDashboard.get_nonce_field( nonceField )
       .then(function( results ) {
+        if (results.data.nonce == undefined) {
+          console.warn( 'Missing nonce!' );
+          return false;
+        }
+        formdata.append('inputNonce', results.data.nonce);
         factoryRouteDashboard.$httpPostForm( formdata )
           .then(function successCallback( results ) {
             var data = results.data;
