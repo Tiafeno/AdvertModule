@@ -50,7 +50,7 @@ final class ServicesController {
 
       $results = new \stdClass();
       $results->ID = (int)$_product->get_id();
-      $results->post_content = $_product->get_description();
+      $results->post_content = $_product->get_description() ;
       $results->post_excerpt = $_product->get_short_description();
       $results->post_title = $_product->get_title();
       $results->categorie = \get_the_terms( $_product->get_id(), 'product_cat' ); // Array of WP_term or false

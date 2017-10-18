@@ -35,11 +35,15 @@ final class AdvertCode {
 			'products_cat_child' => $params->products_cat,
 			'assets_plugins_url' => \plugins_url( "/assets/", __FILE__ )
 		));
+		self::AngularTrixEnqueue();
 	}
 
 	public static function AdvertsEnqueue( $params ) {
 		if ( ! $params instanceof \stdClass) die( 'Variable `params` isn\'t instance of stdClass' );
 		\wp_enqueue_style( 'material-icon', 'https://fonts.googleapis.com/icon?family=Material+Icons');
+		
+		self::AngularTrixEnqueue();
+
 		\wp_enqueue_script( 'angular-route', \plugins_url('/assets/components/angular-route/angular-route.min.js', __FILE__), ['angular'] );
 		\wp_enqueue_script( 'advert', \plugins_url('/assets/js/advert/advert.js', __FILE__), ['angular', 'angular-route', 'underscore'] );
 		\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );
@@ -67,6 +71,19 @@ final class AdvertCode {
 			'ajax_url' => \admin_url('admin-ajax.php'),
 			'assets_plugins_url' => \plugins_url('/assets/', __FILE__)
 		));
+	}
+
+	public static function textAngularEnqueue() {
+		\wp_enqueue_script( 'ta-rangy', \plugins_url('/assets/components/textAngular/textAngular-rangy.min.js', __FILE__), ['angular', 'material'] );
+		\wp_enqueue_script( 'ta-sanitize', \plugins_url('/assets/components/textAngular/textAngular-sanitize.js', __FILE__), ['angular', 'material'] );
+		\wp_enqueue_script( 'textAngular', \plugins_url('/assets/components/textAngular/textAngular.js', __FILE__), ['angular', 'material'] );
+		\wp_enqueue_script( 'ta-setup', \plugins_url('/assets/components/textAngular/textAngularSetup.js', __FILE__), ['angular', 'material'] );
+	}
+
+	public static function AngularTrixEnqueue() {
+		\wp_enqueue_style( 'angular-trix-style', \plugins_url('/assets/components/angular-trix/trix.css', __FILE__), []);
+		\wp_enqueue_script( 'trix', \plugins_url('/assets/components/angular-trix/trix.js', __FILE__), ['angular'] );
+		\wp_enqueue_script( 'angular-trix', \plugins_url('/assets/components/angular-trix/angular-trix.js', __FILE__), ['trix'] );
 	}
 
 	public static function DashboardEnqueue( $user ) {
@@ -100,7 +117,7 @@ final class AdvertCode {
 		\wp_enqueue_style( 'alertify-style', \plugins_url('/assets/components/alertify/css/alertify.css', __FILE__), []);
 
 		\wp_enqueue_script( 'underscore', \plugins_url('/libraries/underscore/underscore.js', __FILE__));
-		\wp_enqueue_script( 'angular', \plugins_url('/assets/components/angular/angular.min.js', __FILE__), array('jquery'));
+		\wp_enqueue_script( 'angular', \plugins_url('/assets/components/angular/angular.js', __FILE__), array('jquery'));
 		\wp_enqueue_script( 'aria', \plugins_url('/assets/components/angular-aria/angular-aria.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-messages', \plugins_url('/assets/components/angular-messages/angular-messages.min.js', __FILE__), array('angular'));
 		\wp_enqueue_script( 'angular-animate', \plugins_url('/assets/components/angular-animate/angular-animate.min.js', __FILE__), array('angular'));

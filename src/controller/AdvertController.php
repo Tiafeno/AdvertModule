@@ -87,7 +87,6 @@ abstract class AdvertController {
     $fieldnonce = services\ServicesRequestHttp::req('fieldnonce');
     if (false != $fieldnonce) {
       \wp_send_json( [
-        'type' => true,
         'nonce' => \wp_create_nonce( $fieldnonce )
       ] );
     }
@@ -101,13 +100,46 @@ abstract class AdvertController {
     }
   }
 
-  public function action_update_product( $paramNonce = false ) {
-    $formNonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+  public function action_update_product() {
+    if (!\is_user_logged_in())
+      return;
+    $User = \wp_get_current_user();
+    $post_id = (int) services\ServicesRequestHttp::req( 'post_id' );
+    $formNonce = services\ServicesRequestHttp::req( 'inputNonce' );
     if ($formNonce === false) return false;
     $factory = new factory\Factory( _update_product_nonce_ );
-    if ($factory->verifyNonce( $formNonce )) {
+    if ($resultNonce = $factory->verifyNonce( $formNonce )) {
+      $title = services\ServicesRequestHttp::req( 'inputTitle' );
+      $content = services\ServicesRequestHttp::req( 'inputContent' );
+      $state = services\ServicesRequestHttp::req( 'inputState' );
+      $adress = services\ServicesRequestHttp::req( 'inputAdress' );
+      $phone = services\ServicesRequestHttp::req( 'inputPhone' );
+      if (false == $post_id) \wp_send_json( [ 'constant post_id isn\'t define or empty.' ] );
+      /* Check if current user can edit */
+      $pst = \get_post( $post_id );
+      if (is_null( $pst )) \wp_send_json( 'Post doesn\'t exist or error' );
+      if ( ! $pst instanceof \WP_Post) \wp_send_json( 'Current post is not instance of WP_POST' );
+      if ($pst->post_author != $User->ID) \wp_send_json( ['info' => 'This post isn\'t your post', 'author' => $pst->post_author, 'user' => $User->ID ] );
+      if ($title != false && $content != false) {
+        $post = [
+          'ID'     => $post_id,
+          'post_title'   =>  $title ,
+          'post_content' =>  $content ,
+        ];
+    
+        /* Update the post -*/
+        $update_result = \wp_update_post( $post, true );
+        if (!\is_wp_error( $update_result )) {
+          \update_post_meta( $post_id, '_product_advert_state', $state );
+          \update_post_meta( $post_id, '_product_advert_adress', $adress );
+          \update_post_meta( $post_id, '_product_advert_phone', $phone );
 
-    }
+          \wp_send_json( [ 'type' => true, 'data' => 'Product update with success'] );
+        } else 
+          \wp_send_json( [ $update_result->get_error_messages() ] );
+      } else \wp_send_json( $title, $content );
+
+    } else \wp_send_json( $resultNonce );
 
   }
 

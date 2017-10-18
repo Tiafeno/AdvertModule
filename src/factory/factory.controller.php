@@ -2,7 +2,7 @@
 namespace advert\src\factory;
 
 final class Factory {
-  protected $Nonce = null;
+  public $Nonce = null;
   public $fielName = null;
   public function __construct( $fieldName ) {
     $this->fieldName = &$fieldName;
@@ -16,6 +16,6 @@ final class Factory {
     return $this->Nonce;
   }
   public function verifyNonce( $name ) {
-    return \wp_verify_nonce($this->Nonce, $name);
+    return \wp_verify_nonce($this->Nonce, $this->fieldName);
   }
 }
