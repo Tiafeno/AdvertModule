@@ -100,9 +100,28 @@ abstract class AdvertController {
     }
   }
 
+  public function action_delete_product() {
+    if ( ! \wp_doing_ajax()) return;
+    if ( ! \is_user_logged_in()) return;
+    $User = \wp_get_current_user();
+    $post_id = (int) services\ServicesRequestHttp::req( 'post_id' );
+    $pt = \get_post( $post_id );
+    if (is_null( $pt )) \wp_send_json( 'Post doesn\'t exist or unknown error' );
+    if ( ! $pt instanceof \WP_Post) \wp_send_json( 'Current post is not instance of WP_POST' );
+    if ($pt->post_author != $User->ID) \wp_send_json( ['info' => 'This post isn\'t your post' ] );
+    /* delete post attachment */
+    /* TODO... */
+    
+    /* delete post */
+    $deletion = \wp_delete_post( $post_id, true);
+    if (false != $deletion) {
+      \wp_send_json( ['type' => true, 'data' => $deletion] );
+    } else \wp_send_json( ['type' => false, 'data' => 'Error unknown on delete the post']);
+  }
+
   public function action_update_product() {
-    if (!\is_user_logged_in())
-      return;
+    if ( ! \wp_doing_ajax()) return;
+    if ( ! \is_user_logged_in()) return;
     $User = \wp_get_current_user();
     $post_id = (int) services\ServicesRequestHttp::req( 'post_id' );
     $formNonce = services\ServicesRequestHttp::req( 'inputNonce' );
@@ -119,7 +138,7 @@ abstract class AdvertController {
       $pst = \get_post( $post_id );
       if (is_null( $pst )) \wp_send_json( 'Post doesn\'t exist or error' );
       if ( ! $pst instanceof \WP_Post) \wp_send_json( 'Current post is not instance of WP_POST' );
-      if ($pst->post_author != $User->ID) \wp_send_json( ['info' => 'This post isn\'t your post', 'author' => $pst->post_author, 'user' => $User->ID ] );
+      if ($pst->post_author != $User->ID) \wp_send_json( ['info' => 'This post isn\'t your post' ] );
       if ($title != false && $content != false) {
         $post = [
           'ID'     => $post_id,

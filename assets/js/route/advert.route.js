@@ -137,7 +137,7 @@ routeAdvert
   });
 
 routeAdvert
-  .controller('AdvertDetails', function( $scope, $routeParams, $location, $routeServices, factoryServices, alertify ) {
+  .controller('AdvertDetails', function( $scope, $window, $routeParams, $location, $routeServices, factoryServices, alertify ) {
     $scope.product_id = parseInt( $routeParams.id );
     $scope.refer = 0;
     $scope.showLoading = true;
@@ -198,6 +198,17 @@ routeAdvert
         .cancelBtn("Non")
         .confirm( _message , function (ev) { /* ok */
             ev.preventDefault();
+            var formdata = new FormData();
+            formdata.append('action', 'action_delete_product');
+            formdata.append('post_id', $scope.product_id);
+            factoryServices.xhrHttp( formdata )
+              .then(function successCallback( results ) {
+                var resp = results.data;
+                if (resp.type) alertify.success( 'Advert delete with success' );
+                $window.setTimeout(function() {
+                  $scope.go( '/' );
+                }, 3000);
+              }, function errorCallback( errno ) {});
         }, function(ev) { /* cancel */
             ev.preventDefault();
 

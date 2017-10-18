@@ -123,6 +123,7 @@ final class _Advert extends AdvertController {
 
     \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
     \add_action('wp_ajax_action_update_product', array($this, 'action_update_product'));
+    \add_action('wp_ajax_action_delete_product', array($this, 'action_delete_product'));
 
     \register_taxonomy(
       'district',
