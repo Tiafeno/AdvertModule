@@ -47,14 +47,13 @@ class AdvertModel {
     $taxonomy = 'district';
     foreach ($districts as $district) {
       $verify = \term_exists( $district->name, $taxonomy);
-      if (!is_null( $verify )) continue;
+      if ( ! is_null( $verify )) continue;
       $isInsert = \wp_insert_term( $district->name, $taxonomy, [
         'slug' => $district->code,
         'parent' => 0
       ]);
-      return (!\is_wp_error( $isInsert )) ? true : false;
+      return ( ! \is_wp_error( $isInsert )) ? true : false;
     }
-
   }
 
   /*
@@ -73,7 +72,7 @@ class AdvertModel {
           'SIRET'     => isset( $SIRET ) ? esc_sql( $SIRET ) : null 
         ),
           array('%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s'));
-    if (!$Query) {
+    if ( ! $Query) {
       return  $this->wpdb->print_error();
     } else {
       $this->wpdb->flush();
