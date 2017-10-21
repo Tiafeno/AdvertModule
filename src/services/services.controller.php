@@ -121,6 +121,13 @@ final class ServicesController {
     *  @return wordpress database results where user_id = $user_id from advert_user
     */
     $advertUser = $Model->get_advert_user( $user_id );
+    if (is_null( $advertUser) ) { 
+      $advertUser = new \stdClass();
+      $advertUser->firstname = $User->user_login; 
+      $_REQUEST[ 'user_id' ] = $user_id;
+      $_REQUEST[ 'firstname' ] = $advertUser->firstname;
+      $Model->add_user( $user_id );
+    }
     $advertUser->user_login = $User->user_login;
     $advertUser->user_email = $User->user_email;
     $advertUser->user_registered = $User->user_registered;

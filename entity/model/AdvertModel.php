@@ -56,21 +56,21 @@ class AdvertModel {
     }
 
   }
+
   /*
   * This function executed if after user register
   */
-
   public function add_user( $user_id ) {
     extract( $_REQUEST, EXTR_PREFIX_SAME, 'user');
     $Query = $this->wpdb->insert($this->wpdb->prefix."advert_user", array(
           'id_user'   => $user_id, // int
-          'lastname'  => esc_sql( $lastname ),
+          'lastname'  => isset( $lastname ) ? esc_sql( $lastname ) : null ,
           'firstname' => esc_sql( $firstname ),
-          'society'   => esc_sql( $society ),
-          'adress'       => esc_sql( $adress ),
-          'postal_code'  => esc_sql( $postal_code ),
-          'phone'     => (int)$phone, // int
-          'SIRET'     => esc_sql( $SIRET )
+          'society'   => isset( $society ) ? esc_sql( $society ) : null ,
+          'adress'       => isset( $adress ) ? esc_sql( $adress ) : null ,
+          'postal_code'  => isset( $postal_code ) ? esc_sql( $postal_code ) : null ,
+          'phone'     => isset( $phone ) ? (int)$phone : null, // int
+          'SIRET'     => isset( $SIRET ) ? esc_sql( $SIRET ) : null 
         ),
           array('%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s'));
     if (!$Query) {
@@ -79,7 +79,7 @@ class AdvertModel {
       $this->wpdb->flush();
       $update_usr = \wp_update_user([
         'ID' => $user_id,
-        'display_name' => $society
+        'display_name' => isset($society) ? $society : $firstname
       ]);
       return \is_wp_error( $update_usr ) ? $update_usr->get_error_messages() : true;
     }
@@ -192,15 +192,15 @@ class AdvertModel {
   public static function install() {
     global $wpdb;
     $wpdb->query("CREATE TABLE IF NOT EXISTS {$wpdb->prefix}advert_user" .
-        "( id_advert_user BIGINT(20) UNSIGNED PRIMARY KEY, " .
+        "( id_advert_user BIGINT(20) UNSIGNED PRIMARY KEY AUTO_INCREMENT, " .
         "id_user BIGINT(20) UNSIGNED UNIQUE NOT NULL," .
-        "lastname VARCHAR(250) NOT NULL ," .
+        "lastname VARCHAR(250) NULL ," .
         "firstname VARCHAR(250) NOT NULL ," .
-        "society VARCHAR(250) NOT NULL ," .
-        "SIRET VARCHAR(100) NOT NULL ," .
-        "adress VARCHAR(100) NOT NULL ," .
-        "postal_code VARCHAR(255) NOT NULL ," .
-        "phone INT(50) NOT NULL ," .
+        "society VARCHAR(250) NULL ," .
+        "SIRET VARCHAR(100) NULL ," .
+        "adress VARCHAR(100) NULL ," .
+        "postal_code VARCHAR(255) NULL ," .
+        "phone INT(50) NULL ," .
         "add_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );");
 
     $wpdb->query("ALTER TABLE {$wpdb->prefix}advert_user " .
