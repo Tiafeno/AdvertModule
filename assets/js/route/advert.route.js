@@ -197,18 +197,18 @@ routeAdvert
         .okBtn("Oui")
         .cancelBtn("Non")
         .confirm( _message , function (ev) { /* ok */
-            ev.preventDefault();
-            var formdata = new FormData();
-            formdata.append('action', 'action_delete_product');
-            formdata.append('post_id', $scope.product_id);
-            factoryServices.xhrHttp( formdata )
-              .then(function successCallback( results ) {
-                var resp = results.data;
-                if (resp.type) alertify.success( 'Advert delete with success' );
-                $window.setTimeout(function() {
-                  $scope.go( '/' );
-                }, 3000);
-              }, function errorCallback( errno ) {});
+          ev.preventDefault();
+          var formdata = new FormData();
+          formdata.append('action', 'action_delete_product');
+          formdata.append('post_id', $scope.product_id);
+          factoryServices.xhrHttp( formdata )
+            .then(function successCallback( results ) {
+              var resp = results.data;
+              if (resp.type) alertify.success( 'Advert delete with success' );
+              $window.setTimeout(function() {
+                $window.location.href = jsRoute.home_url;
+              }, 3000);
+            }, function errorCallback( errno ) {});
         }, function(ev) { /* cancel */
             ev.preventDefault();
 

@@ -200,27 +200,37 @@ app.controller('AdvertFormAddCtrl', function (
   /* Event on click delete image */
   $scope.onClickDeleteThumb = function (post_id) {
     if (typeof post_id == "number") {
-      $scope.picProgress = true;
+      alertify
+        .okBtn("Oui")
+        .cancelBtn("Non")
+        .confirm( 'Voulez vous vraiment effacer cette image?' , function (ev) { /* ok */
+          ev.preventDefault();
 
-      var delete_formdata = new FormData();
-      delete_formdata.append('action', 'action_delete_post');
-      delete_formdata.append('post_type', 'attachment');
-      delete_formdata.append('id', post_id);
+          $scope.picProgress = true;
+          var delete_formdata = new FormData();
+          delete_formdata.append('action', 'action_delete_post');
+          delete_formdata.append('post_type', 'attachment');
+          delete_formdata.append('id', post_id);
+    
+          factoryServices.httpPostFormdata( delete_formdata )
+            .then(function successCallback( results ) {
+              var data = results.data;
+              if (!data.type) { console.warn( data ); return $scope.picProgress = false; }
+              var galleries = _.reject( $scope.thumbnailGalleryIDs, function( gallery ){
+                return gallery.id === data.ID;
+              });
+              $scope.thumbnailGalleryIDs = galleries;
+              angular.element('#fileInput').val("");
+              $scope.picProgress = false;
+            }, function errorCallback( errno ) {
+              $scope.picProgress = false;
+              console.debug( errno );
+            });
+      }, function(ev) { /* cancel */
+          ev.preventDefault();
 
-      factoryServices.httpPostFormdata( delete_formdata )
-        .then(function successCallback( results ) {
-          var data = results.data;
-          if (!data.type) { console.warn( data ); return $scope.picProgress = false; }
-          var galleries = _.reject( $scope.thumbnailGalleryIDs, function( gallery ){
-            return gallery.id === data.ID;
-          });
-          $scope.thumbnailGalleryIDs = galleries;
-          angular.element('#fileInput').val("");
-          $scope.picProgress = false;
-        }, function errorCallback( errno ) {
-          $scope.picProgress = false;
-          console.debug( errno );
-        });
+      });
+
     }
   };
 

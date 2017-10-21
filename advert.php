@@ -204,8 +204,7 @@ final class _Advert extends AdvertController {
   public function action_set_thumbnail_post() {
     $User = null;
     if (isset($_REQUEST[ 'post_id' ])) {
-      $user_id = (int) $_REQUEST[ 'post_id' ];
-      $User = new \WP_User( $user_id );
+      $post_id = (int) $_REQUEST[ 'post_id' ];
     } else {
       \wp_send_json(array(
           'data' => 'Variable post_id don\'t define on $http.',
@@ -221,7 +220,7 @@ final class _Advert extends AdvertController {
       require_once( ABSPATH . 'wp-admin/includes/image.php' );
       require_once( ABSPATH . 'wp-admin/includes/file.php' );
       require_once( ABSPATH . 'wp-admin/includes/media.php' );
-      $attachment_id = \media_handle_upload('file', (int)$_REQUEST[ 'post_id' ]);
+      $attachment_id = \media_handle_upload( 'file', (int)$_REQUEST[ 'post_id' ] );
       if (\is_wp_error( $attachment_id )) {
         \wp_send_json(array(
           'data' => 'There was an error uploading the image. Probably, the uploaded file exceeds the upload_max_filesize.',
@@ -229,7 +228,19 @@ final class _Advert extends AdvertController {
           'type' => false)
         );
       } else {
-        \update_post_meta((int)$_REQUEST[ 'post_id' ], '_thumbnail_id', $attachment_id);
+        if ( ! in_array( '_thumbnail_id', get_post_custom_keys( $post_id ) )) :
+          \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
+        else:
+          $product_gallery_exist = in_array( '_product_image_gallery', get_post_custom_keys( $post_id ) );
+          if ($product_gallery_exist) {
+            $gallery = \get_post_meta( $post_id, '_product_image_gallery', true );
+            $gallery_id = explode( ',', $gallery );
+            array_push( $gallery_id, $attachment_id );
+          } 
+          $gallery_value = $product_gallery_exist ? implode( ",", $gallery_id ) : $attachment_id;
+          \update_post_meta( $post_id, '_product_image_gallery', $gallery_value );
+        endif;
+        
         \wp_send_json(array(
           'data' => 'The image was uploaded successfully!',
           'attach_id' => $attachment_id,
@@ -240,7 +251,7 @@ final class _Advert extends AdvertController {
     } else {
       \wp_send_json(array(
           'data' => 'The security check failed, maybe show the user an error.',
-          'tracking' => [ 'capabilities' => $User ],
+          'tracking' => [ 'post_id' => $post_id ],
           'type' => false
         )
       );
@@ -338,7 +349,7 @@ final class _Advert extends AdvertController {
 
     $post_id = (int)$_REQUEST[ 'post_id' ];
     $cost = (float)$_REQUEST[ 'cost' ];
-    $gallery = json_decode( $this->req($_REQUEST[ 'gallery' ], []) );
+    $gallery = json_decode( $this->req('gallery', []) );
     if (!is_array( $gallery )) $gallery = array();
 
     \wp_set_object_terms($post_id, 'simple', 'product_type');

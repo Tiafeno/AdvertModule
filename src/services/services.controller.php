@@ -2,6 +2,7 @@
 namespace advert\src\services;
 use advert\entity\model as Model;
 use advert\src\services\url as UrlServices;
+use advert\libraries\php\underscore\__ as __;
 
 final class ServicesController {
   public static $vendor = [];
@@ -13,12 +14,12 @@ final class ServicesController {
       return false;
 
     $_attachment_id = \get_post_meta( $post_id, '_thumbnail_id', true);
-    if (!is_int( $attachment_id )) return;
-    if ((int)$_attachment_id === $attachment_id ) \wp_send_json( [
-      'type' => true,
-      'data' => 'Already exist',
-      'status' => $_attachment_id
-    ] );
+    if ((int)$_attachment_id === $attachment_id ) 
+      \wp_send_json( [
+        'type' => true,
+        'data' => 'Already exist',
+        'status' => $_attachment_id
+      ] );
     $updateStatus = \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
     if ( (true == $updateStatus) || is_int( $updateStatus ) ) {
       \wp_send_json(array('data' => 'Update post success', 'type' => true, 'status' => $updateStatus));
@@ -82,6 +83,33 @@ final class ServicesController {
     } else {
       return null;
     }
+  }
+
+  public static function delete_post_attachment( $post_id ) {
+    $errors = [];
+    if ( ! is_int( $post_id )) $errors[] = 'Variable argument post_id is not int type value';
+    $attachment_id = \get_post_meta( $post_id, '_thumbnail_id', true);
+    if ( ! empty( $attachment_id ) && empty( $errors )) {
+      $id = (int) $attachment_id;
+      if ( ! is_int( $id )) array_push($errors, 'Error of attachment id: ' . $id);
+      if ( ! empty( $errors )) :
+        $delete_results = \wp_delete_attachment( $id, true );
+      endif;
+    } else return $errors;
+    $gallery_ids = \get_post_meta( $post_id, '_product_image_gallery', true);
+    if ( ! empty( $gallery_ids )) {
+      $ids = explode(',', $gallery_ids);
+      if ( ! is_array( $ids )) array_push($errors, 'gallery is not array variable');
+      __.each($ids, function( $value ) {
+        $delete_results = \wp_delete_attachment( $value, true );
+        if (false === $delete_results) {
+          array_push($errors, 'Error on delete attachment id: ' . $value);
+        }
+      });
+    }
+
+    return $errors;
+
   }
 
   public static function getUser( $user_id ) {

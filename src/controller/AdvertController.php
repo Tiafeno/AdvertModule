@@ -109,13 +109,16 @@ abstract class AdvertController {
     if (is_null( $pt )) \wp_send_json( 'Post doesn\'t exist or unknown error' );
     if ( ! $pt instanceof \WP_Post) \wp_send_json( 'Current post is not instance of WP_POST' );
     if ($pt->post_author != $User->ID) \wp_send_json( ['info' => 'This post isn\'t your post' ] );
+
     /* delete post attachment */
-    /* TODO... */
-    
+    $delete_attachment = services\ServicesController::delete_post_attachment( $post_id ); // @return array of error
+    if (is_array( $delete_attachment) && !empty( $delete_attachment )) 
+      \wp_send_json( ['data' => $delete_attachment,  'type' => false] );
     /* delete post */
     $deletion = \wp_delete_post( $post_id, true);
     if (false != $deletion) {
-      \wp_send_json( ['type' => true, 'data' => $deletion] );
+      \wp_send_json( ['type' => true, 'post' => $deletion, 'attachment' => $delete_attachment] );
+      
     } else \wp_send_json( ['type' => false, 'data' => 'Error unknown on delete the post']);
   }
 
