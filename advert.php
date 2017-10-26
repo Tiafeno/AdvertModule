@@ -284,7 +284,7 @@ final class _Advert extends AdvertController {
   * @return, json object send
   **/
   public function action_update_dashboard( $paramNonce = false ) {
-    $Nonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    $Nonce = services\Request::req( 'inputNonce', $paramNonce );
     if ($Nonce === false) \wp_send_json([ 'Missing Nonce!' ]);
     if (!\wp_verify_nonce( $Nonce, _update_profil_nonce_ ) ) \wp_send_json([ 'Nonce isn\'t valide' ]);
     if (!\is_user_logged_in()) return false;
