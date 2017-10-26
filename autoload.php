@@ -5,7 +5,7 @@ $twig = null;
 $login_fail = null;
 
 add_action('plugins_loaded', function() {
-  global $loader, $twig;
+  global $loader, $twig, $config;
   if (!$loader instanceof \Twig_Loader_Filesystem) { return; }
   if (!defined('ADVERT_TWIG_ENGINE_PATH')) {
     define('ADVERT_TWIG_ENGINE_PATH', \plugin_dir_path(__FILE__) . '/engine/Twig');
@@ -19,7 +19,7 @@ add_action('plugins_loaded', function() {
   $loader->addPath(ADVERT_TWIG_ENGINE_PATH . '/templates/mail', 'mail');
   if (!is_null( $twig )) exit( 'Twig template is already define' );
   $twig = new \Twig_Environment($loader, array(
-    'debug' => true,
+    'debug' => $config[ 'debug' ],
     'cache' => ADVERT_TWIG_ENGINE_PATH . '/template_cache'
   ));
 });

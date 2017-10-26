@@ -9,6 +9,10 @@ Author: Tiafeno Finel
 Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2
 */
+$config = [
+  'debug' => true
+];
+
 include_once( plugin_dir_path(__FILE__) . '/autoload.php' );
 include_once( plugin_dir_path(__FILE__) . '/libraries/php/underscore/underscore.php' );
 include_once( plugin_dir_path(__FILE__) . '/libraries/php/parsedown/Parsedown.php' );
