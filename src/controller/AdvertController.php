@@ -84,7 +84,7 @@ abstract class AdvertController {
   }
 
   public function action_render_nonce() {
-    $fieldnonce = services\ServicesRequestHttp::req('fieldnonce');
+    $fieldnonce = services\Request::req('fieldnonce');
     if (false != $fieldnonce) {
       \wp_send_json( [
         'nonce' => \wp_create_nonce( $fieldnonce )
@@ -93,7 +93,7 @@ abstract class AdvertController {
   }
 
   public function action_get_nonce( $paramNonce = false ) {
-    $inputNonce = services\ServicesRequestHttp::req( 'inputNonce', $paramNonce );
+    $inputNonce = services\Request::req( 'inputNonce', $paramNonce );
     if (false != $inputNonce) {
       $factory = new factory\Factory( $inputNonce );
       return $factory->getNonce();
@@ -104,7 +104,7 @@ abstract class AdvertController {
     if ( ! \wp_doing_ajax()) return;
     if ( ! \is_user_logged_in()) return;
     $User = \wp_get_current_user();
-    $post_id = (int) services\ServicesRequestHttp::req( 'post_id' );
+    $post_id = (int) services\Request::req( 'post_id' );
     $pt = \get_post( $post_id );
     if (is_null( $pt )) \wp_send_json( 'Post doesn\'t exist or unknown error' );
     if ( ! $pt instanceof \WP_Post) \wp_send_json( 'Current post is not instance of WP_POST' );
@@ -126,16 +126,16 @@ abstract class AdvertController {
     if ( ! \wp_doing_ajax()) return;
     if ( ! \is_user_logged_in()) return;
     $User = \wp_get_current_user();
-    $post_id = (int) services\ServicesRequestHttp::req( 'post_id' );
-    $formNonce = services\ServicesRequestHttp::req( 'inputNonce' );
+    $post_id = (int) services\Request::req( 'post_id' );
+    $formNonce = services\Request::req( 'inputNonce' );
     if ($formNonce === false) return false;
     $factory = new factory\Factory( _update_product_nonce_ );
     if ($resultNonce = $factory->verifyNonce( $formNonce )) {
-      $title = services\ServicesRequestHttp::req( 'inputTitle' );
-      $content = services\ServicesRequestHttp::req( 'inputContent' );
-      $state = services\ServicesRequestHttp::req( 'inputState' );
-      $adress = services\ServicesRequestHttp::req( 'inputAdress' );
-      $phone = services\ServicesRequestHttp::req( 'inputPhone' );
+      $title = services\Request::req( 'inputTitle' );
+      $content = services\Request::req( 'inputContent' );
+      $state = services\Request::req( 'inputState' );
+      $adress = services\Request::req( 'inputAdress' );
+      $phone = services\Request::req( 'inputPhone' );
       if (false == $post_id) \wp_send_json( [ 'constant post_id isn\'t define or empty.' ] );
       /* Check if current user can edit */
       $pst = \get_post( $post_id );
