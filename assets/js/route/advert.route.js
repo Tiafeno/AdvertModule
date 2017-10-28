@@ -90,7 +90,8 @@ routeAdvert
     $scope.submitEditForm = function( isValid ) {
       if (!isValid) return false;
       var nonceField = 'update_product_nonce';
-      factoryServices.getNonceField( nonceField )
+      factoryServices
+        .getNonceField( nonceField )
         .then(function( results ) {
           var formdata = new FormData();
           var nonce = results.data.nonce;
@@ -123,7 +124,8 @@ routeAdvert
     self.Initialize = function() {
       console.warn( $scope.products );
       if (_.isEmpty( Details )){
-        factoryServices.getAdvertDetails( $scope.products_id )
+        factoryServices
+          .getAdvertDetails( $scope.products_id )
           .then(function( results ) {
             var details = results.data;
             self.__set( details.data );
@@ -137,6 +139,19 @@ routeAdvert
   });
 
 routeAdvert
+  .controller( 'AdvertSendEmail', function( $scope ) {
+    $scope.sendMail = function( isValid ) {
+      if (!isValid) return;
+
+    };
+    
+    this.Initialize = function() {
+
+    };
+    this.Initialize();
+  });
+
+routeAdvert
   .controller('AdvertDetails', function( $scope, $window, $routeParams, $location, $routeServices, factoryServices, alertify ) {
     $scope.product_id = parseInt( $routeParams.id );
     $scope.refer = 0;
@@ -144,7 +159,8 @@ routeAdvert
     $scope.product_details = {};
     if (!isNaN($scope.product_id)) {
       /* get products post details */
-      factoryServices.getAdvertDetails( $scope.product_id )
+      factoryServices
+        .getAdvertDetails( $scope.product_id )
         .then(function( results ){
           $scope.showLoading = false;
           var details = results.data;
@@ -201,7 +217,8 @@ routeAdvert
           var formdata = new FormData();
           formdata.append('action', 'action_delete_product');
           formdata.append('post_id', $scope.product_id);
-          factoryServices.xhrHttp( formdata )
+          factoryServices
+            .xhrHttp( formdata )
             .then(function successCallback( results ) {
               var resp = results.data;
               if (resp.type) alertify.success( 'Advert delete with success' );
