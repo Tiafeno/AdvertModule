@@ -237,7 +237,7 @@ routeAdvert
                       var resp = results.data;
                       if (resp.type) alertify.success( 'Advert delete with success' );
                       $window.setTimeout(() => {
-                        $window.location.href = jsRoute.home_url;
+                        $location.path( '/advert' );
                       }, 3000);
                       
                     },  errno => { console.warn( errno ); return; });
