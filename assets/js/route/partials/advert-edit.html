@@ -39,23 +39,28 @@
           </div>
 
           <div class="uk-margin">
-            <label class="uk-form-label" for="form-stacked-text">State</label>
-            <div class="uk-form-controls">
-                <input class="uk-input" ng-model="products.state" id="form-stacked-text" type="text" name="state" required>
-                <div ng-messages="editForm.state.$error">
-                  <div ng-message="required">This is required.</div>
+            <div uk-grid>
+              <div class="uk-width-1-1 uk-width-1-2@m">
+                <label class="uk-form-label" for="form-stacked-text">State</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" ng-model="products.state" id="form-stacked-text" type="text" name="state" required>
+                    <div ng-messages="editForm.state.$error">
+                      <div ng-message="required">This is required.</div>
+                    </div>
                 </div>
-            </div>
-          </div>
+              </div>
 
-          <div class="uk-margin">
-            <label class="uk-form-label" for="form-stacked-text">Adresse</label>
-            <div class="uk-form-controls">
-                <input class="uk-input" ng-model="products.adress" id="form-stacked-text" type="text" name="adress" required>
-                <div ng-messages="editForm.adress.$error">
-                  <div ng-message="required">This is required.</div>
+              <div class="uk-width-1-1 uk-width-1-2@m">
+                <label class="uk-form-label" for="form-stacked-text">Adresse</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" ng-model="products.adress" id="form-stacked-text" type="text" name="adress" required>
+                    <div ng-messages="editForm.adress.$error">
+                      <div ng-message="required">This is required.</div>
+                    </div>
                 </div>
+              </div>
             </div>
+            
           </div>
 
           <div class="uk-margin">

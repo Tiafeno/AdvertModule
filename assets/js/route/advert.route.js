@@ -237,8 +237,10 @@ routeAdvert
                       var resp = results.data;
                       if (resp.type) alertify.success( 'Advert delete with success' );
                       $window.setTimeout(() => {
-                        $location.path( '/advert' );
-                      }, 3000);
+                        $scope.$apply(() => {
+                          $location.path( '/advert' );
+                        });
+                      }, 2500);
                       
                     },  errno => { console.warn( errno ); return; });
                 } else {

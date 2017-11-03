@@ -1,7 +1,20 @@
 button, html, input, select, textarea {
-  font-family: Roboto,"Helvetica Neue",sans-serif !important;
+  font-family: "Source Sans Pro",HelveticaNeue-Light,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif !important;
 }
-
+input#form-stacked-text {
+  padding-left: 4px;
+  background: transparent;
+  border-bottom: 1px solid #ddd;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  box-shadow: none;
+  padding-bottom: 2px;
+}
+input#form-stacked-text:focus {
+  border-bottom: 1.5px solid #2420e0;
+  background: whitesmoke;
+}
 .datepicker {
   opacity: 0;
 }
