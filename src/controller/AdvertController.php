@@ -70,6 +70,18 @@ abstract class AdvertController {
     ] );
   }
 
+  public function action_edit_post_verify() {
+    if (!\is_user_logged_in()) \wp_send_json([ 'authorized' => false, 'error' => 'You are not connected' ]);
+    $post_id = services\Request::req('post_id');
+    $current_user = \wp_get_current_user();
+    $post = \get_post((int) $post_id);
+    if ($current_user->ID === (int)$post->post_author) {
+      \wp_send_json([
+        'authorized' => true
+      ]);
+    } else \wp_send_json( ['authorized' => false, 'error' => 'You don\'t have the required authorization for this operation' ] );
+  }
+
   public function action_verify_password() {
     if (!isset( $_REQUEST[ 'pass' ])) return;
     if (!\is_user_logged_in()) return;

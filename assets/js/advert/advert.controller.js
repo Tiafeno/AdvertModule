@@ -1,9 +1,14 @@
 'use strict'
 
 advert
-  .controller('AdvertController', function ($scope, $window, $filter, Advertfactory) {
+  .controller('AdvertController', function ($scope, $location, $window, $filter, Advertfactory) {
     var self = this;
     $scope.vendors = [];
+
+    $scope.go = function( path ) {
+      $location.path( path );
+    };
+
     self.Initialize = function () {
       Advertfactory.getVendors()
         .then(function (results) {

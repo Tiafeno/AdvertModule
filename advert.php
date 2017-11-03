@@ -121,6 +121,9 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_action_render_nonce', array($this, 'action_render_nonce'));
     \add_action('wp_ajax_nopriv_action_render_nonce', array($this, 'action_render_nonce'));
 
+    \add_action('wp_ajax_action_edit_post_verify', array($this, 'action_edit_post_verify'));
+    \add_action('wp_ajax_nopriv_action_edit_post_verify', array($this, 'action_edit_post_verify'));
+
     \add_action('wp_ajax_action_upload_avatar', array($this, 'action_upload_avatar'));
     \add_action('wp_ajax_action_update_product', array($this, 'action_update_product'));
     \add_action('wp_ajax_action_delete_product', array($this, 'action_delete_product'));

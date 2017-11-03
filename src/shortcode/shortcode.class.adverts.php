@@ -58,7 +58,8 @@ final class AdvertsCode {
 				]);
 				array_push($posts, [
 					'ID' => $adverts->post->ID,
-					'post_title' => $adverts->post->post_title,
+          'post_title' => $adverts->post->post_title,
+          'post_author' => $adverts->post->post_author,
 					'post_date' => $adverts->post->post_date,
 					'post_excerpt' => $adverts->post->post_content,
 					'price' => \get_post_meta( $adverts->post->ID, '_price', true),
