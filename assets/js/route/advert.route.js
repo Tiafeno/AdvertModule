@@ -139,6 +139,8 @@ routeAdvert
   .controller( 'AdvertContactEmail', function( $scope, $routeServices, $routeParams ) {
     var post = $routeServices.getDetails();
     $scope.Error = null;
+
+    }; /* sender, sendername, and message */
     $scope.product_id = parseInt( $routeParams.id );
     $scope.sendMail = function( isValid ) {
       if (!isValid) return;

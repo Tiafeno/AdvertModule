@@ -92,7 +92,7 @@ final class ServicesController {
     if ( ! empty( $attachment_id ) && empty( $errors )) {
       $id = (int) $attachment_id;
       if ( ! is_int( $id )) array_push($errors, 'Error of attachment id: ' . $id);
-      if ( ! empty( $errors )) :
+      if (empty( $errors )) :
         $delete_results = \wp_delete_attachment( $id, true );
       endif;
     } else return $errors;

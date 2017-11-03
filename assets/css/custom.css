@@ -1,6 +1,16 @@
+.input-text, input[type=email], input[type=password], input[type=search], input[type=text], input[type=url], textarea {
+  border-color: rgba(0,0,0,0.12); 
+  box-shadow: none !important; 
+}
+
+.uk-form-stacked .uk-form-label {
+  font-weight: bold;
+}
+
 button, html, input, select, textarea {
   font-family: "Source Sans Pro",HelveticaNeue-Light,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif !important;
 }
+
 input#form-stacked-text {
   padding-left: 4px;
   background: transparent;
@@ -11,13 +21,16 @@ input#form-stacked-text {
   box-shadow: none;
   padding-bottom: 2px;
 }
+
 input#form-stacked-text:focus {
   border-bottom: 1.5px solid #2420e0;
   background: whitesmoke;
 }
+
 .datepicker {
   opacity: 0;
 }
+
 md-input-container .md-input {
   opacity: 1;
 }

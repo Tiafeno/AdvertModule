@@ -229,20 +229,20 @@
                 </md-input-container>
 
                 <div class="container">
-                    <md-progress-linear md-mode="indeterminate" ng-show="picProgress"></md-progress-linear>
+                    <md-progress-linear md-mode="indeterminate" ng-show="Progress.Image"></md-progress-linear>
                 </div>
                 <md-content class="md-padding" layout="row">
-                    <div ng-repeat="thumb in thumbnailGalleryIDs track by thumb.id" id="[[thumb.id]]" class="advert-pic" style="width:250px; padding:1px">
+                    <div ng-repeat="Image in Images track by Image.id" id="[[ Image.id ]]" class="advert-pic" style="width:250px; padding:1px">
                         <div class="pic-editor">
                             <a href="#onClickDeleteThumb" title="Effacer cette image"
-                                ng-click="onClickDeleteThumb(thumb.id)"
+                                ng-click="onClickDeleteThumb( Image.id )"
                                 class="event wp-menu-image dashicons-before dashicons-trash"></a>
 
                             <a href="#onClicksetDefaultThumb" title="Photo principal"
-                                ng-click="onClicksetDefaultThumb(thumb.id, $event)"
+                                ng-click="onClicksetDefaultThumb( Image.id, $event )"
                                 class="event wp-menu-image dashicons-before dashicons-camera"></a>
                         </div>
-                        <img ng-src="[[thumb.file]]" class="md-card-image" alt="">
+                        <img ng-src="[[ Image.file ]]" class="md-card-image" alt="">
                     </div>
                 </md-content>
 

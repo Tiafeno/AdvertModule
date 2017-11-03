@@ -231,10 +231,10 @@ final class _Advert extends AdvertController {
           'type' => false)
         );
       } else {
-        if ( ! in_array( '_thumbnail_id', get_post_custom_keys( $post_id ) )) :
+        if ( ! in_array( '_thumbnail_id', \get_post_custom_keys( $post_id ) )) :
           \update_post_meta($post_id, '_thumbnail_id', $attachment_id);
         else:
-          $product_gallery_exist = in_array( '_product_image_gallery', get_post_custom_keys( $post_id ) );
+          $product_gallery_exist = in_array( '_product_image_gallery', \get_post_custom_keys( $post_id ) );
           if ($product_gallery_exist) {
             $gallery = \get_post_meta( $post_id, '_product_image_gallery', true );
             $gallery_id = explode( ',', $gallery );
