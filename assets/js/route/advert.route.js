@@ -19,6 +19,10 @@ advert.config(['$routeProvider', function( $routeProvider ) {
       templateUrl : jsRoute.partials_uri + 'advert-edit.html',
       controller : 'AdvertEdit'
     })
+    .when('/advert/:id/contact', {
+      templateUrl : jsRoute.partials_uri + 'advert-contact.html',
+      controller : 'AdvertContactEmail'
+    })
     .otherwise({
       redirectTo: '/advert'
     });
@@ -132,11 +136,17 @@ routeAdvert
   });
 
 routeAdvert
+  .controller( 'AdvertContactEmail', function( $scope, $routeServices, $routeParams ) {
+    var post = $routeServices.getDetails();
+    $scope.Error = null;
+    $scope.product_id = parseInt( $routeParams.id );
     $scope.sendMail = function( isValid ) {
       if (!isValid) return;
 
     };
     
+    /* Initialize */
+    $scope.Error =  _.isEmpty( post ) ? 'Post is empty' : null;
   });
 
 /* Controller `AdvertDetails` */
