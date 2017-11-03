@@ -170,7 +170,7 @@ routeAdvert
         /* get products post details */
         factoryServices
           .getAdvertDetails( $scope.product_id )
-          .then(function( results ){
+          .then(function( results ) {
             $scope.showLoading = false;
             var details = results.data;
             if (details.type) {

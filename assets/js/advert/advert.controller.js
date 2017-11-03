@@ -11,19 +11,19 @@ advert
 
     self.Initialize = function () {
       Advertfactory.getVendors()
-        .then(function (results) {
+        .then( results => {
           var data = results.data;
           $scope.vendors = data;
         })
-        .catch(function () {
-          $window.setTimeout(function () {
+        .catch( () => {
+          $window.setTimeout( () => {
             self.Initialize();
           }, 2500);
         });
     };
     self.Initialize();
     var _pt = _.union(adverts.posts);
-    $scope.posts = _.map(_pt, function( el ) {
+    $scope.posts = _.map(_pt,  el => {
       el.img_url = $filter( 'thumbnail_url' )( el.ID );
       return el;
     });
