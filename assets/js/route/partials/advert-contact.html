@@ -2,5 +2,46 @@
   [[ Error ]]
 </div>
 <div ng-if="null == Error">
-  
+  <div class="uk-width-1-1 uk-width-1-2@m uk-margin-top">
+    <form name="contactForm" ng-submit="sendMail( contactForm.$valid )" class="uk-form-stacked" novalidate>
+      <div uk-alert>Pensez à indiquer vos coordonnées téléphoniques pour que l'annonceur 
+        puisse vous contacter facilement. Tout démarchage publicitaire ou spamming sera éliminé.</div>
+      <div class="uk-margin">
+        <label class="uk-form-label" for="form-stacked-text">Votre nom</label>
+        <div class="uk-form-controls">
+            <input class="uk-input" ng-model="mail.senderName" id="form-stacked-text" type="text" name="senderName" required>
+            <div ng-messages="contactForm.senderName.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="uk-margin">
+        <div uk-grid>
+          <div class="uk-width-1-1 uk-width-1-2@m">
+            <label class="uk-form-label" for="form-stacked-text">Votre adresse email</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" ng-model="mail.sender" id="form-stacked-text" type="email" name="sender" required>
+                <div ng-messages="contactForm.sender.$error">
+                  <div ng-message="required">This is required.</div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="uk-margin">
+        <label class="uk-form-label" for="form-stacked-text">Message</label>
+        <div class="uk-form-controls">
+            <!-- <textarea  class="uk-textarea" ng-model="products.post_content" name="content" rows="5" required></textarea> -->
+            <trix-editor angular-trix ng-model="mail.message"></trix-editor>
+        </div>
+      </div>
+
+      <div class="uk-margin">
+          <button type="submit" ng-disabled="contactForm.$invalid" class="uk-button uk-button-primary uk-button-small">Envoyer votre message</button>
+      </div>
+
+    </form>
+  </div>
 </div>

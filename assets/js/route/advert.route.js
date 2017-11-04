@@ -136,15 +136,36 @@ routeAdvert
   });
 
 routeAdvert
-  .controller( 'AdvertContactEmail', function( $scope, $routeServices, $routeParams ) {
+  .controller( 'AdvertContactEmail', function( $scope, $location, $routeServices, $routeParams, factoryServices, alertify ) {
     var post = $routeServices.getDetails();
     $scope.Error = null;
-
-    }; /* sender, sendername, and message */
+    $scope.mail = {}; /* sender, sendername, and message */
     $scope.product_id = parseInt( $routeParams.id );
     $scope.sendMail = function( isValid ) {
       if (!isValid) return;
-
+      var mailerForm = new FormData()
+      mailerForm.append('action', 'action_send_mail');
+      mailerForm.append('params', angular.Json( $scope.mail ));
+      factoryServices
+        .xhrHttp( mailerForm )
+        .then( results => {
+          var response = results.data;
+          if (results.status != undefined && results.status == 200) {
+            if (response.send) {
+              $scope.mail = {};
+              $scope.contactForm.$setUntouched();
+              $scope.contactForm.$setPristine();
+              alertify.alert(response.data, ev => {
+                ev.preventDefault();
+                $scope.$apply(() => {
+                  $location.path('/advert/' + $scope.product_id);
+                });
+              });
+            } else alertify.alert( response.error, ev => {
+              ev.preventDefault();
+            })
+          }
+        }, errno => { console.warn( errno ); })
     };
     
     /* Initialize */

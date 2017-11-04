@@ -96,6 +96,9 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
     \add_action('wp_ajax_nopriv_action_set_thumbnail_id', array($this, 'action_set_thumbnail_id'));
 
+    \add_action('wp_ajax_action_send_mail', array($this, 'action_send_mail'));
+    \add_action('wp_ajax_nopriv_action_send_mail', array($this, 'action_send_mail'));
+
     \add_action('wp_ajax_action_update_dashboard', array($this, 'action_update_dashboard'));
 
     /* See these function at AdvertController.class.php */
@@ -272,12 +275,16 @@ final class _Advert extends AdvertController {
   * @return, JSON : with `type` value true or false. 0 if user isn't logged
   **/
   public function action_set_thumbnail_id(){
-    if (isset( $_REQUEST[ 'attachment_id' ] ) || isset( $_REQUEST[ 'post_id' ] )):
-      $attachment_id = (int)$_REQUEST[ 'attachment_id' ];
-      $post_id = (int)$_REQUEST[ 'post_id' ];
+    $attachment_id = (int) services\Request::req( 'attachment_id', false );
+    $post_id = (int) services\Request::req( 'post_id', false );
+    if ($attachment_id != false || $post_id != false) :
       if (!is_int( $post_id )) return false;
       $this->Services->setThumbnail($attachment_id, $post_id);
     endif;
+  }
+
+  public function action_send_mail() {
+
   }
 
   /**

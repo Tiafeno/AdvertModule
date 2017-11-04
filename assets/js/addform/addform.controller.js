@@ -212,7 +212,7 @@ app.controller('AdvertFormAddCtrl', function (
       alertify
         .okBtn("Oui")
         .cancelBtn("Non")
-        .confirm( 'Voulez vous vraiment effacer cette image?' , function (ev) { /* ok */
+        .confirm( 'Voulez vous vraiment effacer cette image?' , ev => { /* ok */
           ev.preventDefault();
 
           $scope.Progress.Image = true;
@@ -244,12 +244,12 @@ app.controller('AdvertFormAddCtrl', function (
 
   this.Initialise = function () {
     /* Get all category product term */
-    factoryServices.getTermsProductCategory().then(function (results) {
-      results.data.forEach(function (el) {
+    factoryServices.getTermsProductCategory().then(results => {
+      results.data.forEach(el => {
         if (el.term_id == 1 || el.slug == 'all') return false;
         $scope.product_cat.push( el );
       });
-    }).catch(function () { console.warn('Terms products error') });
+    }).catch(() => { console.warn('Terms products error') });
 
     /* Get current post gallery and thumbnail */
 
