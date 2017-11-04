@@ -284,7 +284,16 @@ final class _Advert extends AdvertController {
   }
 
   public function action_send_mail() {
-
+    $User = null;
+    if (\is_user_logged_in())
+      $User = \wp_get_current_user();
+    $Mailer = services\Request::getValue( 'mail', false );
+    if (false === $Mailer) \wp_send_json( ['error' => 'Mail params is not define', 'send' => false] );
+    $Mailer = json_decode( $Mailer );
+    \wp_send_json( [
+      'message' => $Mailer->message,
+      'name' => $Mailer->senderName
+    ] );
   }
 
   /**
@@ -390,26 +399,11 @@ final class _Advert extends AdvertController {
 
     $desc = \apply_filters('the_content', $_POST[ 'description' ]);
 
-    $form = new \stdClass();
-    $form->state  = $this->req( 'state' );
-    $form->adress = $this->req( 'adress' );
-    $form->phone  = $this->req( 'phone' );
-    $form->hidephone = $this->req( 'hidephone', 0 );
-    $form->post_id = $post_id;
-
-    /**
-    * Update post meta, custom key
-    */
-    \update_post_meta( $post_id, '_product_advert_state', $form->state );
-    \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
-    \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
-    \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
-
     $post = [
       'ID'     => $post_id,
       'post_status'  => 'publish',
       'post_title'   => \esc_html((string)$_REQUEST[ 'title' ]),
-      'post_content' => $desc,
+      'post_content' => $desc
     ];
 
     /* Update the post for new content */
@@ -422,60 +416,87 @@ final class _Advert extends AdvertController {
         )
       );
     } else {
-
+      /**
+      * Update cutom post meta key
+      */
+      $form = new \stdClass();
+      $form->state  = $this->req( 'state' );
+      $form->adress = $this->req( 'adress' );
+      $form->phone  = $this->req( 'phone' );
+      $form->hidephone = $this->req( 'hidephone', 0 );
+      $form->post_id = $post_id;
+      
+      $this->_setCustomMeta( $form );
+      
       /*
       * Set term product_cat to this post,
       * if the term exist in product_cat taxonomy
       */
-      $categorie = (int) $_REQUEST[ 'categorie' ];
-      $term = \term_exists( $categorie, 'product_cat');
-      if (!is_null( $term )){
-        $post_terms = \wp_set_post_terms( $current_post_id, [ $term[ 'term_id' ] ], 'product_cat');
-        if (\is_wp_error( $post_terms ))
-          \wp_send_json( [
-            'type' => false,
-            'tracking' => 'Error: On set post terms ',
-            'data' => $post_terms->get_error_messages()
-            ]
-          );
-      }
+      $this->_setTerms( $current_post_id );
+    }
+  }
 
-      /* Set attributes in the product post */
-      if (isset($_REQUEST[ 'attributs' ])){
-        $attributes = str_replace('\\"','"', trim($_REQUEST[ 'attributs' ]));
-        $attributes = json_decode($attributes);
-        $product_attributes = [];
-        while (list(, $attribute) = each( $attributes )) {
-          \wp_set_object_terms($current_post_id, $attribute->value, $attribute->_id);
-          $product_attributes[ $attribute->_id ] = [
-            'name' => $attribute->_id, // set attribute name
-            'value' => (int)$attribute->value, // set attribute value
-            'is_visible' => 1,
-            'is_variation' => 0,
-            'is_taxonomy' => 0 // !important
-          ];
-        }
-        \update_post_meta($current_post_id, '_product_attributes', $product_attributes);
-        \wp_send_json([
-            'type' => true,
-            'data' => 'Update post with attributs',
-            'redirect_url' => UrlServices\ServiceUrlController::getAdvertDetailsUrl( $current_post_id )
-          ]
-        );
-      } else {
+  private function _setCustomMeta( $form ) {
+    if ( ! $form instanceof \stdClass ) return false;
+    \update_post_meta( $post_id, '_product_advert_state', $form->state );
+    \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
+    \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
+    \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
+  }
+
+  public function _setTerms( $post_id ) {
+    $categorie = $this->req( 'categorie' );
+    $term = \term_exists( (int) $categorie, 'product_cat');
+    if (!is_null( $term )){
+      $post_terms = \wp_set_post_terms( $post_id, [ $term[ 'term_id' ] ], 'product_cat');
+      if (\is_wp_error( $post_terms ))
         \wp_send_json( [
-          'type' => true,
-          'data' => 'Update post with success without attributs!'
+          'type' => false,
+          'tracking' => 'Error: On set post terms ',
+          'data' => $post_terms->get_error_messages()
           ]
         );
-      }
+    }
+    
+    /* Set attributes in the product post */
+    $this->_setAttributs( $post_id );
+  }
 
+  private function _setAttributs( $post_id ) {
+    if (false != $this->req( 'attributs', false )) {
+      $attributes = str_replace('\\"','"', trim($this->req( 'attributs' )));
+      $attributes = json_decode($attributes);
+      $product_attributes = [];
+      while (list(, $attribute) = each( $attributes )) {
+        \wp_set_object_terms($post_id, $attribute->value, $attribute->_id);
+        $product_attributes[ $attribute->_id ] = [
+          'name' => $attribute->_id, // set attribute name
+          'value' => (int)$attribute->value, // set attribute value
+          'is_visible' => 1,
+          'is_variation' => 0,
+          'is_taxonomy' => 0 // !important
+        ];
+      }
+      \update_post_meta($post_id, '_product_attributes', $product_attributes);
+      \wp_send_json([
+          'type' => true,
+          'data' => 'Update post with attributs',
+          'redirect_url' => UrlServices\ServiceUrlController::getAdvertDetailsUrl( $post_id )
+        ]
+      );
+    } else {
+      \wp_send_json( [
+        'type' => true,
+        'data' => 'Update post with success without attributs!'
+        ]
+      );
     }
   }
 
   /* This is Lambda function to get REQUEST header content */
-  public function req($k, $def=''){
-    return isset( $_REQUEST[ $k ] ) ? $_REQUEST[ $k ] : $def;
+  public static function req($k, $def = false){
+    $request = trim($_REQUEST[ $k ]);
+    return isset( $request ) ? ( !empty( $request ) ? $request : false ) : $def;
   }
 
   public function action_register_user() {
@@ -547,11 +568,11 @@ final class _Advert extends AdvertController {
     if (!\is_user_logged_in())
       return false;
 
-    if (!isset( $_REQUEST[ 'id' ] ))
-      return false;
+    if (false === services\Request::req( 'id', false))
+      \wp_send_json( ['type' => false, 'data' => 'params ìd`missing'] );
 
-    $post_id = (int)trim($_REQUEST[ 'id' ]);
-    $post_type = ( isset($_REQUEST['post_type']) && !empty(trim($_REQUEST['post_type'])) ) ? trim($_REQUEST['post_type']) : 'attachment';
+    $post_id = (int)trim(services\Request::req( 'id' ));
+    $post_type = ( false == services\Request::req( 'post_type', false ) ) ? trim($_REQUEST['post_type']) : 'attachment';
     $args = [
       'p' => $post_id,
       'post_type' => $post_type

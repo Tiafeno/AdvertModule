@@ -95,7 +95,7 @@
                     </md-input-container>
                 </div>
 
-                <div layout="column" layout-padding style="background: rgba(249, 250, 251, 0.82); border-top: .6180469716em solid rgba(0,0,0,.15);" >
+                <div layout="column" layout-padding style="background: rgba(249, 250, 251, 0.82);" >
                 {% for vendor in vendors %}
                     {% if vendor.type in ['text', 'number', 'tel'] %}
                         <md-input-container ng-show="optionalInput.{{ vendor.validate }}" >
@@ -161,14 +161,11 @@
                     {% endif %}
 
                 {% endfor %}
-                    <md-input-container class="md-block">
+                
+                    <div class="md-block">
                         <label>Texte de l'annonce</label>
-                        <textarea angular-trix  ng-model="advertPost.description" style="font-size: 14px; line-height: 1.5;" name="description"
-                        md-maxlength="500" rows="5" md-select-on-focus required></textarea>
-                        <div ng-messages="setAdvertForm.description.$error">
-                            <div ng-message="required">Veuillez rédiger un texte d'annonce.</div>
-                        </div>
-                    </md-input-container>
+                        <trix-editor angular-trix ng-model="advertPost.description"></trix-editor>
+                    </div>
                 </div>
 
                 <md-input-container flex="50" class="md-block" flex-gt-sm>

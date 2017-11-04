@@ -75,14 +75,16 @@ routeAdvert
   })
 
 routeAdvert
-  .controller('AdvertEdit', function( $scope, $routeServices, $routeParams, $location, alertify, factoryServices ) {
+  .controller('AdvertEdit', function( 
+    $scope, 
+    $routeServices, 
+    $routeParams, 
+    $location, 
+    alertify, 
+    factoryServices 
+  ) {
     var self = this;
     var Details = $routeServices.getDetails();
-    $scope.tinymceOptions = {
-      plugins: 'table',
-      toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
-    };
-
     $scope.products = {};
     $scope.product_id = parseInt( $routeParams.id );
     $scope.submitEditForm = function( isValid ) {
@@ -136,7 +138,14 @@ routeAdvert
   });
 
 routeAdvert
-  .controller( 'AdvertContactEmail', function( $scope, $location, $routeServices, $routeParams, factoryServices, alertify ) {
+  .controller( 'AdvertContactEmail', function( 
+    $scope, 
+    $location, 
+    $routeServices, 
+    $routeParams, 
+    factoryServices, 
+    alertify 
+  ) {
     var post = $routeServices.getDetails();
     $scope.Error = null;
     $scope.mail = {}; /* sender, sendername, and message */
@@ -145,7 +154,7 @@ routeAdvert
       if (!isValid) return;
       var mailerForm = new FormData()
       mailerForm.append('action', 'action_send_mail');
-      mailerForm.append('params', angular.Json( $scope.mail ));
+      mailerForm.append('mail', angular.toJson( $scope.mail ));
       factoryServices
         .xhrHttp( mailerForm )
         .then( results => {
