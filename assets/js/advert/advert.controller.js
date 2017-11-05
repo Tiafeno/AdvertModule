@@ -1,7 +1,13 @@
 'use strict'
 
 advert
-  .controller('AdvertController', function ($scope, $location, $window, $filter, Advertfactory) {
+  .controller('AdvertController', function (
+    $scope, 
+    $location, 
+    $window, 
+    $filter, 
+    Advertfactory
+  ) {
     var self = this;
     $scope.vendors = [];
 

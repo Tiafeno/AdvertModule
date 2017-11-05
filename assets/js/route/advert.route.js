@@ -269,6 +269,9 @@ routeAdvert
                     .then( results => {
                       var resp = results.data;
                       if (resp.type) alertify.success( 'Advert delete with success' );
+                      adverts.posts = _.reject( adverts.posts, element => {
+                        return element.ID == $scope.product_id;
+                      });
                       $window.setTimeout(() => {
                         $scope.$apply(() => {
                           $location.path( '/advert' );

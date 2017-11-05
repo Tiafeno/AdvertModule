@@ -445,7 +445,10 @@ final class _Advert extends AdvertController {
       $form->hidephone = $this->req( 'hidephone', 0 );
       $form->post_id = $post_id;
       
-      $this->_setCustomMeta( $form );
+      \update_post_meta( $post_id, '_product_advert_state', $form->state );
+      \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
+      \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
+      \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
       
       /*
       * Set term product_cat to this post,
@@ -453,14 +456,6 @@ final class _Advert extends AdvertController {
       */
       $this->_setTerms( $current_post_id );
     }
-  }
-
-  private function _setCustomMeta( $form ) {
-    if ( ! $form instanceof \stdClass ) return false;
-    \update_post_meta( $post_id, '_product_advert_state', $form->state );
-    \update_post_meta( $post_id, '_product_advert_adress', $form->adress );
-    \update_post_meta( $post_id, '_product_advert_phone', $form->phone );
-    \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
   }
 
   private function _setTerms( $post_id ) {
