@@ -154,7 +154,10 @@ routeAdvert
       if (!isValid) return;
       var mailerForm = new FormData()
       mailerForm.append('action', 'action_send_mail');
-      mailerForm.append('mail', angular.toJson( $scope.mail ));
+      mailerForm.append('post_id', $scope.product_id);
+      mailerForm.append('senderName', $scope.mail.senderName);
+      mailerForm.append('sender', $scope.mail.sender);
+      mailerForm.append('message', $scope.mail.message);
       factoryServices
         .xhrHttp( mailerForm )
         .then( results => {
@@ -162,8 +165,6 @@ routeAdvert
           if (results.status != undefined && results.status == 200) {
             if (response.send) {
               $scope.mail = {};
-              $scope.contactForm.$setUntouched();
-              $scope.contactForm.$setPristine();
               alertify.alert(response.data, ev => {
                 ev.preventDefault();
                 $scope.$apply(() => {

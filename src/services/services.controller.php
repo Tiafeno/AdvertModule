@@ -35,6 +35,18 @@ final class ServicesController {
     }
   }
 
+  public static function getAuthor( $post_id ) {
+    $post = \get_post( (int)$post_id );
+    if (is_null( $post )) return false;
+    $User = \get_user_by('ID', (int)$post->post_author );
+    if (false === $User) return $User;
+    return [
+      'mail' => $User->user_email,
+      'name' => $User->display_name,
+      'post_title' => $post->post_title
+    ];
+  }
+
   public static function getPost( $post_id ) {
     if (!function_exists('wc_get_product')) return false;
     $_product = \wc_get_product( (int)$post_id );

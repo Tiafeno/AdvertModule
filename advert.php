@@ -14,16 +14,18 @@ use advert\shortcode\login as login;
 use advert\shortcode\register as register;
 
 use advert\src\services\url as UrlServices;
-use advert\shortcode\services as services;
+use advert\src\services as services;
 
 final class _Advert extends AdvertController {
   private $Model;
+  public $Services;
 
   public function __construct() {
     parent::__construct();
 
     /* create Model instance */
     $this->Model = new AdvertModel();
+    $this->Services = new services\ServicesController();
 
     // Action WP
     \add_action( 'init', array( &$this, 'wordpress_init' ));
@@ -284,16 +286,33 @@ final class _Advert extends AdvertController {
   }
 
   public function action_send_mail() {
+    $post_id = services\Request::req('post_id', false);
+    $senderName = services\Request::req( 'senderName', false );
+    $sender = services\Request::req( 'sender', false );
+    $message = services\Request::req( 'message', false );
     $User = null;
+    $headers = [];
+
     if (\is_user_logged_in())
       $User = \wp_get_current_user();
-    $Mailer = services\Request::getValue( 'mail', false );
-    if (false === $Mailer) \wp_send_json( ['error' => 'Mail params is not define', 'send' => false] );
-    $Mailer = json_decode( $Mailer );
-    \wp_send_json( [
-      'message' => $Mailer->message,
-      'name' => $Mailer->senderName
-    ] );
+    
+    if (false === $sender || false === $senderName || false === $message || false === $post_id) 
+      \wp_send_json( ['error' => 'Probably one of the parameters is not defined', 'send' => false] );
+    $Author = services\ServicesController::getAuthor( $post_id );
+
+    /* prepare to send mail */
+    $subject = "Contact - " . $Author[ 'post_title'];
+    $to = $Author[ 'mail' ];
+    $body = &$message;
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = 'From: ' . \esc_html( $senderName ) . ' <' . $sender . '>';
+    $headers[] = 'Cc: contact@falicrea.com'; 
+    $headers[] = 'Cc: ' . $sender; 
+    if (\wp_mail( $to, $subject, $body, $headers)) :
+      \wp_send_json( ['send' => true, 'data' => 'Your message has been sent successfully'] );
+    endif;
+    \wp_send_json( ['error' => 'An error occurred while sending', 'send' => false] );
+
   }
 
   /**
@@ -444,7 +463,7 @@ final class _Advert extends AdvertController {
     \update_post_meta( $post_id, '_product_advert_hidephone', $form->hidephone );
   }
 
-  public function _setTerms( $post_id ) {
+  private function _setTerms( $post_id ) {
     $categorie = $this->req( 'categorie' );
     $term = \term_exists( (int) $categorie, 'product_cat');
     if (!is_null( $term )){
