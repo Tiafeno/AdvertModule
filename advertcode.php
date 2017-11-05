@@ -51,6 +51,7 @@ final class AdvertCode {
 		\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
 		\wp_localize_script( 'advert-route', 'jsRoute', [
 			'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
+			'schema' => \plugins_url( '/src/services/schema/', __FILE__ ),
 			'ajax_url' => \admin_url( 'admin-ajax.php' ),
 			'home_url' => \home_url( '/' )
 		] );

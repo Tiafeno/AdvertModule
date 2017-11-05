@@ -19,6 +19,14 @@ advert.config(['$routeProvider', function( $routeProvider ) {
       templateUrl : jsRoute.partials_uri + 'advert-edit.html',
       controller : 'AdvertEdit'
     })
+    .when('/restricted', {
+      templateUrl : jsRoute.partials_uri + 'restricted.html',
+      controller : 'AdvertRestricted'
+    })
+    .when('/advert/error/:code', {
+      templateUrl : jsRoute.partials_uri + 'error.html',
+      controller : 'AdvertError'
+    })
     .when('/advert/:id/contact', {
       templateUrl : jsRoute.partials_uri + 'advert-contact.html',
       controller : 'AdvertContactEmail'
@@ -32,7 +40,7 @@ var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'a
 routeAdvert
   .factory('factoryServices', ( $location, $http, $q ) => {
     return {
-      getAdvertDetails : function( id ) {
+      getProduct : function( id ) {
         var advert_post = parseInt( id );
         if (isNaN( advert_post )) {
           console.warn( 'Error Type: Variable `id` isn\'t int' );
@@ -45,7 +53,7 @@ routeAdvert
           }
         });
       },
-      getNonceField : function( nonce ) {
+      getNonce : function( nonce ) {
         if (_.isEmpty( nonce )) return false;
         return $http.get( jsRoute.ajax_url, {
           params : {
@@ -67,11 +75,37 @@ routeAdvert
       }
     }
   })
-  .service('$routeServices', function() {
+  .service('$routeServices', function( $http, $window ) {
     var self = this;
     var post_details = {};
+    var authorizeEdit = false;
+    var Error = [];
+
+    self.isAuthorize = () => { return authorizeEdit; };
+    self.authorizeAccess = () => { authorizeEdit = true; };
+    self.deniedAccess = () => { authorizeEdit = false; };
+
     self.getDetails = () => { return post_details; };
     self.setDetails =  details => { return post_details = details; };
+
+    self.getErrors = () => {
+      $http.get(jsRoute.schema + 'errorcode.json')
+        .then( response => {
+          Error = _.union( response.data );
+        }, () => { $widows.setTimeout( () => { self.getErrors(); }, 1500); })
+    };
+    self.getErrors();
+
+  })
+
+routeAdvert
+  .controller('AdvertRestricted', function( $scope ) {
+
+  })
+
+routeAdvert
+  .controller('AdvertError', function( $scope, $routeParams ) {
+    $scope.errorCode = parseInt( $routeParams.code );
   })
 
 routeAdvert
@@ -85,13 +119,14 @@ routeAdvert
   ) {
     var self = this;
     var Details = $routeServices.getDetails();
+    $scope.showLoading = true;
     $scope.products = {};
     $scope.product_id = parseInt( $routeParams.id );
     $scope.submitEditForm = function( isValid ) {
       if (!isValid) return false;
       var nonceField = 'update_product_nonce';
       factoryServices
-        .getNonceField( nonceField )
+        .getNonce( nonceField )
         .then( results => {
           var formdata = new FormData();
           var nonce = results.data.nonce;
@@ -119,20 +154,42 @@ routeAdvert
       _.each( _data.post, (value, key) => {
         $scope.products[ key ] =  value;
       });
+      $scope.showLoading = false;
     };
 
     self.Initialize = function() {
-      /* user have access to edit */
-      if (_.isEmpty( Details )){
-        factoryServices
-          .getAdvertDetails( $scope.product_id )
-          .then( results => {
-            $scope.__set( results.data.data );
-          })
-          .catch()
+      /* verify if user hava access to edit */
+      if ($routeServices.isAuthorize()) {
+        /* user have access to edit */
+        if (_.isEmpty( Details )){
+          factoryServices
+            .getProduct( $scope.product_id )
+            .then( results => {
+              $scope.__set( results.data.data );
+            })
+            .catch()
+        } else {
+          $scope.__set( Details );
+        }
       } else {
-        $scope.__set( Details );
+        var formEditVerify = new FormData();
+        formEditVerify.append('action', 'action_edit_post_verify');
+        formEditVerify.append('post_id', $scope.product_id);
+        factoryServices.xhrHttp( formEditVerify )
+        .then( results => {
+          var resp = results.data; /* { 'authorized' : true } */
+          if (resp.authorized) {
+            $routeServices.authorizeAccess();
+            self.Initialize();
+          } else {
+            $routeServices.deniedAccess();
+            $location.path( '/restricted' );
+          }
+        }, errno => {
+          console.warn( errno );
+        });
       }
+      
     };
     self.Initialize();
   });
@@ -202,13 +259,14 @@ routeAdvert
       if (!isNaN($scope.product_id)) {
         /* get products post details */
         factoryServices
-          .getAdvertDetails( $scope.product_id )
+          .getProduct( $scope.product_id )
           .then(function( results ) {
             $scope.showLoading = false;
             var details = results.data;
             if (details.type) {
               $scope.product_details = details.data;
               $routeServices.setDetails( $scope.product_details );
+              $routeServices.deniedAccess();
               /* set image in slider */
               var pictures =  $scope.product_details.post.pictures;
               if (!_.isEmpty( pictures )) {
@@ -262,6 +320,7 @@ routeAdvert
               .xhrHttp( formVerify )
               .then( results => {
                 if (results.data.authorized) {
+                  $routeServices.authorizeAccess();
                   formdata.append('action', 'action_delete_product');
                   formdata.append('post_id', $scope.product_id);
                   factoryServices
@@ -309,7 +368,7 @@ routeAdvert
       }
     }
   })
-  .directive('editadvert', ( $location, factoryServices, alertify ) => {
+  .directive('editadvert', ( $location, $routeServices, factoryServices, alertify ) => {
     return {
       restrict: 'A', /* Attribut */
       scope: true,
@@ -319,11 +378,12 @@ routeAdvert
             var formEditVerify = new FormData();
             formEditVerify.append('action', 'action_edit_post_verify');
             formEditVerify.append('post_id', scope.product_id);
-      
-            factoryServices.xhrHttp( formEditVerify )
+            if ( ! $routeServices.isAuthorize()) {
+              factoryServices.xhrHttp( formEditVerify )
               .then( results => {
                 var resp = results.data; /* { 'authorized' : true } */
                 if (resp.authorized) {
+                  $routeServices.authorizeAccess();
                   $location.path( '/advert/' + scope.product_id + '/edit' );
                 } else {
                   /* user don't have access to edit this post */
@@ -334,6 +394,8 @@ routeAdvert
               }, errno => {
                 
               });
+            } else 
+              $location.path( '/advert/' + scope.product_id + '/edit' );
           })
       }
     }

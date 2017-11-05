@@ -1,4 +1,10 @@
-<div class="uk-section uk-section-small">
+<div class="advert-loading" ng-show="showLoading">
+    <div class="spinner">
+      <div class="dot1"></div>
+      <div class="dot2"></div>
+    </div>
+  </div>
+<div class="uk-section uk-section-small" ng-show="!showLoading">
   <div class="uk-container uk-container-small">
     <div uk-grid>
       <div class="uk-width-1-1 uk-width-1-2@m uk-margin-top">
