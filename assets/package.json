@@ -1,0 +1,26 @@
+{
+  "name": "compilator",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "babel js -d dist/es5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.0.0",
+    "babel-preset-env": "^1.6.0",
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0"
+  },
+  "main": "gruntfile.js",
+  "dependencies": {
+    "uglify-js": "^3.1.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "htt://github.com/Tiafeno/AdvertModule"
+  },
+  "author": "Tiafeno Finel",
+  "license": "MIT",
+  "description": ""
+}

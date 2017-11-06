@@ -2,3 +2,4 @@
 engine/Twig/template_cache/
 .vscode
 .idea
+assets/node_modules

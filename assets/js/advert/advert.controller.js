@@ -17,7 +17,7 @@ advert
 
     self.Initialize = function () {
       Advertfactory.getVendors()
-        .then( results => {
+        .then( (results) => {
           var data = results.data;
           $scope.vendors = data;
         })

@@ -144,7 +144,8 @@ final class _Advert extends AdvertController {
       )
     );
 
-      return true;
+    
+    return true;
   }
 
   /*
