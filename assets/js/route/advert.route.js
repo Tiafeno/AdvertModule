@@ -308,9 +308,7 @@ routeAdvert
               if ( ! _.isEmpty( pictures )) {
                 jQuery( '.advert-slider' )
                   .find( '.advert-bg' )
-                  .css({
-                    'background' : '#151515 url( ' + pictures[ 0 ].full + ' )'
-                  });
+                  .css({ 'background' : '#151515 url( ' + pictures[ 0 ].full + ' )' });
               }
             } else console.warn( details.data );
           })
@@ -346,23 +344,27 @@ routeAdvert
           .cancelBtn("Non")
           .confirm( _message , ev => { /** Ok **/
             ev.preventDefault();
-            formdata.append('action', 'action_delete_product');
-            formdata.append('post_id', $scope.product_id);
-            factoryServices
-              .xhrHttp( formdata )
-              .then( results => {
-                var resp = results.data;
-                if (resp.type) alertify.success( 'Advert delete with success' );
-                adverts.posts = _.reject( adverts.posts, element => {
-                  return element.ID == $scope.product_id;
-                });
-                $window.setTimeout(() => {
-                  $scope.$apply(() => {
-                    $location.path( '/advert' );
+            if ( ! $routeServices.isAuthorize()) {
+              alertify.alert( $routeServices.getDeniedMessage(), ev => { ev.preventDefault(); })
+            } else {
+              formdata.append('action', 'action_delete_product');
+              formdata.append('post_id', $scope.product_id);
+              factoryServices
+                .xhrHttp( formdata )
+                .then( results => {
+                  var resp = results.data;
+                  if (resp.type) alertify.success( 'Advert delete with success' );
+                  adverts.posts = _.reject( adverts.posts, element => {
+                    return element.ID == $scope.product_id;
                   });
-                }, 2500);
-                
-              },  errno => { console.warn( errno ); return; });
+                  $window.setTimeout(() => {
+                    $scope.$apply(() => {
+                      $location.path( '/advert' );
+                    });
+                  }, 2500);
+                  
+                },  errno => { console.warn( errno ); return; });
+              }
           }, ev => { /** Cancel **/
               ev.preventDefault();
 
