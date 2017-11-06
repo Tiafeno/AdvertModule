@@ -19,17 +19,21 @@ advert.config(['$routeProvider', function( $routeProvider ) {
       templateUrl : jsRoute.partials_uri + 'advert-edit.html',
       controller : 'AdvertEdit'
     })
+    .when('/advert/:id/contact', {
+      templateUrl : jsRoute.partials_uri + 'advert-contact.html',
+      controller : 'AdvertContactEmail'
+    })
+    .when('/advert/:id/putforward', {
+      templateUrl : jsRoute.partials_uri + 'advert-putforward.html',
+      controller : 'putForward'
+    })
     .when('/restricted', {
       templateUrl : jsRoute.partials_uri + 'restricted.html',
       controller : 'AdvertRestricted'
     })
-    .when('/advert/error/:code', {
+    .when('/error/:code', {
       templateUrl : jsRoute.partials_uri + 'error.html',
       controller : 'AdvertError'
-    })
-    .when('/advert/:id/contact', {
-      templateUrl : jsRoute.partials_uri + 'advert-contact.html',
-      controller : 'AdvertContactEmail'
     })
     .otherwise({
       redirectTo: '/advert'
@@ -37,74 +41,6 @@ advert.config(['$routeProvider', function( $routeProvider ) {
 }]);
 
 var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'angularTrix' ]);
-routeAdvert
-  .factory('factoryServices', ( $location, $http, $q ) => {
-    return {
-      getProduct : id => {
-        var advert_post = parseInt( id );
-        if (isNaN( advert_post )) {
-          console.warn( 'Error Type: Variable `id` isn\'t int' );
-          return false;
-        }
-        return $http.get(jsRoute.ajax_url, {
-          params : {
-            post_id: id,
-            action: 'action_get_advertdetails'
-          }
-        });
-      },
-      getNonce : nonce => {
-        if (_.isEmpty( nonce )) return false;
-        return $http.get( jsRoute.ajax_url, {
-          params : {
-            fieldnonce: nonce,
-            action: 'action_render_nonce'
-          }
-        });
-      },
-      xhrHttp : form => {
-        return $http({
-          url: jsRoute.ajax_url,
-          method: "POST",
-          headers: { 'Content-Type': undefined },
-          data: form
-        });
-      },
-      go : path => {
-        $location.path( path );
-      }
-    }
-  })
-  .service('$routeServices', function( $http, $window ) {
-    var self = this;
-    var post_details = {};
-    var authorizeEdit = false;
-    var Error = [];
-    var deniedMessage = null;
-
-    self.getDeniedMessage = () => { return deniedMessage; };
-    self.isAuthorize = () => { return authorizeEdit; };
-    self.authorizeAccess = () => { 
-      deniedMessage = null;
-      authorizeEdit = true; 
-    };
-    self.deniedAccess = ( errorMessage ) => {
-      deniedMessage = errorMessage; 
-      authorizeEdit = false; 
-    };
-
-    self.getDetails = () => { return post_details; };
-    self.setDetails =  details => { return post_details = details; };
-
-    self.getErrors = () => {
-      $http.get(jsRoute.schema + 'errorcode.json')
-        .then( response => {
-          Error = _.union( response.data );
-        }, () => { $widows.setTimeout( () => { self.getErrors(); }, 1500); })
-    };
-    self.getErrors();
-
-  })
 
 routeAdvert
   .controller('AdvertRestricted', function( $scope ) {
@@ -371,78 +307,7 @@ routeAdvert
           });
       };
   })
-  .directive('advertslider', ( $parse ) => {
-    return {
-      restrict: 'A', /* Attribut */
-      scope: true,
-      link: (scope, element, attrs) => {
-         element
-           .bind('click', e => {
-              var refer = scope.$eval( attrs.pictureRefer );
-              var currentSlide = scope.product_details.post.pictures[ refer ];
-              /* $parse method, this allows parameters to be passed */
-              var invoker = $parse( attrs.advertsClick );
-              invoker(scope, { idx: refer.toString() });
-              jQuery( '.advert-bg' ).css({
-                'background': '#151515 url(' + currentSlide.full + ')'
-              });
-            });
-      }
-    }
-  })
-  .directive('editadvert', ( 
-    $location, 
-    $routeServices, 
-    factoryServices, 
-    alertify 
-  ) => {
-    return {
-      restrict: 'A', /* Attribut */
-      scope: true,
-      link: ( scope, element, attrs ) => {
-        element
-          .bind('click', e => {
-            if ( ! $routeServices.isAuthorize()) {
-              /* user don't have access to edit this post */
-              alertify.alert($routeServices.getDeniedMessage(), ev => {
-                ev.preventDefault();
-              });
-            } else 
-              $location.path( '/advert/' + scope.product_id + '/edit' );
-          })
-      }
-    }
-  })
-  .directive('contactAdvertiser', (
-    $location, 
-    factoryServices
-  ) => {
-    return {
-      restrict: 'A', /* Attribut */
-      scope: true,
-      link: (scope, element, attrs) => {
-        element
-          .bind('click', e => {
-            scope.$apply(() => {
-              $location.path( '/advert/' + scope.product_id + '/contact' );
-            });
-          })
-      }
-    }
-  })
-  .directive('zoombg', ( $window ) => {
-    return {
-      link: (scope, element, attrs) => {
-        element.bind('click', e => {
-          var _pts = scope.product_details.post.pictures;
-          var strWindowFeatures = "menubar=yes, location=yes, resizable=yes, scrollbars=yes, status=yes";
-          if (!_.isEmpty( _pts )) {
-            var windowObjectReference = $window.open(_pts[ scope.refer ].full, scope.product_details.post.post_title, strWindowFeatures);
-          }
-        });
-      }
-    }
-  })
+  
   .filter('moment', () => {
     return  input => {
       var postDate = input;

@@ -49,6 +49,9 @@ final class AdvertCode {
 		\wp_enqueue_script( 'advert-filter', \plugins_url('/assets/js/advert/advert.filter.js', __FILE__), ['advert'] );
 		\wp_enqueue_script( 'advert-factory', \plugins_url('/assets/js/advert/advert.factory.js', __FILE__), ['advert'] );
 		\wp_enqueue_script( 'advert-route', \plugins_url('/assets/js/route/advert.route.js', __FILE__), ['advert'] );
+		\wp_enqueue_script( 'advert-route-premium', \plugins_url('/assets/js/route/advert.route.premium.js', __FILE__), ['advert-route'] );
+		\wp_enqueue_script( 'advert-route-services', \plugins_url('/assets/js/route/advert.route.services.js', __FILE__), ['advert-route', 'advert-route-premium'] );
+		\wp_enqueue_script( 'advert-route-directive', \plugins_url('/assets/js/route/advert.route.directive.js', __FILE__), ['advert-route', 'advert-route-premium'] );
 		\wp_localize_script( 'advert-route', 'jsRoute', [
 			'partials_uri' => \plugins_url( '/assets/js/route/partials/', __FILE__ ),
 			'schema' => \plugins_url( '/src/services/schema/', __FILE__ ),
