@@ -21,6 +21,7 @@
       <div class="uk-width-1-2 uk-margin-top">
         <div class="uk-grid-collapse uk-child-width-expand@s uk-text-center" style="margin-bottom: 4rem;" uk-grid>
             <div ng-repeat="picture in product_details.post.pictures track by $index" class="advert-detail-container ">
+                <!-- AngularJS directive -->
                 <div class="uk-background-muted advert-detail-bg advert-list-details" picture-refer="[[ $index ]]" advertslider adverts-click="EventClickSlide( idx )" style="background-image: url( [[picture.thumbnail]] )"></div>
             </div>
         </div>

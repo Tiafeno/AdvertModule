@@ -295,7 +295,6 @@ final class _Advert extends AdvertController {
 
     if (\is_user_logged_in())
       $User = \wp_get_current_user();
-    
     if (false === $sender || false === $senderName || false === $message || false === $post_id) 
       \wp_send_json( ['error' => 'Probably one of the parameters is not defined', 'send' => false] );
     $Author = services\ServicesController::getAuthor( $post_id );
@@ -312,7 +311,6 @@ final class _Advert extends AdvertController {
       \wp_send_json( ['send' => true, 'data' => 'Your message has been sent successfully'] );
     endif;
     \wp_send_json( ['error' => 'An error occurred while sending', 'send' => false] );
-
   }
 
   /**

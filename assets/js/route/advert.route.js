@@ -40,7 +40,7 @@ var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'a
 routeAdvert
   .factory('factoryServices', ( $location, $http, $q ) => {
     return {
-      getProduct : function( id ) {
+      getProduct : id => {
         var advert_post = parseInt( id );
         if (isNaN( advert_post )) {
           console.warn( 'Error Type: Variable `id` isn\'t int' );
@@ -53,7 +53,7 @@ routeAdvert
           }
         });
       },
-      getNonce : function( nonce ) {
+      getNonce : nonce => {
         if (_.isEmpty( nonce )) return false;
         return $http.get( jsRoute.ajax_url, {
           params : {
@@ -62,7 +62,7 @@ routeAdvert
           }
         });
       },
-      xhrHttp : function( form ) {
+      xhrHttp : form => {
         return $http({
           url: jsRoute.ajax_url,
           method: "POST",
@@ -80,10 +80,18 @@ routeAdvert
     var post_details = {};
     var authorizeEdit = false;
     var Error = [];
+    var deniedMessage = null;
 
+    self.getDeniedMessage = () => { return deniedMessage; };
     self.isAuthorize = () => { return authorizeEdit; };
-    self.authorizeAccess = () => { authorizeEdit = true; };
-    self.deniedAccess = () => { authorizeEdit = false; };
+    self.authorizeAccess = () => { 
+      deniedMessage = null;
+      authorizeEdit = true; 
+    };
+    self.deniedAccess = ( errorMessage ) => {
+      deniedMessage = errorMessage; 
+      authorizeEdit = false; 
+    };
 
     self.getDetails = () => { return post_details; };
     self.setDetails =  details => { return post_details = details; };
@@ -139,7 +147,8 @@ routeAdvert
           formdata.append('post_id', $scope.products.ID);
           if (_.isEmpty( nonce )) { console.warn( 'Nonce variable is empty' ); return false; }
           formdata.append('inputNonce', nonce);
-          factoryServices.xhrHttp( formdata )
+          factoryServices
+            .xhrHttp( formdata )
             .then( () => {
               alertify.success("Advert update with success");
             },  errno => {
@@ -203,12 +212,15 @@ routeAdvert
     factoryServices, 
     alertify 
   ) {
-    var post = $routeServices.getDetails();
     $scope.Error = null;
     $scope.mail = {}; /* sender, sendername, and message */
     $scope.product_id = parseInt( $routeParams.id );
+    $scope.product_details = $routeServices.getDetails();
+
+    if (isNaN( $scope.product_id)) $scope.Error = 'Id parameter isn\'t int variable type' ;
+
     $scope.sendMail = function( isValid ) {
-      if (!isValid) return;
+      if ( ! isValid) return;
       var mailerForm = new FormData()
       mailerForm.append('action', 'action_send_mail');
       mailerForm.append('post_id', $scope.product_id);
@@ -235,8 +247,19 @@ routeAdvert
         }, errno => { console.warn( errno ); })
     };
     
+    if ( ! _.isNull( $scope.Error )) return;
     /* Initialize */
-    $scope.Error =  _.isEmpty( post ) ? 'Post is empty' : null;
+    if (_.isEmpty($scope.product_details)) {
+      factoryServices
+        .getProduct( $scope.product_id )
+        .then(results => {
+          var details = results.data;
+          if (details.type) {
+            $scope.product_details = details.data;
+            $routeServices.setDetails( $scope.product_details );
+          } else console.warn( details.data );
+        });
+    }
   });
 
 /* Controller `AdvertDetails` */
@@ -251,12 +274,26 @@ routeAdvert
     alertify 
   ) 
     {
+      /* Verification authorization */
+      var Authorization = () => {
+        var OthForm = new FormData();
+        OthForm.append('action', 'action_edit_post_verify');
+        OthForm.append('post_id', $scope.product_id);
+        factoryServices
+          .xhrHttp( OthForm )
+          .then( results => {
+            if (results.data.authorized) {
+              $routeServices.authorizeAccess();
+            } else $routeServices.deniedAccess( results.data.error );
+          });
+      };
+      Authorization();
 
       $scope.product_id = parseInt( $routeParams.id );
       $scope.refer = 0;
       $scope.showLoading = true;
       $scope.product_details = {};
-      if (!isNaN($scope.product_id)) {
+      if ( ! isNaN($scope.product_id)) {
         /* get products post details */
         factoryServices
           .getProduct( $scope.product_id )
@@ -266,10 +303,9 @@ routeAdvert
             if (details.type) {
               $scope.product_details = details.data;
               $routeServices.setDetails( $scope.product_details );
-              $routeServices.deniedAccess();
               /* set image in slider */
               var pictures =  $scope.product_details.post.pictures;
-              if (!_.isEmpty( pictures )) {
+              if ( ! _.isEmpty( pictures )) {
                 jQuery( '.advert-slider' )
                   .find( '.advert-bg' )
                   .css({
@@ -287,11 +323,10 @@ routeAdvert
 
       /* Event on click show phone number button */
       $scope.EventviewPhoneNumber = function( ev ) {
-        var _hidephone = $scope.product_details.post.hidephone;
         var _phone = $scope.product_details.post.phone;
         var __elementPhone = angular.element( numberView );
-        var _hide = parseInt( _hidephone );
-        if (!_hide) {
+        var _hide = parseInt( $scope.product_details.post.hidephone );
+        if ( ! _hide) {
           __elementPhone.html( _phone );
         } else {
           /* alert user */
@@ -302,48 +337,33 @@ routeAdvert
         }
       };
 
-      /* run on click delete this product */
+      /* Run on click delete this product */
       $scope.EventdeletePost = function( ev ) {
         var _message = "Voulez vous vraiment supprimer cette annonce";
-        var formVerify = new FormData();
         var formdata = new FormData();
-
         alertify
           .okBtn("Oui")
           .cancelBtn("Non")
-          .confirm( _message , ev => { /* ok */
+          .confirm( _message , ev => { /** Ok **/
             ev.preventDefault();
-
-            formVerify.append('action', 'action_edit_post_verify');
-            formVerify.append('post_id', $scope.product_id);
+            formdata.append('action', 'action_delete_product');
+            formdata.append('post_id', $scope.product_id);
             factoryServices
-              .xhrHttp( formVerify )
+              .xhrHttp( formdata )
               .then( results => {
-                if (results.data.authorized) {
-                  $routeServices.authorizeAccess();
-                  formdata.append('action', 'action_delete_product');
-                  formdata.append('post_id', $scope.product_id);
-                  factoryServices
-                    .xhrHttp( formdata )
-                    .then( results => {
-                      var resp = results.data;
-                      if (resp.type) alertify.success( 'Advert delete with success' );
-                      adverts.posts = _.reject( adverts.posts, element => {
-                        return element.ID == $scope.product_id;
-                      });
-                      $window.setTimeout(() => {
-                        $scope.$apply(() => {
-                          $location.path( '/advert' );
-                        });
-                      }, 2500);
-                      
-                    },  errno => { console.warn( errno ); return; });
-                } else {
-                  alertify.alert( results.data.error, ev => { ev.preventDefault(); });
-                  return;
-                }
-              })
-          }, ev => { /* cancel */
+                var resp = results.data;
+                if (resp.type) alertify.success( 'Advert delete with success' );
+                adverts.posts = _.reject( adverts.posts, element => {
+                  return element.ID == $scope.product_id;
+                });
+                $window.setTimeout(() => {
+                  $scope.$apply(() => {
+                    $location.path( '/advert' );
+                  });
+                }, 2500);
+                
+              },  errno => { console.warn( errno ); return; });
+          }, ev => { /** Cancel **/
               ev.preventDefault();
 
           });
@@ -355,11 +375,11 @@ routeAdvert
       scope: true,
       link: (scope, element, attrs) => {
          element
-           .bind('click', (e) => {
+           .bind('click', e => {
               var refer = scope.$eval( attrs.pictureRefer );
               var currentSlide = scope.product_details.post.pictures[ refer ];
               /* $parse method, this allows parameters to be passed */
-              var invoker = $parse(attrs.advertsClick);
+              var invoker = $parse( attrs.advertsClick );
               invoker(scope, { idx: refer.toString() });
               jQuery( '.advert-bg' ).css({
                 'background': '#151515 url(' + currentSlide.full + ')'
@@ -368,31 +388,22 @@ routeAdvert
       }
     }
   })
-  .directive('editadvert', ( $location, $routeServices, factoryServices, alertify ) => {
+  .directive('editadvert', ( 
+    $location, 
+    $routeServices, 
+    factoryServices, 
+    alertify 
+  ) => {
     return {
       restrict: 'A', /* Attribut */
       scope: true,
       link: ( scope, element, attrs ) => {
         element
           .bind('click', e => {
-            var formEditVerify = new FormData();
-            formEditVerify.append('action', 'action_edit_post_verify');
-            formEditVerify.append('post_id', scope.product_id);
             if ( ! $routeServices.isAuthorize()) {
-              factoryServices.xhrHttp( formEditVerify )
-              .then( results => {
-                var resp = results.data; /* { 'authorized' : true } */
-                if (resp.authorized) {
-                  $routeServices.authorizeAccess();
-                  $location.path( '/advert/' + scope.product_id + '/edit' );
-                } else {
-                  /* user don't have access to edit this post */
-                  alertify.alert(resp.error, ev => {
-                    ev.preventDefault();
-                  });
-                }
-              }, errno => {
-                
+              /* user don't have access to edit this post */
+              alertify.alert($routeServices.getDeniedMessage(), ev => {
+                ev.preventDefault();
               });
             } else 
               $location.path( '/advert/' + scope.product_id + '/edit' );
@@ -400,7 +411,10 @@ routeAdvert
       }
     }
   })
-  .directive('contactAdvertiser', function($location, factoryServices) {
+  .directive('contactAdvertiser', (
+    $location, 
+    factoryServices
+  ) => {
     return {
       restrict: 'A', /* Attribut */
       scope: true,
@@ -427,7 +441,7 @@ routeAdvert
       }
     }
   })
-  .filter('moment', function() {
+  .filter('moment', () => {
     return  input => {
       var postDate = input;
       var Madagascar = moment( postDate );
