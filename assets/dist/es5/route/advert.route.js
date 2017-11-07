@@ -37,11 +37,11 @@ var routeAdvert = angular.module('routeAdvert', ['ngAlertify', 'ngSanitize', 'an
 
 routeAdvert.controller('AdvertRestricted', function ($scope) {});
 
-routeAdvert.controller('AdvertError', function ($scope, $routeParams) {
+routeAdvert.controller('AdvertError', ['$scope', '$routeParams', function ($scope, $routeParams) {
   $scope.errorCode = parseInt($routeParams.code);
-});
+}]);
 
-routeAdvert.controller('AdvertEdit', function ($scope, $routeServices, $routeParams, $location, alertify, factoryServices) {
+routeAdvert.controller('AdvertEdit', ['$scope', '$routeServices', '$routeParams', '$location', 'alertify', 'factoryServices', function ($scope, $routeServices, $routeParams, $location, alertify, factoryServices) {
   var self = this;
   var Details = $routeServices.getDetails();
   $scope.showLoading = true;
@@ -111,9 +111,9 @@ routeAdvert.controller('AdvertEdit', function ($scope, $routeServices, $routePar
     }
   };
   self.Initialize();
-});
+}]);
 
-routeAdvert.controller('AdvertContactEmail', function ($scope, $location, $routeServices, $routeParams, factoryServices, alertify) {
+routeAdvert.controller('AdvertContactEmail', ['$scope', '$location', '$routeServices', '$routeParams', 'factoryServices', 'alertify', function ($scope, $location, $routeServices, $routeParams, factoryServices, alertify) {
   $scope.Error = null;
   $scope.mail = {}; /* sender, sendername, and message */
   $scope.product_id = parseInt($routeParams.id);
@@ -160,12 +160,12 @@ routeAdvert.controller('AdvertContactEmail', function ($scope, $location, $route
       } else console.warn(details.data);
     });
   }
-});
+}]);
 
 /* Controller `AdvertDetails` */
-routeAdvert.controller('AdvertDetails', function ($scope, $window, $routeParams, $location, $routeServices, factoryServices, alertify) {
+routeAdvert.controller('AdvertDetails', ['$scope', '$window', '$routeParams', '$location', '$routeServices', 'factoryServices', 'alertify', function ($scope, $window, $routeParams, $location, $routeServices, factoryServices, alertify) {
   /* Verification authorization */
-  var Authorization = function Authorization() {
+  var AuthorizationFn = function AuthorizationFn() {
     var OthForm = new FormData();
     OthForm.append('action', 'action_edit_post_verify');
     OthForm.append('post_id', $scope.product_id);
@@ -175,7 +175,7 @@ routeAdvert.controller('AdvertDetails', function ($scope, $window, $routeParams,
       } else $routeServices.deniedAccess(results.data.error);
     });
   };
-  Authorization();
+  AuthorizationFn();
 
   $scope.product_id = parseInt($routeParams.id);
   $scope.refer = 0;
@@ -252,7 +252,7 @@ routeAdvert.controller('AdvertDetails', function ($scope, $window, $routeParams,
       ev.preventDefault();
     });
   };
-}).filter('moment', function () {
+}]).filter('moment', function () {
   return function (input) {
     var postDate = input;
     var Madagascar = moment(postDate);

@@ -8,7 +8,7 @@ if (_.isUndefined( window.routeAdvert ))
 
 if (_.isNull( Error )) {
   routeAdvert
-    .controller('putForward', function( 
+    .controller('putForward', ['$scope', '$routeParams', '$routeServices', 'factoryServices', function( 
       $scope, 
       $routeParams, 
       $routeServices, 
@@ -16,5 +16,5 @@ if (_.isNull( Error )) {
     ) {
       
       
-    })
+    }])
 }

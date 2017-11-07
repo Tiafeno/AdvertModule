@@ -1,6 +1,6 @@
 'use strict';
 
-routeAdvert.directive('advertslider', function ($parse) {
+routeAdvert.directive('advertslider', ['$parse', function ($parse) {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -17,7 +17,7 @@ routeAdvert.directive('advertslider', function ($parse) {
       });
     }
   };
-}).directive('editadvert', function ($location, $routeServices, factoryServices, alertify) {
+}]).directive('editadvert', ['$location', '$routeServices', 'factoryServices', 'alertify', function ($location, $routeServices, factoryServices, alertify) {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -32,7 +32,7 @@ routeAdvert.directive('advertslider', function ($parse) {
       });
     }
   };
-}).directive('contactAdvertiser', function ($location, factoryServices) {
+}]).directive('contactAdvertiser', ['$location', 'factoryServices', function ($location, factoryServices) {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -44,7 +44,7 @@ routeAdvert.directive('advertslider', function ($parse) {
       });
     }
   };
-}).directive('zoombg', function ($window) {
+}]).directive('zoombg', ['$window', function ($window) {
   return {
     link: function link(scope, element, attrs) {
       element.bind('click', function (e) {
@@ -56,4 +56,4 @@ routeAdvert.directive('advertslider', function ($parse) {
       });
     }
   };
-});
+}]);

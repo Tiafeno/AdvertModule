@@ -10,10 +10,18 @@ Author URI: http://falicrea.com
 License: A "Slug" license name e.g. GPL2
 */
 $config = [
-  'debug' => true
+  'debug' => true,
+  /*
+  * For need prod files, please run this command in assets folder
+  -  - npm install or upgrade
+  *  - npm run build
+  *  - grunt uglify
+  */
+  'env' => 'prod' /* dev or prod */
 ];
 
 include_once( \plugin_dir_path(__FILE__) . '/autoload.php' );
+include_once( \plugin_dir_path(__FILE__) . '/configurator.php' );
 include_once( \plugin_dir_path(__FILE__) . '/libraries/php/underscore/underscore.php' );
 include_once( \plugin_dir_path(__FILE__) . '/libraries/php/parsedown/Parsedown.php' );
 include_once( \plugin_dir_path(__FILE__) . '/src/services/services.controller.php' );

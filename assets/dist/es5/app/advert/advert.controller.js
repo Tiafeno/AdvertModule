@@ -1,6 +1,6 @@
 'use strict';
 
-advert.controller('AdvertController', function ($scope, $location, $window, $filter, Advertfactory) {
+advert.controller('AdvertController', ['$scope', '$location', '$window', '$filter', 'Advertfactory', function ($scope, $location, $window, $filter, Advertfactory) {
   var self = this;
   $scope.vendors = [];
 
@@ -24,6 +24,6 @@ advert.controller('AdvertController', function ($scope, $location, $window, $fil
     el.img_url = $filter('thumbnail_url')(el.ID);
     return el;
   });
-}).config(function ($interpolateProvider) {
+}]).config(['$interpolateProvider', function ($interpolateProvider) {
   $interpolateProvider.startSymbol('[[').endSymbol(']]');
-});
+}]);

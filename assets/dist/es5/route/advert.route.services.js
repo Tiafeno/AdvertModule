@@ -1,6 +1,6 @@
 'use strict';
 
-routeAdvert.factory('factoryServices', function ($location, $http, $q) {
+routeAdvert.factory('factoryServices', ['$location', '$http', '$q', function ($location, $http, $q) {
   return {
     getProduct: function getProduct(id) {
       var advert_post = parseInt(id);
@@ -36,7 +36,7 @@ routeAdvert.factory('factoryServices', function ($location, $http, $q) {
       $location.path(path);
     }
   };
-}).service('$routeServices', function ($http, $window) {
+}]).service('$routeServices', ['$http', '$window', function ($http, $window) {
   var self = this;
   var post_details = {};
   var authorizeEdit = false;
@@ -75,4 +75,4 @@ routeAdvert.factory('factoryServices', function ($location, $http, $q) {
     });
   };
   self.getErrors();
-});
+}]);

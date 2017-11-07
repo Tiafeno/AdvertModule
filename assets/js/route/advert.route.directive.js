@@ -1,7 +1,7 @@
 'use strict'
 
 routeAdvert
-.directive('advertslider', ( $parse ) => {
+.directive('advertslider', ['$parse', ( $parse ) => {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -19,8 +19,8 @@ routeAdvert
           });
     }
   }
-})
-.directive('editadvert', ( 
+}])
+.directive('editadvert', ['$location', '$routeServices', 'factoryServices', 'alertify', ( 
   $location, 
   $routeServices, 
   factoryServices, 
@@ -42,8 +42,8 @@ routeAdvert
         })
     }
   }
-})
-.directive('contactAdvertiser', (
+}])
+.directive('contactAdvertiser', ['$location', 'factoryServices', (
   $location, 
   factoryServices
 ) => {
@@ -59,8 +59,8 @@ routeAdvert
         })
     }
   }
-})
-.directive('zoombg', ( $window ) => {
+}])
+.directive('zoombg', ['$window', ( $window ) => {
   return {
     link: (scope, element, attrs) => {
       element.bind('click', e => {
@@ -72,4 +72,4 @@ routeAdvert
       });
     }
   }
-})
+}])

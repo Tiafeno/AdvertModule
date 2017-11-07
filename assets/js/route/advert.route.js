@@ -40,7 +40,7 @@ advert.config(['$routeProvider', function( $routeProvider ) {
     });
 }]);
 
-var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'angularTrix' ]);
+var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'angularTrix' ]); 
 
 routeAdvert
   .controller('AdvertRestricted', function( $scope ) {
@@ -48,12 +48,18 @@ routeAdvert
   })
 
 routeAdvert
-  .controller('AdvertError', function( $scope, $routeParams ) {
+  .controller('AdvertError', ['$scope', '$routeParams', function( $scope, $routeParams ) {
     $scope.errorCode = parseInt( $routeParams.code );
-  })
+  }])
 
 routeAdvert
-  .controller('AdvertEdit', function( 
+  .controller('AdvertEdit', [
+    '$scope', 
+    '$routeServices', 
+    '$routeParams', 
+    '$location', 
+    'alertify', 
+    'factoryServices', function( 
     $scope, 
     $routeServices, 
     $routeParams, 
@@ -137,10 +143,16 @@ routeAdvert
       
     };
     self.Initialize();
-  });
+  }]);
 
 routeAdvert
-  .controller( 'AdvertContactEmail', function( 
+  .controller( 'AdvertContactEmail', [
+    '$scope',
+    '$location',
+    '$routeServices',
+    '$routeParams',
+    'factoryServices',
+    'alertify', function( 
     $scope, 
     $location, 
     $routeServices, 
@@ -196,11 +208,18 @@ routeAdvert
           } else console.warn( details.data );
         });
     }
-  });
+  }]);
 
 /* Controller `AdvertDetails` */
 routeAdvert
-  .controller('AdvertDetails', function( 
+  .controller('AdvertDetails', [
+    '$scope',
+    '$window',
+    '$routeParams',
+    '$location',
+    '$routeServices',
+    'factoryServices',
+    'alertify', function( 
     $scope, 
     $window, 
     $routeParams, 
@@ -211,7 +230,7 @@ routeAdvert
   ) 
     {
       /* Verification authorization */
-      var Authorization = () => {
+      var AuthorizationFn = () => {
         var OthForm = new FormData();
         OthForm.append('action', 'action_edit_post_verify');
         OthForm.append('post_id', $scope.product_id);
@@ -223,7 +242,7 @@ routeAdvert
             } else $routeServices.deniedAccess( results.data.error );
           });
       };
-      Authorization();
+      AuthorizationFn();
 
       $scope.product_id = parseInt( $routeParams.id );
       $scope.refer = 0;
@@ -306,7 +325,7 @@ routeAdvert
 
           });
       };
-  })
+  }])
   
   .filter('moment', () => {
     return  input => {

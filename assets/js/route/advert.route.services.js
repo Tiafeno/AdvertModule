@@ -1,7 +1,7 @@
 'use strict'
 
 routeAdvert
-.factory('factoryServices', ( $location, $http, $q ) => {
+.factory('factoryServices', ['$location', '$http', '$q', ( $location, $http, $q ) => {
   return {
     getProduct : id => {
       var advert_post = parseInt( id );
@@ -37,8 +37,8 @@ routeAdvert
       $location.path( path );
     }
   }
-})
-.service('$routeServices', function( $http, $window ) {
+}])
+.service('$routeServices', ['$http', '$window', function( $http, $window ) {
   var self = this;
   var post_details = {};
   var authorizeEdit = false;
@@ -67,4 +67,4 @@ routeAdvert
   };
   self.getErrors();
 
-})
+}])
