@@ -46,4 +46,7 @@ define('_update_product_nonce_', 'update_product_nonce');
 define('_update_profil_nonce_', 'update_profil_nonce');
 
 use advert\plugins;
+use advert\configurator as config;
+
 new plugins\_Advert();
+$Configurator = new config\Configurator( $config[ 'env' ]);

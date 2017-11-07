@@ -17,5 +17,3 @@ class Configurator {
     return "/assets/{$this->folder}/{$type}/{$this->application}" . $fileName . $withMin;
   } 
 }
-
-$Configurator = new Configurator( $config[ 'env' ]);
