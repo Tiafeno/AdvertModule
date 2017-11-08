@@ -6,6 +6,12 @@
 </div>
 
 <div class="uk-section" ng-show="!showLoading">
+
+  <modal-dialog>
+      <h2 class="uk-modal-title">Headline</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, runt mollit anim id est laborum.</p>
+  </modal-dialog>
+
   <div class="uk-container uk-container-small advert-slider">
     <div class="advert-detail-container">
       <div class="advert-detail-bg advert-bg" zoombg style="height: 380px;">
@@ -31,7 +37,7 @@
         <div uk-margin>
           <div uk-grid>
             <div class="uk-width-1-1 uk-width-1-2@m">
-              <button ng-click="EventviewPhoneNumber( $event )" id="numberView" class="advert-button uk-button uk-button-secondary
+              <button uk-toggle="target: #modalDialog" id="numberView" class="advert-button uk-button uk-button-secondary
               uk-width-1-1 uk-margin-small-bottom uk-text-left">
                 Voir le telephone
               </button>

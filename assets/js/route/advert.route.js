@@ -7,6 +7,10 @@
 */
 advert.config(['$routeProvider', function( $routeProvider ) {
   $routeProvider
+    .when('/shop', {
+      templateUrl : jsRoute.partials_uri + 'shop-list.html',
+      controller: 'ShopController'
+    })
     .when('/advert', {
       templateUrl : jsRoute.partials_uri + 'advert-lists.html',
       controller: 'AdvertController'
@@ -43,30 +47,32 @@ advert.config(['$routeProvider', function( $routeProvider ) {
 var routeAdvert = angular.module('routeAdvert', [ 'ngAlertify', 'ngSanitize', 'angularTrix' ]); 
 
 routeAdvert
-  .controller('AdvertRestricted', function( $scope ) {
-
-  })
-
+  .controller('AdvertRestricted', ['$scope', function( $scope ) { }])
 routeAdvert
   .controller('AdvertError', ['$scope', '$routeParams', function( $scope, $routeParams ) {
     $scope.errorCode = parseInt( $routeParams.code );
   }])
+routeAdvert
+  .controller('ShopController', ['$scope', '$routeServices', 'factoryServices', 
+  function( $scope, $routeServices, factoryServices) {
+    $scope.shops = [];
+    if (_.isEmpty( $scope.shops )) {
+      var formShop = new FormData();
+      formShop.append('action', 'action_get_shops');
+      factoryServices
+        .xhrHttp( formShop )
+        .then( results => {
+          var response = results.data;
+          if (response.return) {
+            $scope.shops = _.union( response.results );
+          }
+        }, error => {});
+    }
+  }])
 
 routeAdvert
-  .controller('AdvertEdit', [
-    '$scope', 
-    '$routeServices', 
-    '$routeParams', 
-    '$location', 
-    'alertify', 
-    'factoryServices', function( 
-    $scope, 
-    $routeServices, 
-    $routeParams, 
-    $location, 
-    alertify, 
-    factoryServices 
-  ) {
+  .controller('AdvertEdit', ['$scope', '$routeServices', '$routeParams', '$location', 'alertify', 'factoryServices', 
+  function( $scope, $routeServices, $routeParams, $location, alertify, factoryServices ) {
     var self = this;
     var Details = $routeServices.getDetails();
     $scope.showLoading = true;
@@ -212,21 +218,9 @@ routeAdvert
 
 /* Controller `AdvertDetails` */
 routeAdvert
-  .controller('AdvertDetails', [
-    '$scope',
-    '$window',
-    '$routeParams',
-    '$location',
-    '$routeServices',
-    'factoryServices',
-    'alertify', function( 
-    $scope, 
-    $window, 
-    $routeParams, 
-    $location, 
-    $routeServices, 
-    factoryServices, 
-    alertify 
+  .controller('AdvertDetails',
+  ['$scope','$window','$routeParams','$location','$routeServices', '$shopServices', 'factoryServices','alertify',
+  function( $scope, $window, $routeParams, $location, $routeServices, $shopServices, factoryServices, alertify 
   ) 
     {
       /* Verification authorization */
@@ -257,6 +251,7 @@ routeAdvert
             var details = results.data;
             if (details.type) {
               $scope.product_details = details.data;
+              $shopServices.setShopFn( $scope.product_details.post.post_author );
               $routeServices.setDetails( $scope.product_details );
               /* set image in slider */
               var pictures =  $scope.product_details.post.pictures;
@@ -268,26 +263,14 @@ routeAdvert
             } else console.warn( details.data );
           })
           .catch(function() {});
-      }
+      } else { $location.path( '/advert' ); }
 
       $scope.EventClickSlide = function( idx ) {
         $scope.refer = parseInt( idx );
       };
 
-      /* Event on click show phone number button */
-      $scope.EventviewPhoneNumber = function( ev ) {
-        var _phone = $scope.product_details.post.phone;
-        var __elementPhone = angular.element( numberView );
-        var _hide = parseInt( $scope.product_details.post.hidephone );
-        if ( ! _hide) {
-          __elementPhone.html( _phone );
-        } else {
-          /* alert user */
-          var content = "Numero de telephone n'est pas disponible";
-          alertify.alert(content, ev => {
-            ev.preventDefault();
-          });
-        }
+      $scope.EventviewshopFn = function( ev ) {
+         UIkit.modal( '#modalDialog' ).hide();
       };
 
       /* Run on click delete this product */

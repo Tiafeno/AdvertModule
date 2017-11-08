@@ -17,7 +17,7 @@ $config = [
   *  - npm run build
   *  - grunt uglify
   */
-  'env' => 'prod' /* dev or prod */
+  'env' => 'dev' /* dev or prod */
 ];
 
 include_once( \plugin_dir_path(__FILE__) . '/autoload.php' );

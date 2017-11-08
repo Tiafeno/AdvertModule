@@ -124,6 +124,14 @@ final class ServicesController {
 
   }
 
+  private static function getShopAvatar( $user_id ) {
+    /* Get user avatar */
+    $user_avatar = \get_user_meta( $user_id, '_avatar_', true );
+    if (!empty($user_avatar))
+      return \wp_get_attachment_image_src((int)$user_avatar, array(250, 250))[ 0 ];
+    return '';
+  }
+
   public static function getUser( $user_id ) {
     $User = \get_user_by('ID', $user_id);
     $Model = new Model\AdvertModel();
@@ -148,11 +156,28 @@ final class ServicesController {
     $advertUser->token = $User->user_pass;
 
     /* Get user avatar */
-    $user_avatar = \get_user_meta( $user_id, '_avatar_', true );
-    if (!empty($user_avatar))
-      $advertUser->img_url = \wp_get_attachment_image_src((int)$user_avatar, array(250, 250))[ 0 ];
+    $advertUser->img_url = self::getShopAvatar( $user_id );
 
     return $advertUser;
+  }
+
+  public static function getShops() {
+    $Shops = [];
+    $Model = new Model\AdvertModel();
+    $Users = $Model->get_users();
+    if (is_null( $Users )) return null;
+    while(list(, $User) = each( $Users)) {
+      $current_user = \get_user_by('ID', (int)$User->id_user);
+      $shop = new \stdClass();
+      $shop->id_user = (int)$User->id_user;
+      $shop->society = $User->society;
+      $shop->adress = $User->adress;
+      $shop->postal_code = $User->postal_code;
+      $shop->img_url = self::getShopAvatar( (int)$User->id_user);
+
+      array_push($Shops, $shop);
+    }
+    return $Shops;
   }
 
   public static function getVendor() {

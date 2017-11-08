@@ -94,6 +94,11 @@ class AdvertModel {
     return $this->wpdb->get_row( $sql, OBJECT );
   }
 
+  public function get_users() {
+    $sql = "SELECT * FROM {$this->wpdb->prefix}advert_user" ;
+    return $this->wpdb->get_results( $sql, OBJECT);
+  }
+
   private static function create_role() {
     $result = \add_role(
       'advertiser',

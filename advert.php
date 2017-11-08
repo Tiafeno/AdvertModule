@@ -26,7 +26,7 @@ final class _Advert extends AdvertController {
     /* create Model instance */
     $this->Model = new AdvertModel();
     $this->Services = new services\ServicesController();
-
+    
     // Action WP
     \add_action( 'init', array( &$this, 'wordpress_init' ));
     \add_action( 'search_Widget', function () {
@@ -104,6 +104,9 @@ final class _Advert extends AdvertController {
     \add_action('wp_ajax_action_update_dashboard', array($this, 'action_update_dashboard'));
 
     /* See these function at AdvertController.class.php */
+    \add_action('wp_ajax_action_get_shops', array($this, 'action_get_shops'));
+    \add_action('wp_ajax_nopriv_action_get_shops', array($this, 'action_get_shops'));
+
     \add_action('wp_ajax_getTermsProductCategory', array($this, 'getTermsProductCategory'));
     \add_action('wp_ajax_nopriv_getTermsProductCategory', array($this, 'getTermsProductCategory'));
 
@@ -173,6 +176,7 @@ final class _Advert extends AdvertController {
   * @return void
   */
   public function wordpress_loaded() {
+    //print_r(services\ServicesController::getShops());
 
     if (isset( $_POST[ 'setAdvert' ], $_POST[ 'post_id' ] ) &&
     \wp_verify_nonce($_POST[ 'setAdvert_nonce_' ], 'Advert_update_nonce') &&

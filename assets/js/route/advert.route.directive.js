@@ -20,12 +20,8 @@ routeAdvert
     }
   }
 }])
-.directive('editadvert', ['$location', '$routeServices', 'factoryServices', 'alertify', ( 
-  $location, 
-  $routeServices, 
-  factoryServices, 
-  alertify 
-) => {
+.directive('editadvert', ['$location', '$routeServices', 'factoryServices', 'alertify', 
+( $location, $routeServices, factoryServices, alertify ) => {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -43,10 +39,8 @@ routeAdvert
     }
   }
 }])
-.directive('contactAdvertiser', ['$location', 'factoryServices', (
-  $location, 
-  factoryServices
-) => {
+.directive('contactAdvertiser', ['$location', 'factoryServices', 
+( $location, factoryServices ) => {
   return {
     restrict: 'A', /* Attribut */
     scope: true,
@@ -71,5 +65,18 @@ routeAdvert
         }
       });
     }
+  }
+}])
+.directive('modalDialog', ['$routeServices', 
+( $routeServices ) => {
+  return {
+    restrict: 'AEC',
+    replace: true,
+    transclude: true,
+    scope: true,
+    controller: ['$scope', function modalController( $scope ) {
+      
+    }],
+    templateUrl: jsRoute.partials_uri + "dialog.html",
   }
 }])

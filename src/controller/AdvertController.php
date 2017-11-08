@@ -227,4 +227,13 @@ abstract class AdvertController {
     \wp_send_json( $vendors );
   }
 
+  public function action_get_shops() {
+    $user_id = services\Request::req( 'user_id', false );
+    $results = (false == $user_id) ? services\ServicesController::getShops() : services\ServicesController::getUser( (int) $user_id );
+    if ( ! is_null( $results ))
+      \wp_send_json( [ 'results' => $results, 'return' => true] );
+    \wp_send_json( [ 'results' => 'shop is null', 'return' => false] );
+    
+  }
+
 }
