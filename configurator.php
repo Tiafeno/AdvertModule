@@ -1,7 +1,7 @@
 <?php
 namespace advert\configurator;
 
-class Configurator {
+final class Configurator {
   public $env;
   public $folder;
   public $application;
